@@ -1,5 +1,8 @@
 package gui;
 
+import nbody.controller.Controller;
+import nbody.model.MandelbrotSet;
+
 /**
  * Mandelbrot Viewer - structured sequential program.
  * 
@@ -14,7 +17,7 @@ public class MandelbrotViewer {
 		int nIter = 1000;
 		
 		MandelbrotSet set = new MandelbrotSet(w, h, nIter);
-		MandelbrotView view = new MandelbrotView(w, h);
+		nBodyView view = new nBodyView(w, h);
 		set.addListener(view);
 		Controller controller = new Controller(set, view);
 		view.addListener(controller);

@@ -1,4 +1,6 @@
-package gui;
+package nbody.controller;
+
+import gui.Complex;
 
 public interface InputListener {
 
