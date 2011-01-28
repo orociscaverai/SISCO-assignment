@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Master extends Thread {
     private int numBodies;
+    private int deltaTime;
     private ExecutorService executor;
     private InteractionMatrix interactionMatrix;
     private Planets planets;
@@ -13,6 +14,7 @@ public class Master extends Thread {
 
     public Master(int numBodies) {
 	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "4"));
+	this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
 	this.numBodies = numBodies;
 	interactionMatrix = new InteractionMatrix(numBodies);
 	planets = new Planets(numBodies);
@@ -42,10 +44,27 @@ public class Master extends Thread {
 	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 	// / XXX Stampa per Debug
 	System.out.println(System.currentTimeMillis() - time);
-	//System.out.print(interactionMatrix.toString());
+	// System.out.print(interactionMatrix.toString());
 	executor = Executors.newFixedThreadPool(poolSize);
 	System.out.println(System.currentTimeMillis() - time);
-    }
+
+	for (int i = 0; i < numBodies - 1; i++) {
+
+	    try {
+		executor.execute(new ComputeNewPosition(i, deltaTime,
+			interactionMatrix));
+		// log("submitted task " + i + " " + j);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+
+	}
+
+	executor.shutdown();
+	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+	System.out.println(System.currentTimeMillis() - time);
+
+    } // compute()
 
     public void run() {
 	// TODO
