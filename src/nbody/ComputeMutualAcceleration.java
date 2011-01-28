@@ -3,6 +3,7 @@ package nbody;
 public class ComputeMutualAcceleration implements Runnable
 {
 	private int a, b;
+	private final static int dimension = 2;
 	private InteractionMatrix interactionMatrix;
 
 	public ComputeMutualAcceleration(int indexA, int indexB, InteractionMatrix interactionMatrix) {
@@ -25,26 +26,28 @@ public class ComputeMutualAcceleration implements Runnable
 		float[] bi = a.getPosition();
 		float[] bj = b.getPosition();
 		float G = 1.0f;
-		float[] r = new float[2];
+		float[] r = new float[dimension];
 
-		r[0] = bj[0] - bi[0];
-		r[1] = bj[1] - bi[1];
+		for (int i = 0; i<dimension;i++)
+			r[i] = bj[i] - bi[i];
 
-		float distSqr = r[0] * r[0] + r[1] * r[1] + soft2;
+		float distSqr = 0;
+		for (int i=0; i<dimension; i++)
+			distSqr = distSqr + r[i] * r[i];
+		distSqr += soft2;
 
 		float invDistCube = (G / distSqr);
 
-		float[] ai = new float[2];
-		float[] aj = new float[2];
-		ai[0] = (float) (invDistCube * b.getMass() * (r[0] / Math.sqrt(distSqr)));
-		ai[1] = (float) (invDistCube * b.getMass() * (r[1] / Math.sqrt(distSqr)));
-		aj[0] = (float) (invDistCube * a.getMass() * (-r[0] / Math.sqrt(distSqr)));
-		aj[1] = (float) (invDistCube * a.getMass() * (-r[1] / Math.sqrt(distSqr)));
-
+		float[] ai = new float[dimension];
+		float[] aj = new float[dimension];
+		for (int i = 0; i<dimension; i++){
+			ai[i] = (float) (invDistCube * b.getMass() * (r[i] / Math.sqrt(distSqr)));
+			aj[i] = (float) (invDistCube * a.getMass() * (-r[i] / Math.sqrt(distSqr)));
+		}
 		interactionMatrix.setAcceleration(indexA, indexB, ai);
 		interactionMatrix.setAcceleration(indexB, indexA, aj);
 	}	
-	
-	
-	
+
+
+
 }

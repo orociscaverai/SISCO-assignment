@@ -23,5 +23,11 @@ public class TestMain
 		System.out.println(pl.toString());
 		System.out.println("-------------------------");
 		System.out.println(im.toString());
+		ComputeNewPosition cp1 = new ComputeNewPosition(0, 2, im);
+		//ComputeNewPosition cp2 = new ComputeNewPosition(1, 1, im);
+		cp1.run();
+		//cp2.run();
+		System.out.println(pl.toString());
+		System.out.println("-------------------------");
 	}
 }

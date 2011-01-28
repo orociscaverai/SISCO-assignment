@@ -104,6 +104,8 @@ public class Planet
 	public String toString()
 	{
 		String out = "";
+		out += "Acceleration;" + acceleration[0] + " " + acceleration[1] + "\n";
+		out += "Velocity;" + velocity[0] + " " + velocity[1] + "\n";
 		out += "Position: " + position[0] + " " + position[1] + "\n";
 		out += "Mass: " + mass + "\n";
 		out += "Radius: " + radius + "\n";
