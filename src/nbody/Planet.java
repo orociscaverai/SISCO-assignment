@@ -9,6 +9,11 @@ public class Planet
 	private float[] acceleration = new float[dimension];
 	private float mass;
 	private float radius;
+	
+	public Planet(float radius,float mass){
+		this.radius = radius;
+		this.mass = mass;
+	}
 
 	public Planet(float[] position, float radius, float mass) {
 		this.position = position;

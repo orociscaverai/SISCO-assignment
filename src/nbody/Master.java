@@ -10,12 +10,13 @@ public class Master extends Thread {
 	private ExecutorService executor;
 	private InteractionMatrix interactionMatrix;
 	private int poolSize;
+	private PlanetsMap pl;
 
 	public Master(int numBodies) {
 		this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
 		this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
 		this.numBodies = numBodies;
-		new Planets(numBodies);
+		pl = new PlanetsMap(numBodies);
 		interactionMatrix = new InteractionMatrix(numBodies);
 	}
 
@@ -31,7 +32,7 @@ public class Master extends Thread {
 			for (int j = i + 1; j < numBodies; j++) {
 				try {
 					executor.execute(new ComputeMutualAcceleration(i, j,
-							interactionMatrix));
+							interactionMatrix,pl));
 					// log("submitted task " + i + " " + j);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,6 +40,7 @@ public class Master extends Thread {
 			}
 		}
 
+		PlanetsMap map = new PlanetsMap();
 		executor.shutdown();
 		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 		// / XXX Stampa per Debug
@@ -51,7 +53,7 @@ public class Master extends Thread {
 
 			try {
 				executor.execute(new ComputeNewPosition(i, deltaTime,
-						interactionMatrix));
+						interactionMatrix,pl,map));
 				// log("submitted task " + i + " " + j);
 			} catch (Exception e) {
 				e.printStackTrace();

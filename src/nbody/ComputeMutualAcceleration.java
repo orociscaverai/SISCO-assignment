@@ -5,24 +5,26 @@ public class ComputeMutualAcceleration implements Runnable
 	private int a, b;
 	private final static int dimension = 2;
 	private InteractionMatrix interactionMatrix;
+	private PlanetsMap map;
 
-	public ComputeMutualAcceleration(int indexA, int indexB, InteractionMatrix interactionMatrix) {
+	public ComputeMutualAcceleration(int indexA, int indexB, InteractionMatrix interactionMatrix, PlanetsMap map) {
 		this.a = indexA;
 		this.b = indexB;
 		this.interactionMatrix = interactionMatrix;
+		this.map = map;
 	}
 
 	@Override
 	public void run()
 	{
 		// TODO controllare soft
-		bodyBodyInteraction(a, b, 0.0f);
+		bodyBodyInteraction(a, b, 0.0f,map);
 	}
 
-	private void bodyBodyInteraction(int indexA, int indexB, float soft2)
+	private void bodyBodyInteraction(int indexA, int indexB, float soft2, PlanetsMap map)
 	{
-		Planet a = Planets.getPlanet(indexA);
-		Planet b = Planets.getPlanet(indexB);
+		Planet a = map.getPlanet(indexA);
+		Planet b = map.getPlanet(indexB);
 		float[] bi = a.getPosition();
 		float[] bj = b.getPosition();
 		float G = 1.0f;

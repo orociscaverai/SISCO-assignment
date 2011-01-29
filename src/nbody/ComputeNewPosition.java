@@ -2,40 +2,48 @@ package nbody;
 
 public class ComputeNewPosition implements Runnable {
 	final private static int dimension = 2;
-	int bodyIndex, deltatime;
-	InteractionMatrix interactionMatrix;
+	private int bodyIndex, deltatime;
+	private InteractionMatrix interactionMatrix;
+	private PlanetsMap newMap;
+	private PlanetsMap oldMap;
 
 	public ComputeNewPosition(int bodyIndex, int deltaTime,
-			InteractionMatrix interactionMatrix) {
+			InteractionMatrix interactionMatrix,PlanetsMap oldMap, PlanetsMap newMap) {
 		this.interactionMatrix = interactionMatrix;
 		this.bodyIndex = bodyIndex;
 		this.deltatime = deltaTime;
+		this.oldMap = oldMap;
+		this.newMap = newMap;
 	}
 
 	@Override
 	public void run() {
 		float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
-		float[] vel = Planets.getPlanet(bodyIndex).getVelocity();
-		computePosition(acc, vel);
-		computeVelocity(acc, vel);
+		Planet old = oldMap.getPlanet(bodyIndex);
+		float[] vel = old.getVelocity();
+		float[] oldPos = old.getPosition();
+		Planet p = new Planet(old.getRadius(),old.getMass());
+		p.setPosition(computePosition(acc, vel,oldPos));
+		p.setVelocity(computeVelocity(acc, vel));
+		//TODO problemi di corse critiche utilizzare una struttura dati diversa dalla lista
+		newMap.addPlanet(p);
 	}
 
-	private void computeVelocity(float[] acceleration, float[] oldVel) {
+	private float[] computeVelocity(float[] acceleration, float[] oldVel) {
 		float[] newVel = new float[dimension];
 		for (int i = 0; i < dimension; i++) {
 			newVel[i] = acceleration[i] * deltatime + oldVel[i];
 		}
-		Planets.getPlanet(bodyIndex).setVelocity(newVel);
+		return newVel;
 	}
 
-	private void computePosition(float[] acceleration, float[] oldVel) {
+	private float[] computePosition(float[] acceleration, float[] oldVel, float[] oldPos) {
 		float[] newPos = new float[dimension];
 		//System.out.println("Init:"+newPos[0]+" "+newPos[1]);
-		float[] oldPos = Planets.getPlanet(bodyIndex).getPosition();
 		for (int i = 0; i < dimension; i++) {
 			newPos[i] = 0.5f * acceleration[i] * deltatime * deltatime
 			+ oldVel[i] * deltatime + oldPos[i];
 		}
-		Planets.getPlanet(bodyIndex).setPosition(newPos);
+		return newPos;
 	}
 }

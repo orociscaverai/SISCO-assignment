@@ -4,22 +4,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class Planets
+public class PlanetsMap
 {
-	private static List<Planet> planets;
+	private List<Planet> planets;
 	final private static int dimension = 2;
 
 	// TODO le liste hanno un numero massimo di lementi contenibile che è uguale a Integer.MAX_VALUE
 
 	/** Costruisce una lista di pianeti vuota */
-	public Planets() {
+	public PlanetsMap() {
 		this(0);
 	}
 
 	/**
 	 * Costruisce una lista con numBodies elementi generati in maniera casuale
 	 */
-	public Planets(int numBodies) {
+	public PlanetsMap(int numBodies) {
 		planets = new LinkedList<Planet>();
 		Random rand = new Random();
 		float radius;
@@ -38,12 +38,12 @@ public class Planets
 		}
 	}
 
-	public static Planet getPlanet(int index)
+	public Planet getPlanet(int index)
 	{
 		return planets.get(index);
 	}
 
-	public static void addPlanet(Planet p)
+	public void addPlanet(Planet p)
 	{
 		planets.add(p);
 	}
