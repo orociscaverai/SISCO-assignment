@@ -1,12 +1,11 @@
 package nbody;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 
 public class PlanetsMap
 {
-	private List<Planet> planets;
+	private Vector<Planet> planets;
 	final private static int dimension = 2;
 
 	// TODO le liste hanno un numero massimo di lementi contenibile che è uguale a Integer.MAX_VALUE
@@ -20,7 +19,7 @@ public class PlanetsMap
 	 * Costruisce una lista con numBodies elementi generati in maniera casuale
 	 */
 	public PlanetsMap(int numBodies) {
-		planets = new LinkedList<Planet>();
+		planets = new Vector<Planet>();
 		Random rand = new Random();
 		float radius;
 		for (int i = 0; i < numBodies; i++)
