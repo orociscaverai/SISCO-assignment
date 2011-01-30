@@ -1,67 +1,37 @@
 package nbody;
 
 import java.util.Random;
-import java.util.Vector;
 
-public class PlanetsMap
-{
-	private Vector<Planet> planets;
-	final private static int dimension = 2;
+public class PlanetsMap {
+	private final static int dimension =2;
+	private float[][] positions;
+	private int numBody;
 
-	// TODO le liste hanno un numero massimo di lementi contenibile che è uguale a Integer.MAX_VALUE
-
-	/** Costruisce una lista di pianeti vuota */
-	public PlanetsMap() {
-		this(0);
+	public PlanetsMap(int numBody){
+		this.numBody = numBody;
+		positions = new float[numBody][dimension];
 	}
-
-	/**
-	 * Costruisce una lista con numBodies elementi generati in maniera casuale
-	 */
-	public PlanetsMap(int numBodies) {
-		planets = new Vector<Planet>();
+	
+	public float[] getPosition(int PlanetIndex){
+		return positions[PlanetIndex];
+	}
+	public void setPosition(int PlanetIndex, float[] pos){
+		assert(pos.length == numBody);
+		positions[PlanetIndex] = pos;
+	}
+	public void GenerateRandomMap(){
 		Random rand = new Random();
-		float radius;
-		for (int i = 0; i < numBodies; i++)
-		{
-			float position[] = new float[dimension];
-			for (int k = 0; k < dimension; k++)
-			{
-				position[k] = rand.nextFloat();
+		for(int i = 0; i<numBody; i++){
+			for(int k = 0; k<dimension; k++){
+				positions[i][k] = rand.nextFloat();
 			}
-			// XXX la proporzione la considerimo 1/20
-			// TODO considerare un minimo
-			radius = rand.nextFloat() / 20;
-			// calcolare la massa della Terra aggiungere un fattore casuale per la densità
-			planets.add(new Planet(position, radius, radius * 100));
 		}
 	}
-
-	public Planet getPlanet(int index)
-	{
-		return planets.get(index);
-	}
-
-	public void addPlanet(Planet p)
-	{
-		planets.add(p);
-	}
-
-	public int getNumBodies()
-	{
-		return planets.size();
-	}
-
-	public String toString()
-	{
+	public String toString(){
 		String out = "";
-		int i = 0;
-		for (Planet p : planets)
-		{
-			out += "Planet " + i + "\n";
-			out += p.toString() + "\n";
-			i++;
-		}
+		for (int i = 0;i<numBody;i++)
+			out += "Position: " + positions[i][0] + " " + positions[i][1] + "\n";
+
 		return out;
 	}
 }

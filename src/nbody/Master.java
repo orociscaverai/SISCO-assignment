@@ -10,14 +10,16 @@ public class Master extends Thread {
 	private ExecutorService executor;
 	private InteractionMatrix interactionMatrix;
 	private int poolSize;
-	private PlanetsMap pl;
+	private PlanetsMap map;
 
 	public Master(int numBodies) {
 		this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
 		this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
 		this.numBodies = numBodies;
-		pl = new PlanetsMap(numBodies);
+		Planets.getInstance(numBodies);
 		interactionMatrix = new InteractionMatrix(numBodies);
+		this.map = new PlanetsMap(numBodies);
+		map.GenerateRandomMap();
 	}
 
 	private void compute() throws InterruptedException {
@@ -32,7 +34,7 @@ public class Master extends Thread {
 			for (int j = i + 1; j < numBodies; j++) {
 				try {
 					executor.execute(new ComputeMutualAcceleration(i, j,
-							interactionMatrix,pl));
+							interactionMatrix,map));
 					// log("submitted task " + i + " " + j);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,7 +42,7 @@ public class Master extends Thread {
 			}
 		}
 
-		PlanetsMap map = new PlanetsMap();
+		PlanetsMap newMap = new PlanetsMap(numBodies);
 		executor.shutdown();
 		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 		// / XXX Stampa per Debug
@@ -52,8 +54,8 @@ public class Master extends Thread {
 		for (int i = 0; i < numBodies - 1; i++) {
 
 			try {
-				executor.execute(new ComputeNewPosition(i, deltaTime,
-						interactionMatrix,pl,map));
+				executor.execute(new ComputeNewPosition(i,map.getPosition(i), deltaTime,
+						interactionMatrix,newMap));
 				// log("submitted task " + i + " " + j);
 			} catch (Exception e) {
 				e.printStackTrace();

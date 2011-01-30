@@ -4,29 +4,25 @@ public class ComputeNewPosition implements Runnable {
 	final private static int dimension = 2;
 	private int bodyIndex, deltatime;
 	private InteractionMatrix interactionMatrix;
-	private PlanetsMap newMap;
-	private PlanetsMap oldMap;
+	private float[] oldPos;
+	private PlanetsMap map;
 
-	public ComputeNewPosition(int bodyIndex, int deltaTime,
-			InteractionMatrix interactionMatrix,PlanetsMap oldMap, PlanetsMap newMap) {
+	public ComputeNewPosition(int bodyIndex, float[] oldPos, int deltaTime,
+			InteractionMatrix interactionMatrix, PlanetsMap map) {
 		this.interactionMatrix = interactionMatrix;
 		this.bodyIndex = bodyIndex;
 		this.deltatime = deltaTime;
-		this.oldMap = oldMap;
-		this.newMap = newMap;
+		this.map = map;
+		this.oldPos = oldPos;
 	}
 
 	@Override
 	public void run() {
 		float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
-		Planet old = oldMap.getPlanet(bodyIndex);
+		PlanetGenerics old = Planets.getInstance().getPlanet(bodyIndex);
 		float[] vel = old.getVelocity();
-		float[] oldPos = old.getPosition();
-		Planet p = new Planet(old.getRadius(),old.getMass());
-		p.setPosition(computePosition(acc, vel,oldPos));
-		p.setVelocity(computeVelocity(acc, vel));
-		//TODO problemi di corse critiche utilizzare una struttura dati diversa dalla lista
-		newMap.addPlanet(p);
+		map.setPosition(bodyIndex,computePosition(acc, vel,oldPos));
+		old.setVelocity(computeVelocity(acc, vel));
 	}
 
 	private float[] computeVelocity(float[] acceleration, float[] oldVel) {

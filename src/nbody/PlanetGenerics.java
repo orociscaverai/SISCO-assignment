@@ -1,43 +1,43 @@
 package nbody;
 
-public class Planet
+public class PlanetGenerics
 {
 
 	final private static int dimension = 2;
-	private float[] position = new float[dimension];
+	//private float[] position = new float[dimension];
 	private float[] velocity = new float[dimension];
-	private float[] acceleration = new float[dimension];
+	//private float[] acceleration = new float[dimension];
 	private float mass;
 	private float radius;
 	
-	public Planet(float radius,float mass){
+	public PlanetGenerics(float radius,float mass){
 		this.radius = radius;
 		this.mass = mass;
 	}
 
-	public Planet(float[] position, float radius, float mass) {
-		this.position = position;
+/*	public PlanetGenerics(float[] position, float radius, float mass) {
+		//this.position = position;
 		this.radius = radius;
 		this.mass = mass;
-	}
+	}*/
 
 	/**
 	 * @return the position
 	 */
-	public float[] getPosition()
+/*	public float[] getPosition()
 	{
 		return position;
-	}
+	}*/
 
 	/**
 	 * @param position
 	 *            the position to set
 	 */
-	public void setPosition(float[] position)
+/*	public void setPosition(float[] position)
 	{
 		this.position = position;
 	}
-
+*/
 	/**
 	 * @return the velocity
 	 */
@@ -58,20 +58,20 @@ public class Planet
 	/**
 	 * @return the acceleration
 	 */
-	public float[] getAcceleration()
+/*	public float[] getAcceleration()
 	{
 		return acceleration;
 	}
-
+*/
 	/**
 	 * @param acceleration
 	 *            the acceleration to set
 	 */
-	public void setAcceleration(float[] acceleration)
+/*	public void setAcceleration(float[] acceleration)
 	{
 		this.acceleration = acceleration;
 	}
-
+*/
 	/**
 	 * @return the radius
 	 */
@@ -109,9 +109,9 @@ public class Planet
 	public String toString()
 	{
 		String out = "";
-		out += "Acceleration;" + acceleration[0] + " " + acceleration[1] + "\n";
+//		out += "Acceleration;" + acceleration[0] + " " + acceleration[1] + "\n";
 		out += "Velocity;" + velocity[0] + " " + velocity[1] + "\n";
-		out += "Position: " + position[0] + " " + position[1] + "\n";
+//		out += "Position: " + position[0] + " " + position[1] + "\n";
 		out += "Mass: " + mass + "\n";
 		out += "Radius: " + radius + "\n";
 		return out;

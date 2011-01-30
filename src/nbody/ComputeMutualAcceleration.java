@@ -18,15 +18,15 @@ public class ComputeMutualAcceleration implements Runnable
 	public void run()
 	{
 		// TODO controllare soft
-		bodyBodyInteraction(a, b, 0.0f,map);
+		bodyBodyInteraction(a, b, 0.0f);
 	}
 
-	private void bodyBodyInteraction(int indexA, int indexB, float soft2, PlanetsMap map)
+	private void bodyBodyInteraction(int indexA, int indexB, float soft2)
 	{
-		Planet a = map.getPlanet(indexA);
-		Planet b = map.getPlanet(indexB);
-		float[] bi = a.getPosition();
-		float[] bj = b.getPosition();
+		PlanetGenerics a = Planets.getInstance().getPlanet(indexA);
+		PlanetGenerics b = Planets.getInstance().getPlanet(indexB);
+		float[] bi = map.getPosition(indexA);
+		float[] bj = map.getPosition(indexB);
 		float G = 1.0f;
 		float[] r = new float[dimension];
 
