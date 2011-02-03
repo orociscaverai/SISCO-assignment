@@ -5,84 +5,84 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Master extends Thread {
-	private int numBodies;
-	private int deltaTime;
-	private ExecutorService executor;
-	private InteractionMatrix interactionMatrix;
-	private int poolSize;
-	private PlanetsMap map;
+    private int numBodies;
+    private int deltaTime;
+    private ExecutorService executor;
+    private InteractionMatrix interactionMatrix;
+    private int poolSize;
+    private PlanetsMap map;
 
-	public Master(int numBodies) {
-		this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
-		this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
-		this.numBodies = numBodies;
-		Planets.getInstance(numBodies);
-		interactionMatrix = new InteractionMatrix(numBodies);
-		this.map = new PlanetsMap(numBodies);
-		map.GenerateRandomMap();
+    public Master(int numBodies) {
+	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
+	this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
+	this.numBodies = numBodies;
+	Planets.getInstance(numBodies);
+	interactionMatrix = new InteractionMatrix(numBodies);
+	this.map = new PlanetsMap(numBodies);
+	map.GenerateRandomMap();
+    }
+
+    private void compute() throws InterruptedException {
+	executor = Executors.newFixedThreadPool(poolSize);
+	long time = System.currentTimeMillis();
+
+	// double step = (b - a) / numTasks;
+	// Combinazioni senza ripetizioni di tutti i Bodies
+	// Utile come debug
+	// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
+	for (int i = 0; i < numBodies - 1; i++) {
+	    for (int j = i + 1; j < numBodies; j++) {
+		try {
+		    executor.execute(new ComputeMutualAcceleration(i, j,
+			    interactionMatrix, map));
+		    // log("submitted task " + i + " " + j);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
 	}
 
-	private void compute() throws InterruptedException {
-		executor = Executors.newFixedThreadPool(poolSize);
-		long time = System.currentTimeMillis();
+	PlanetsMap newMap = new PlanetsMap(numBodies);
+	executor.shutdown();
+	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+	// / XXX Stampa per Debug
+	System.out.println(System.currentTimeMillis() - time);
+	// System.out.print(interactionMatrix.toString());
+	executor = Executors.newFixedThreadPool(poolSize);
+	System.out.println(System.currentTimeMillis() - time);
 
-		// double step = (b - a) / numTasks;
-		// Combinazioni senza ripetizioni di tutti i Bodies
-		// Utile come debug
-		// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
-		for (int i = 0; i < numBodies - 1; i++) {
-			for (int j = i + 1; j < numBodies; j++) {
-				try {
-					executor.execute(new ComputeMutualAcceleration(i, j,
-							interactionMatrix,map));
-					// log("submitted task " + i + " " + j);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+	for (int i = 0; i < numBodies - 1; i++) {
 
-		PlanetsMap newMap = new PlanetsMap(numBodies);
-		executor.shutdown();
-		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		// / XXX Stampa per Debug
-		System.out.println(System.currentTimeMillis() - time);
-		// System.out.print(interactionMatrix.toString());
-		executor = Executors.newFixedThreadPool(poolSize);
-		System.out.println(System.currentTimeMillis() - time);
+	    try {
+		executor.execute(new ComputeNewPosition(i, map.getPosition(i),
+			deltaTime, interactionMatrix, newMap));
+		// log("submitted task " + i + " " + j);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
 
-		for (int i = 0; i < numBodies - 1; i++) {
-
-			try {
-				executor.execute(new ComputeNewPosition(i,map.getPosition(i), deltaTime,
-						interactionMatrix,newMap));
-				// log("submitted task " + i + " " + j);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		executor.shutdown();
-		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		System.out.println(System.currentTimeMillis() - time);
-
-	} // compute()
-
-	public void run() {
-		// TODO
-		// while (true){
-		for (int i = 0; i < 1; i++) {
-			try {
-				compute();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
-	private void log(String msg) {
-		System.out.println("[SERVICE] " + msg);
+	executor.shutdown();
+	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+	System.out.println(System.currentTimeMillis() - time);
+
+    } // compute()
+
+    public void run() {
+	// TODO
+	// while (true){
+	for (int i = 0; i < 1; i++) {
+	    try {
+		compute();
+	    } catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	}
+    }
+
+    private void log(String msg) {
+	System.out.println("[SERVICE] " + msg);
+    }
 }
