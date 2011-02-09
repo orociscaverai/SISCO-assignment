@@ -13,7 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import nbody.Event;
 import nbody.PlanetsMap;
+import nbody.StartedEvent;
+import nbody.ObservableComponent;
 
 /**
  * Class representing the view part of the application.
@@ -21,7 +24,7 @@ import nbody.PlanetsMap;
  * @author aricci
  * 
  */
-public class NBodyView implements NBodySetListener {
+public class NBodyView extends ObservableComponent implements NBodySetListener {
 
     private NBodyFrame frame;
 
@@ -80,7 +83,7 @@ public class NBodyView implements NBodySetListener {
 	private JButton stepButton;
 	private JTextField cx;
 	private JTextField cy;
-	private JTextField diam;
+	private JTextField numBodies;
 	private JTextField state;
 	private NBodyPanel setPanel;
 	private NBodyView view;
@@ -92,11 +95,11 @@ public class NBodyView implements NBodySetListener {
 	    this.view = view;
 	    cx = new JTextField(10);
 	    cy = new JTextField(10);
-	    diam = new JTextField(10);
+	    numBodies = new JTextField(10);
 
 	    cx.setText("0");
 	    cy.setText("0");
-	    diam.setText("4");
+	    numBodies.setText("4");
 
 	    startButton = new JButton("start");
 	    stopButton = new JButton("stop");
@@ -112,8 +115,8 @@ public class NBodyView implements NBodySetListener {
 	    controlPanel.add(new JLabel("center "));
 	    controlPanel.add(cx);
 	    controlPanel.add(cy);
-	    controlPanel.add(new JLabel("diam."));
-	    controlPanel.add(diam);
+	    controlPanel.add(new JLabel("Num Bodies"));
+	    controlPanel.add(numBodies);
 	    controlPanel.add(startButton);
 	    controlPanel.add(stopButton);
 	    controlPanel.add(pauseButton);
@@ -176,11 +179,9 @@ public class NBodyView implements NBodySetListener {
 	}
 
 	private void notifyStarted() {
-	    // Complex c0 = new Complex(Double.parseDouble(cx.getText()),
-	    // Double.parseDouble(cy.getText()));
-	    // double d = Double.parseDouble(diam.getText());
-	    // Event ev = new StartedEvent(c0, d, view);
-	    // view.notifyEvent(ev);
+	    Event ev = new StartedEvent(Integer.parseInt(numBodies.getText()),
+		    view);
+	    view.notifyEvent(ev);
 	}
 
 	private void notifyStopped() {
