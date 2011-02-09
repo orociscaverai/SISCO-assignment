@@ -5,11 +5,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import nbody.PlanetGenerics;
+import nbody.PlanetsMap;
 
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {
@@ -20,12 +19,16 @@ public class NBodyPanel extends JPanel {
 	this.image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
     }
 
-    public void updateImage(Vector<PlanetGenerics> planets) {
+    public void updateImage(PlanetsMap pm) {
+	// TODO ci deve essere un modo per lavorare su un pannello di dimensioni
+	// fisse come in OpenGL
 	Graphics2D g2D = image.createGraphics();
+	int w = Math.min(image.getWidth(), image.getHeight());
 	g2D.setColor(Color.red);
-	for (PlanetGenerics p : planets) {
-	    g2D.fill(new Ellipse2D.Float(0, 0, p.getRadius() * 800f, p
-		    .getRadius() * 600f));
+	for (int i = pm.getNumBodies() - 1; i >= 0; i--) {
+	    g2D.fill(new Ellipse2D.Float(pm.getPosition(i)[0], pm
+		    .getPosition(i)[1], pm.getRadius(i) * w, pm.getRadius(i)
+		    * w));
 	}
 	repaint();
     }

@@ -17,7 +17,7 @@ public class TestGuiMain {
     public static void main(String[] args) {
 
 	NBodyView view = new NBodyView(800, 600);
-	
+
 	Planets pl;
 	pl = Planets.getInstance();
 
@@ -31,12 +31,12 @@ public class TestGuiMain {
 	float[] fl = new float[2];
 	fl[0] = 0.0f;
 	fl[1] = 0.0f;
-	map.setPosition(0, fl);
+	map.setPosition(0, fl, 0.009f);
 
 	fl = new float[2];
 	fl[0] = 4.0f;
 	fl[1] = 3.0f;
-	map.setPosition(1, fl);
+	map.setPosition(1, fl, 0.1f);
 
 	ComputeMutualAcceleration cma = new ComputeMutualAcceleration(0, 1, im,
 		map);
@@ -50,7 +50,7 @@ public class TestGuiMain {
 		1, im, newMap);
 	cp1.run();
 	cp2.run();
-	view.setUpdated(pl);
+	view.setUpdated(map);
 	System.out.println(pl.toString());
 	System.out.println("-------------------------");
 	System.out.println(newMap.toString());

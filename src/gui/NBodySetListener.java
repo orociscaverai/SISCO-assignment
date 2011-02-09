@@ -1,9 +1,8 @@
 package gui;
 
-import nbody.Planets;
+import nbody.PlanetsMap;
 
 public interface NBodySetListener {
 
-    // TODO rinominare Planets in PlanetsSet
-    void setUpdated(Planets planets);
+    void setUpdated(PlanetsMap planets);
 }

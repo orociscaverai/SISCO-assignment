@@ -16,7 +16,7 @@ public class Master extends Thread {
 	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
 	this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
 	this.numBodies = numBodies;
-	Planets.getInstance(numBodies);
+	Planets.getInstance().makeRandomBodies(numBodies);
 	interactionMatrix = new InteractionMatrix(numBodies);
 	this.map = new PlanetsMap(numBodies);
 	map.GenerateRandomMap();

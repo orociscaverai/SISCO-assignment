@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import nbody.Planets;
+import nbody.PlanetsMap;
 
 /**
  * Class representing the view part of the application.
@@ -22,18 +23,22 @@ import nbody.Planets;
  */
 public class NBodyView implements NBodySetListener {
 
-    private MandelbrotFrame frame;
+    private NBodyFrame frame;
 
+    /**
+     * Costruisce una finestra che ha le dimensioni di disegno pari ai due
+     * paramentri più le dimensioni dei menù.
+     * */
     public NBodyView(int w, int h) {
-	frame = new MandelbrotFrame(this, w, h);
+	frame = new NBodyFrame(this, w, h);
 	frame.setVisible(true);
     }
 
     // TODO Ma perchè deve essere final????????
-    public void setUpdated(final Planets set) {
+    public void setUpdated(final PlanetsMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-		frame.setPanel.updateImage(set.getPlanets());
+		frame.setPanel.updateImage(map);
 	    }
 	});
     }
@@ -67,7 +72,7 @@ public class NBodyView implements NBodySetListener {
     }
 
     @SuppressWarnings("serial")
-    class MandelbrotFrame extends JFrame implements ActionListener {
+    class NBodyFrame extends JFrame implements ActionListener {
 
 	private JButton startButton;
 	private JButton stopButton;
@@ -80,9 +85,9 @@ public class NBodyView implements NBodySetListener {
 	private NBodyPanel setPanel;
 	private NBodyView view;
 
-	public MandelbrotFrame(NBodyView view, int w, int h) {
+	public NBodyFrame(NBodyView view, int w, int h) {
 	    super("Mandelbrot Viewer");
-	    setSize(w, h);
+	    // setSize(w, h);
 
 	    this.view = view;
 	    cx = new JTextField(10);
@@ -101,7 +106,7 @@ public class NBodyView implements NBodySetListener {
 	    startButton.setEnabled(true);
 	    stopButton.setEnabled(false);
 	    pauseButton.setEnabled(false);
-	    stepButton.setEnabled(true);
+	    stepButton.setEnabled(false);
 
 	    JPanel controlPanel = new JPanel();
 	    controlPanel.add(new JLabel("center "));
@@ -115,7 +120,7 @@ public class NBodyView implements NBodySetListener {
 	    controlPanel.add(stepButton);
 
 	    setPanel = new NBodyPanel(w, h);
-	    setPanel.setSize(w, h);
+	    setPanel.setPreferredSize(new Dimension(w, h));
 
 	    JPanel infoPanel = new JPanel();
 	    state = new JTextField(20);
@@ -130,6 +135,7 @@ public class NBodyView implements NBodySetListener {
 	    cp.add(BorderLayout.CENTER, setPanel);
 	    cp.add(BorderLayout.SOUTH, infoPanel);
 	    setContentPane(cp);
+	    pack();
 	    setResizable(false);
 
 	    startButton.addActionListener(this);

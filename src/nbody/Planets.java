@@ -6,35 +6,24 @@ import java.util.Vector;
 public class Planets {
     private Vector<PlanetGenerics> planets;
     final private static int dimension = 2;
-    private static Planets instance;
 
-    public static Planets getInstance(int numBodies) {
-	if (instance == null) {
-	    instance = new Planets(numBodies);
-	}
-	return instance;
+    private static class SingletonHolder {
+	private final static Planets instance = new Planets();
     }
 
+    // TODO singleton ThreadSafe
     public static Planets getInstance() {
-	if (instance == null) {
-	    instance = new Planets();
-	}
-	return instance;
+	return SingletonHolder.instance;
     }
 
-    // TODO le liste hanno un numero massimo di elementi contenibile che è
-    // uguale a Integer.MAX_VALUE
-
-    /** Costruisce una lista di pianeti vuota */
     private Planets() {
-	this(0);
+	planets = new Vector<PlanetGenerics>();
     }
 
     /**
-     * Costruisce una lista con numBodies elementi generati in maniera casuale
+     * Aggiunge numBodies elementi alla lista generati in maniera casuale
      */
-    private Planets(int numBodies) {
-	planets = new Vector<PlanetGenerics>();
+    public void makeRandomBodies(int numBodies) {
 	Random rand = new Random();
 	float radius;
 	for (int i = 0; i < numBodies; i++) {
