@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Master extends ControllerAgent {
-    private int deltaTime;
+    private float deltaTime;
     private ExecutorService executor;
     private InteractionMatrix interactionMatrix;
     private int poolSize;
@@ -18,19 +18,15 @@ public class Master extends ControllerAgent {
     public Master(NBodyView view) {
 	super("Pippo");
 	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
-	this.deltaTime = Integer.parseInt(System.getProperty("deltaTime", "1"));
+	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime", "0.05"));
 	this.view = view;
 
 	view.register(this);
     }
 
     private void doCompute(int numBodies) throws InterruptedException {
-	Planets.getInstance().makeRandomBodies(numBodies);
-	interactionMatrix = new InteractionMatrix(numBodies);
-	this.map = new PlanetsMap(numBodies);
 
 	executor = Executors.newFixedThreadPool(poolSize);
-	long time = System.currentTimeMillis();
 
 	// double step = (b - a) / numTasks;
 	// Combinazioni senza ripetizioni di tutti i Bodies
@@ -50,12 +46,10 @@ public class Master extends ControllerAgent {
 
 	PlanetsMap newMap = new PlanetsMap(numBodies);
 	executor.shutdown();
-	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+	executor.awaitTermination(3600, TimeUnit.SECONDS);
 	// / XXX Stampa per Debug
-	System.out.println(System.currentTimeMillis() - time);
 	// System.out.print(interactionMatrix.toString());
 	executor = Executors.newFixedThreadPool(poolSize);
-	System.out.println(System.currentTimeMillis() - time);
 
 	for (int i = 0; i < numBodies - 1; i++) {
 
@@ -71,7 +65,7 @@ public class Master extends ControllerAgent {
 
 	executor.shutdown();
 	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-	System.out.println(System.currentTimeMillis() - time);
+	view.setUpdated(newMap);
 
     } // doCompute()
 
@@ -81,23 +75,30 @@ public class Master extends ControllerAgent {
 	    while (true) {
 		if (!processing) {
 		    Event ev = fetchEvent();
-		    // log("received ev: "+ev.getDescription());
-		    if (ev.getDescription().equals("started") && !processing) {
+		    // log("received ev: " + ev.getDescription());
+		    if (ev.getDescription().equals("started")) {
 			StartedEvent evs = (StartedEvent) ev;
 			processing = true;
+			
 			this.numBodies = evs.getNumBodies();
-			Planets.getInstance().makeRandomBodies(numBodies);
+//			Planets.getInstance().makeRandomBodies(numBodies);
 			interactionMatrix = new InteractionMatrix(numBodies);
 			this.map = new PlanetsMap(numBodies);
 			map.GenerateRandomMap();
+//			Planets.getInstance().getPlanet(0).setMass(0.1f);
+			log(map.toString());
+			log(Planets.getInstance().toString());
 		    }
 		} else { // processing = true
 		    Event ev = fetchEventIfPresent();
 		    if (ev != null) {
-			if (ev.getDescription().equals("pause")) {
+			if (ev.getDescription().equals("paused")) {
 			    // doDisplayTaskCompletion();
 			    processing = false;
 			} else if (ev.getDescription().equals("stopped")) {
+			    // doDisplayTaskInterruption();
+			    processing = false;
+			}else if (ev.getDescription().equals("singleStep")) {
 			    // doDisplayTaskInterruption();
 			    processing = false;
 			}

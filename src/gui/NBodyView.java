@@ -14,9 +14,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import nbody.Event;
+import nbody.ObservableComponent;
 import nbody.PlanetsMap;
 import nbody.StartedEvent;
-import nbody.ObservableComponent;
+import nbody.StoppedEvent;
 
 /**
  * Class representing the view part of the application.
@@ -89,7 +90,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	private NBodyView view;
 
 	public NBodyFrame(NBodyView view, int w, int h) {
-	    super("Mandelbrot Viewer");
+	    super("NBody Viewer");
 	    // setSize(w, h);
 
 	    this.view = view;
@@ -99,7 +100,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 
 	    cx.setText("0");
 	    cy.setText("0");
-	    numBodies.setText("4");
+	    numBodies.setText("500");
 
 	    startButton = new JButton("start");
 	    stopButton = new JButton("stop");
@@ -185,8 +186,8 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	}
 
 	private void notifyStopped() {
-	    // Event ev = new StoppedEvent(view);
-	    // view.notifyEvent(ev);
+	    Event ev = new StoppedEvent(view);
+	    view.notifyEvent(ev);
 	}
 
 	private void notifyPaused() {

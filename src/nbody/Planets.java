@@ -33,10 +33,10 @@ public class Planets {
 	     */
 	    // XXX la proporzione la considerimo 1/20
 	    // TODO considerare un minimo
-	    radius = rand.nextFloat() / 20;
+	    radius = rand.nextFloat() / 10;
 	    // calcolare la massa della Terra aggiungere un fattore casuale per
 	    // la densità
-	    planets.add(new PlanetGenerics(/* position, */radius, radius * 100));
+	    planets.add(new PlanetGenerics(/* position, */radius, radius / 20));
 	}
     }
 

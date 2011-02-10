@@ -1,6 +1,5 @@
 package nbody;
 
-import java.util.Random;
 
 public class PlanetsMap {
     private final static int dimension = 2;
@@ -33,10 +32,9 @@ public class PlanetsMap {
     }
 
     public void GenerateRandomMap() {
-	Random rand = new Random();
 	for (int i = 0; i < numBody; i++) {
 	    for (int k = 0; k < dimension; k++) {
-		positions[i][k] = rand.nextFloat();
+		positions[i][k] = (float) Math.random();
 	    }
 	}
     }

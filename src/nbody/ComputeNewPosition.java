@@ -2,12 +2,13 @@ package nbody;
 
 public class ComputeNewPosition implements Runnable {
     final private static int dimension = 2;
-    private int bodyIndex, deltatime;
+    private int bodyIndex;
+    private float deltatime;
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private PlanetsMap map;
 
-    public ComputeNewPosition(int bodyIndex, float[] oldPos, int deltaTime,
+    public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
 	    InteractionMatrix interactionMatrix, PlanetsMap map) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
