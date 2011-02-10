@@ -18,7 +18,8 @@ public class Master extends ControllerAgent {
     public Master(NBodyView view) {
 	super("Pippo");
 	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
-	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime", "0.05"));
+	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime",
+		"0.005"));
 	this.view = view;
 
 	view.register(this);
@@ -32,7 +33,7 @@ public class Master extends ControllerAgent {
 	// Combinazioni senza ripetizioni di tutti i Bodies
 	// Utile come debug
 	// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
-	for (int i = 0; i < numBodies - 1; i++) {
+	for (int i = 0; i < numBodies; i++) {
 	    for (int j = i + 1; j < numBodies; j++) {
 		try {
 		    executor.execute(new ComputeMutualAcceleration(i, j,
@@ -79,13 +80,22 @@ public class Master extends ControllerAgent {
 		    if (ev.getDescription().equals("started")) {
 			StartedEvent evs = (StartedEvent) ev;
 			processing = true;
-			
+
 			this.numBodies = evs.getNumBodies();
-//			Planets.getInstance().makeRandomBodies(numBodies);
 			interactionMatrix = new InteractionMatrix(numBodies);
 			this.map = new PlanetsMap(numBodies);
+			Planets.getInstance().makeRandomBodies(numBodies);
 			map.GenerateRandomMap();
-//			Planets.getInstance().getPlanet(0).setMass(0.1f);
+			// float[] pippo = new float[2];
+			// pippo[0] = 0.0f;
+			// pippo[1] = 0.0f;
+			// map.setPosition(0, pippo, Planets.getInstance()
+			// .getPlanet(0).getRadius());
+			// pippo = new float[2];
+			// pippo[0] = -0.5f;
+			// pippo[1] = -0.5f;
+			// map.setPosition(1, pippo, Planets.getInstance()
+			// .getPlanet(1).getRadius());
 			log(map.toString());
 			log(Planets.getInstance().toString());
 		    }
@@ -98,7 +108,7 @@ public class Master extends ControllerAgent {
 			} else if (ev.getDescription().equals("stopped")) {
 			    // doDisplayTaskInterruption();
 			    processing = false;
-			}else if (ev.getDescription().equals("singleStep")) {
+			} else if (ev.getDescription().equals("singleStep")) {
 			    // doDisplayTaskInterruption();
 			    processing = false;
 			}

@@ -7,6 +7,7 @@ public class ComputeNewPosition implements Runnable {
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private PlanetsMap map;
+    private float velocityDamping;
 
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
 	    InteractionMatrix interactionMatrix, PlanetsMap map) {
@@ -15,6 +16,8 @@ public class ComputeNewPosition implements Runnable {
 	this.deltatime = deltaTime;
 	this.map = map;
 	this.oldPos = oldPos;
+	this.velocityDamping = Float.parseFloat(System.getProperty(
+		"velocityDamping", "1.0"));
     }
 
     @Override
@@ -22,6 +25,13 @@ public class ComputeNewPosition implements Runnable {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
 	PlanetGenerics old = Planets.getInstance().getPlanet(bodyIndex);
 	float[] vel = old.getVelocity();
+	// TODO
+	for (int i = 0; i < dimension; i++) {
+	    int sign = 1;
+	    if (acc[i] > 0)
+		sign = -1;
+	    acc[i] += sign * velocityDamping * vel[i] / old.getMass();
+	}
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos),
 		old.getRadius());
 	old.setVelocity(computeVelocity(acc, vel));
