@@ -1,4 +1,6 @@
-package nbody;
+package nbody.event;
+
+import nbody.ObservableComponent;
 
 public class Event {
 

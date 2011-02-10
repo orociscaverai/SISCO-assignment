@@ -5,19 +5,28 @@ import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import nbody.Event;
 import nbody.ObservableComponent;
 import nbody.PlanetsMap;
-import nbody.StartedEvent;
-import nbody.StoppedEvent;
+import nbody.event.DeltaTimeEvent;
+import nbody.event.Event;
+import nbody.event.PausedEvent;
+import nbody.event.RandomizeEvent;
+import nbody.event.SingleStepEvent;
+import nbody.event.StartedEvent;
+import nbody.event.StoppedEvent;
 
 /**
  * Class representing the view part of the application.
@@ -28,21 +37,28 @@ import nbody.StoppedEvent;
 public class NBodyView extends ObservableComponent implements NBodySetListener {
 
     private NBodyFrame frame;
+    private ArrayBlockingQueue<PlanetsMap> coda;
 
     /**
      * Costruisce una finestra che ha le dimensioni di disegno pari ai due
      * paramentri più le dimensioni dei menù.
      * */
-    public NBodyView(int w, int h) {
+    public NBodyView(int w, int h, ArrayBlockingQueue<PlanetsMap> coda) {
 	frame = new NBodyFrame(this, w, h);
 	frame.setVisible(true);
+	this.coda = coda;
     }
 
     // TODO Ma perchè deve essere final????????
     public void setUpdated(final PlanetsMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-		frame.setPanel.updateImage(map);
+
+		try {
+		    frame.setPanel.updateImage(coda.take());
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
 	    }
 	});
     }
@@ -76,16 +92,31 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
     }
 
     @SuppressWarnings("serial")
-    class NBodyFrame extends JFrame implements ActionListener {
+    class FloatJSlider extends JSlider {
 
+	final int scale;
+
+	public FloatJSlider(int min, int max, int value, int scale) {
+	    super(min, max, value);
+	    this.scale = scale;
+	}
+
+	public float getScaledValue() {
+	    return ((float) super.getValue()) / this.scale;
+	}
+    }
+
+    @SuppressWarnings("serial")
+    class NBodyFrame extends JFrame implements ActionListener, ChangeListener {
+
+	private JButton randomizeButton;
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton pauseButton;
 	private JButton stepButton;
-	private JTextField cx;
-	private JTextField cy;
 	private JTextField numBodies;
 	private JTextField state;
+	private FloatJSlider deltaTimeSlider;
 	private NBodyPanel setPanel;
 	private NBodyView view;
 
@@ -94,18 +125,20 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    // setSize(w, h);
 
 	    this.view = view;
-	    cx = new JTextField(10);
-	    cy = new JTextField(10);
-	    numBodies = new JTextField(10);
 
-	    cx.setText("0");
-	    cy.setText("0");
+	    numBodies = new JTextField(10);
 	    numBodies.setText("500");
+
+	    randomizeButton = new JButton("randomize");
 
 	    startButton = new JButton("start");
 	    stopButton = new JButton("stop");
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
+
+	    // The interval between 0 and 0.1 in 100 steps.
+	    deltaTimeSlider = new FloatJSlider(0, 100, 0, 1000);
+	    deltaTimeSlider.setOrientation(SwingConstants.VERTICAL);
 
 	    startButton.setEnabled(true);
 	    stopButton.setEnabled(false);
@@ -113,11 +146,14 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    stepButton.setEnabled(false);
 
 	    JPanel controlPanel = new JPanel();
-	    controlPanel.add(new JLabel("center "));
-	    controlPanel.add(cx);
-	    controlPanel.add(cy);
 	    controlPanel.add(new JLabel("Num Bodies"));
 	    controlPanel.add(numBodies);
+
+	    // Uso le lable solo per creare un po' di spazio
+	    controlPanel.add(new JLabel(" "));
+	    controlPanel.add(randomizeButton);
+	    controlPanel.add(new JLabel("  "));
+
 	    controlPanel.add(startButton);
 	    controlPanel.add(stopButton);
 	    controlPanel.add(pauseButton);
@@ -138,14 +174,18 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    cp.add(BorderLayout.NORTH, controlPanel);
 	    cp.add(BorderLayout.CENTER, setPanel);
 	    cp.add(BorderLayout.SOUTH, infoPanel);
+	    cp.add(BorderLayout.WEST, deltaTimeSlider);
 	    setContentPane(cp);
 	    pack();
 	    setResizable(false);
 
+	    randomizeButton.addActionListener(this);
 	    startButton.addActionListener(this);
 	    stopButton.addActionListener(this);
 	    pauseButton.addActionListener(this);
 	    stepButton.addActionListener(this);
+
+	    deltaTimeSlider.addChangeListener(this);
 
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -157,31 +197,51 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stopButton.setEnabled(true);
 		pauseButton.setEnabled(true);
 		stepButton.setEnabled(false);
+		randomizeButton.setEnabled(false);
 		notifyStarted();
 	    } else if (cmd.equals("stop")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
+		randomizeButton.setEnabled(true);
 		notifyStopped();
 	    } else if (cmd.equals("pause")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(true);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(true);
+		randomizeButton.setEnabled(false);
 		notifyPaused();
 	    } else if (cmd.equals("step")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(true);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
+		randomizeButton.setEnabled(false);
 		notifySingleStep();
+	    } else if (cmd.equals("randomize")) {
+		startButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		pauseButton.setEnabled(false);
+		stepButton.setEnabled(false);
+		notifyRandomize();
 	    }
 	}
 
+	public void stateChanged(ChangeEvent e) {
+	    notifyDeltaTimeChanced();
+	}
+
+	private void notifyDeltaTimeChanced() {
+	    float deltaTime = deltaTimeSlider.getScaledValue();
+	    Event ev = new DeltaTimeEvent(view, deltaTime);
+	    view.notifyEvent(ev);
+
+	}
+
 	private void notifyStarted() {
-	    Event ev = new StartedEvent(Integer.parseInt(numBodies.getText()),
-		    view);
+	    Event ev = new StartedEvent(view);
 	    view.notifyEvent(ev);
 	}
 
@@ -191,10 +251,19 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	}
 
 	private void notifyPaused() {
+	    Event ev = new PausedEvent(view);
+	    view.notifyEvent(ev);
 	}
 
 	private void notifySingleStep() {
+	    Event ev = new SingleStepEvent(view);
+	    view.notifyEvent(ev);
 	}
 
+	private void notifyRandomize() {
+	    int nb = Integer.parseInt(numBodies.getText());
+	    Event ev = new RandomizeEvent(view, nb);
+	    view.notifyEvent(ev);
+	}
     }
 }

@@ -27,10 +27,9 @@ public class NBodyPanel extends JPanel {
 	// fisse come in OpenGL
 	Graphics2D g2d = image.createGraphics();
 	g2d.clearRect(0, 0, w, h);
-	int rad = Math.min(image.getWidth(), image.getHeight());
 	g2d.setColor(Color.red);
 	// g2d.translate(w / 2, -h / 2);
-	g2d.scale(w, h); // Pixel rispetto alla mia unità di misura
+	g2d.scale(w / 2, h / 2); // Pixel rispetto alla mia unità di misura
 	for (int i = pm.getNumBodies() - 1; i >= 0; i--) {// le cordinate sono
 							  // nella
 							  // mia unità di misura

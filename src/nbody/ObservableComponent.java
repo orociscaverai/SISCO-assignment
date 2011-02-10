@@ -2,6 +2,8 @@ package nbody;
 
 import java.util.*;
 
+import nbody.event.Event;
+
 /**
  * Base class for representing passive components generating events.
  * 
