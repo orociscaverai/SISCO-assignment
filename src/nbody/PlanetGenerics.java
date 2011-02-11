@@ -3,42 +3,22 @@ package nbody;
 public class PlanetGenerics {
 
     final private static int dimension = 2;
-    // private float[] position = new float[dimension];
-    private float[] velocity = new float[dimension];
-    // private float[] acceleration = new float[dimension];
     private float mass;
-    private float radius;
+    private float invMass;
+    private float[] velocity;
 
-    public PlanetGenerics(float radius, float mass) {
-	this.radius = radius;
-	this.mass = mass;
-	// XXX
-//	this.velocity[0] = 0.001f;
-//	this.velocity[1] = 0.001f;
+    public PlanetGenerics(float mass) {
+	this(mass, new float[dimension]);
     }
 
-    /*
-     * public PlanetGenerics(float[] position, float radius, float mass) {
-     * //this.position = position; this.radius = radius; this.mass = mass; }
-     */
+    public PlanetGenerics(float mass, float[] velocity) {
+	this.mass = mass;
+	this.velocity = new float[dimension];
 
-    /**
-     * @return the position
-     */
-    /*
-     * public float[] getPosition() { return position; }
-     */
+	for (int i = 0; i < dimension; i++)
+	    this.velocity[i] = velocity[i];
+    }
 
-    /**
-     * @param position
-     *            the position to set
-     */
-    /*
-     * public void setPosition(float[] position) { this.position = position; }
-     */
-    /**
-     * @return the velocity
-     */
     public float[] getVelocity() {
 	return velocity;
     }
@@ -65,34 +45,20 @@ public class PlanetGenerics {
      * public void setAcceleration(float[] acceleration) { this.acceleration =
      * acceleration; }
      */
-    /**
-     * @return the radius
-     */
-    public float getRadius() {
-	return radius;
-    }
 
-    /**
-     * @param radius
-     *            the radius to set
-     */
-    public void setRadius(float radius) {
-	this.radius = radius;
-    }
-
-    /**
-     * @return the radius
-     */
     public float getMass() {
 	return mass;
     }
 
-    /**
-     * @param radius
-     *            the radius to set
-     */
     public void setMass(float mass) {
 	this.mass = mass;
+    }
+
+    /**
+     * @return the inverse of mass
+     */
+    public float getInvMass() {
+	return invMass;
     }
 
     public String toString() {
@@ -102,7 +68,7 @@ public class PlanetGenerics {
 	out += "Velocity: " + velocity[0] + " " + velocity[1] + "\n";
 	// out += "Position: " + position[0] + " " + position[1] + "\n";
 	out += "Mass: " + mass + "\n";
-	out += "Radius: " + radius + "\n";
 	return out;
     }
+
 }

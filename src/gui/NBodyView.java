@@ -101,6 +101,11 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    this.scale = scale;
 	}
 
+	public FloatJSlider(int min, int max, float value, int scale) {
+	    super(min, max, (int) (value * max));
+	    this.scale = scale;
+	}
+
 	public float getScaledValue() {
 	    return ((float) super.getValue()) / this.scale;
 	}
@@ -127,7 +132,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    this.view = view;
 
 	    numBodies = new JTextField(10);
-	    numBodies.setText("500");
+	    numBodies.setText("100");
 
 	    randomizeButton = new JButton("randomize");
 
@@ -136,8 +141,9 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
 
-	    // The interval between 0 and 0.1 in 100 steps.
-	    deltaTimeSlider = new FloatJSlider(0, 100, 0, 1000);
+	    System.getProperty("deltaTime", "0.01");
+	    // The interval between 0 and 1 in 100 steps.
+	    deltaTimeSlider = new FloatJSlider(0, 100, 0.5f, 100);
 	    deltaTimeSlider.setOrientation(SwingConstants.VERTICAL);
 
 	    startButton.setEnabled(true);
