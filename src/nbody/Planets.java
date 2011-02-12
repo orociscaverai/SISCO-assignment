@@ -25,19 +25,11 @@ public class Planets {
      */
     public void makeRandomBodies(int numBodies) {
 	Random rand = new Random();
-	float radius, mass;
+	float mass;
+	planets.clear();
 	for (int i = 0; i < numBodies; i++) {
-	    /*
-	     * float position[] = new float[dimension]; for (int k = 0; k <
-	     * dimension; k++) { position[k] = rand.nextFloat(); }
-	     */
-	    // XXX la proporzione la considerimo 1/20
-	    // TODO considerare un minimo
-	    radius = rand.nextFloat() / 100;
-	    mass = rand.nextFloat() * 0.01f;
-	    // calcolare la massa della Terra aggiungere un fattore casuale per
-	    // la densità
-	    planets.add(new PlanetGenerics(/* position, */radius, mass));
+	    mass = rand.nextFloat() * 0.0006f;
+	    planets.add(new PlanetGenerics(mass));
 	}
     }
 

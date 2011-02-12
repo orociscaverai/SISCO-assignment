@@ -27,15 +27,14 @@ public class NBodyPanel extends JPanel {
 	// fisse come in OpenGL
 	Graphics2D g2d = image.createGraphics();
 	g2d.clearRect(0, 0, w, h);
-	int rad = Math.min(image.getWidth(), image.getHeight());
 	g2d.setColor(Color.red);
-	// g2d.translate(w / 2, -h / 2);
-	g2d.scale(w, h); // Pixel rispetto alla mia unità di misura
+	g2d.translate(w / 2, h / 2);
+	g2d.scale(w / 10, h / 10); // Pixel rispetto alla mia unità di misura
+	float radius = 0.05f;
 	for (int i = pm.getNumBodies() - 1; i >= 0; i--) {// le cordinate sono
-							  // nella
-							  // mia unità di misura
+	    // nella mia unità di misura
 	    g2d.fill(new Ellipse2D.Float(pm.getPosition(i)[0], pm
-		    .getPosition(i)[1], pm.getRadius(i), pm.getRadius(i)));
+		    .getPosition(i)[1], radius, radius));
 	}
 	repaint();
     }

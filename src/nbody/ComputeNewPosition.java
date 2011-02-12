@@ -23,36 +23,39 @@ public class ComputeNewPosition implements Runnable {
     @Override
     public void run() {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
+
 	PlanetGenerics old = Planets.getInstance().getPlanet(bodyIndex);
 	float[] vel = old.getVelocity();
-	// TODO
-	for (int i = 0; i < dimension; i++) {
-	    int sign = 1;
-	    if (acc[i] > 0)
-		sign = -1;
-	    acc[i] += sign * velocityDamping * vel[i] / old.getMass();
-	}
-	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos),
-		old.getRadius());
+
 	old.setVelocity(computeVelocity(acc, vel));
+
+	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
+
     }
 
-    private float[] computeVelocity(float[] acceleration, float[] oldVel) {
+    private float[] computeVelocity(float[] acceleration, float[] vel) {
+
 	float[] newVel = new float[dimension];
+
 	for (int i = 0; i < dimension; i++) {
-	    newVel[i] = acceleration[i] * deltatime + oldVel[i];
+	    newVel[i] = ((acceleration[i] * deltatime) + vel[i])
+		    * velocityDamping;
 	}
 	return newVel;
     }
 
-    private float[] computePosition(float[] acceleration, float[] oldVel,
+    private float[] computePosition(float[] acceleration, float[] vel,
 	    float[] oldPos) {
+
 	float[] newPos = new float[dimension];
-	// System.out.println("Init:"+newPos[0]+" "+newPos[1]);
+
+	// System.out.println("Init:" + newPos[0] + " " + newPos[1]);
 	for (int i = 0; i < dimension; i++) {
-	    newPos[i] = 0.5f * acceleration[i] * deltatime * deltatime
-		    + oldVel[i] * deltatime + oldPos[i];
+	    newPos[i] = 0.5f * acceleration[i] * deltatime * deltatime + vel[i]
+		    * deltatime + oldPos[i];
 	}
+
 	return newPos;
     }
+
 }

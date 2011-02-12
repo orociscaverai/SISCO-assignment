@@ -2,6 +2,8 @@ package nbody;
 
 import java.util.concurrent.*;
 
+import nbody.event.Event;
+
 public class ControllerAgent extends Thread {
 
 	private BlockingQueue<Event> queue;

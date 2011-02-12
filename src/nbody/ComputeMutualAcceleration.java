@@ -30,25 +30,26 @@ public class ComputeMutualAcceleration implements Runnable {
 	PlanetGenerics b = Planets.getInstance().getPlanet(indexB);
 	float[] bi = map.getPosition(indexA);
 	float[] bj = map.getPosition(indexB);
-	float[] r = new float[dimension];
+	float[] rij = new float[dimension];
 
+	// Distanza tra il Body i e il Body j
 	for (int i = 0; i < dimension; i++)
-	    r[i] = bj[i] - bi[i];
+	    rij[i] = bj[i] - bi[i];
 
+	// Distanza al quadrato
 	float distSqr = 0;
 	for (int i = 0; i < dimension; i++)
-	    distSqr = distSqr + r[i] * r[i];
+	    distSqr += rij[i] * rij[i];
 	distSqr += soft2;
 
-	float invDistCube = (G / distSqr);
+	// invDistCube = G / distSqr^(3/2)
+	float invDistCube = (float) (G / Math.sqrt(distSqr * distSqr * distSqr));
 
 	float[] ai = new float[dimension];
 	float[] aj = new float[dimension];
 	for (int i = 0; i < dimension; i++) {
-	    ai[i] = (float) (invDistCube * b.getMass() * (r[i] / Math
-		    .sqrt(distSqr)));
-	    aj[i] = (float) (invDistCube * a.getMass() * (-r[i] / Math
-		    .sqrt(distSqr)));
+	    ai[i] = rij[i] * b.getMass() * invDistCube;
+	    aj[i] = rij[i] * a.getMass() * invDistCube * -1;
 	}
 	interactionMatrix.setAcceleration(indexA, indexB, ai);
 	interactionMatrix.setAcceleration(indexB, indexA, aj);

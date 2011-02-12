@@ -1,4 +1,4 @@
-package nbody;
+package nbody.event;
 
 import gui.NBodyView;
 
