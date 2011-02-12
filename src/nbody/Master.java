@@ -44,7 +44,7 @@ public class Master extends ControllerAgent {
 
 	// Combinazioni senza ripetizioni di tutti i Bodies
 	// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
-	for (int i = 0; i < numBodies -1; i++) {
+	for (int i = 0; i < numBodies; i++) {
 	    for (int j = i + 1; j < numBodies; j++) {
 		try {
 		    executor.execute(new ComputeMutualAcceleration(i, j,
