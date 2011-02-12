@@ -12,40 +12,43 @@ import nbody.event.Event;
 import nbody.event.RandomizeEvent;
 
 public class Master extends ControllerAgent {
-    private float deltaTime;
     private ExecutorService executor;
     private InteractionMatrix interactionMatrix;
-    private int poolSize;
     private PlanetsMap map;
     private NBodyView view;
     private int numBodies;
     private ArrayBlockingQueue<PlanetsMap> coda;
+    private int poolSize;
+    private float deltaTime;
+    private float softFactor;
 
     public Master(NBodyView view, ArrayBlockingQueue<PlanetsMap> coda) {
 	super("Master");
-	this.poolSize = Integer.parseInt(System.getProperty("poolSize", "6"));
+
+	this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
 	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime",
 		"0.005"));
 	this.view = view;
 	this.coda = coda;
 	this.numBodies = 0;
+	this.softFactor = 1f;
 
 	view.register(this);
+
+	log(" " + poolSize);
     }
 
-    private void doCompute(int numBodies) throws InterruptedException {
+    private void doCompute() throws InterruptedException {
 
 	executor = Executors.newFixedThreadPool(poolSize);
 
-	// double step = (b - a) / numTasks;
 	// Combinazioni senza ripetizioni di tutti i Bodies
-	// Utile come debug
 	// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
 	for (int i = 0; i < numBodies; i++) {
 	    for (int j = i + 1; j < numBodies; j++) {
 		try {
 		    executor.execute(new ComputeMutualAcceleration(i, j,
-			    interactionMatrix, map));
+			    interactionMatrix, map, softFactor));
 		    // log("submitted task " + i + " " + j);
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -56,8 +59,6 @@ public class Master extends ControllerAgent {
 	PlanetsMap newMap = new PlanetsMap(numBodies);
 	executor.shutdown();
 	executor.awaitTermination(3600, TimeUnit.SECONDS);
-	// / XXX Stampa per Debug
-	// System.out.print(interactionMatrix.toString());
 	executor = Executors.newFixedThreadPool(poolSize);
 
 	for (int i = 0; i < numBodies; i++) {
@@ -90,8 +91,8 @@ public class Master extends ControllerAgent {
 
 	log(map.toString());
 	log(Planets.getInstance().toString());
-	
-//	preset();
+
+	// preset();
 
     }// doRandomize()
 
@@ -141,10 +142,18 @@ public class Master extends ControllerAgent {
 
     public void run() {
 	boolean processing = false;
+
 	try {
 	    while (true) {
+		Event ev;
 		if (!processing) {
-		    Event ev = fetchEvent();
+		    ev = fetchEvent();
+		} else {
+		    // processing = true
+		    ev = fetchEventIfPresent();
+		}
+
+		if (ev != null) {
 		    log("received ev: " + ev.getDescription());
 
 		    if (ev.getDescription().equals("started")) {
@@ -155,34 +164,43 @@ public class Master extends ControllerAgent {
 			this.numBodies = ((RandomizeEvent) ev).getNumBodies();
 			doRandomize();
 
+		    }
+		    if (ev.getDescription().equals("paused")) {
+			processing = false;
+
+		    } else if (ev.getDescription().equals("stopped")) {
+			processing = false;
+
+		    } else if (ev.getDescription().equals("singleStep")) {
+			processing = false;
+
 		    } else if (ev.getDescription().equals("deltaTime")) {
 			this.deltaTime = ((DeltaTimeEvent) ev).getDeltaTime();
-			log("Delta" + deltaTime);
+			this.softFactor = ((DeltaTimeEvent) ev).getSoftFactor();
+			log("\nDelta " + deltaTime + "\nSoft " + softFactor);
 		    }
-		} else { // processing = true
-		    Event ev = fetchEventIfPresent();
-		    if (ev != null) {
-			if (ev.getDescription().equals("paused")) {
-			    processing = false;
-
-			} else if (ev.getDescription().equals("stopped")) {
-			    processing = false;
-
-			} else if (ev.getDescription().equals("singleStep")) {
-			    processing = false;
-
-			} else if (ev.getDescription().equals("deltaTime")) {
-			    this.deltaTime = ((DeltaTimeEvent) ev)
-				    .getDeltaTime();
-			    log("Delta" + deltaTime);
-			}
-		    } else {
-			doCompute(numBodies);
-		    }
+		} else {
+		    doCompute();
 		}
 	    }
+
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	}
     }
+
+    float normalize(float[] vector) {
+	float dist = (float) Math.sqrt((vector[0] * vector[0] + vector[1]
+		* vector[1]));
+	if (dist > 1e-6) {
+	    vector[0] /= dist;
+	    vector[1] /= dist;
+	}
+	return dist;
+    }
+
+    float dot(float[] v0, float[] v1) {
+	return v0[0] * v1[0] + v0[1] * v1[1];
+    }
+
 }

@@ -101,8 +101,9 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    this.scale = scale;
 	}
 
-	public FloatJSlider(int min, int max, float value, int scale) {
-	    super(min, max, (int) (value * max));
+	public FloatJSlider(float min, float max, float value, int scale) {
+	    super((int) (min * scale), (int) (max * scale),
+		    (int) (value * scale));
 	    this.scale = scale;
 	}
 
@@ -122,12 +123,13 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	private JTextField numBodies;
 	private JTextField state;
 	private FloatJSlider deltaTimeSlider;
+	private FloatJSlider softFactorSlider;
+	private JSlider zoomSlider;
 	private NBodyPanel setPanel;
 	private NBodyView view;
 
 	public NBodyFrame(NBodyView view, int w, int h) {
 	    super("NBody Viewer");
-	    // setSize(w, h);
 
 	    this.view = view;
 
@@ -143,10 +145,16 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 
 	    System.getProperty("deltaTime", "0.01");
 	    // The interval between 0 and 1 in 100 steps.
-	    deltaTimeSlider = new FloatJSlider(0, 100, 0.5f, 100);
+	    deltaTimeSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
 	    deltaTimeSlider.setOrientation(SwingConstants.VERTICAL);
 
-	    startButton.setEnabled(true);
+	    softFactorSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
+	    softFactorSlider.setOrientation(SwingConstants.VERTICAL);
+
+	    zoomSlider = new JSlider(1, 100, 1);
+	    zoomSlider.setOrientation(SwingConstants.VERTICAL);
+
+	    startButton.setEnabled(false);
 	    stopButton.setEnabled(false);
 	    pauseButton.setEnabled(false);
 	    stepButton.setEnabled(false);
@@ -180,7 +188,13 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    cp.add(BorderLayout.NORTH, controlPanel);
 	    cp.add(BorderLayout.CENTER, setPanel);
 	    cp.add(BorderLayout.SOUTH, infoPanel);
-	    cp.add(BorderLayout.WEST, deltaTimeSlider);
+	    JPanel sliderPanel = new JPanel();
+	    sliderPanel.add(deltaTimeSlider);
+	    sliderPanel.add(softFactorSlider);
+	    sliderPanel.add(zoomSlider);
+	    cp.add(BorderLayout.WEST, sliderPanel);
+
+
 	    setContentPane(cp);
 	    pack();
 	    setResizable(false);
@@ -192,6 +206,8 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    stepButton.addActionListener(this);
 
 	    deltaTimeSlider.addChangeListener(this);
+	    softFactorSlider.addChangeListener(this);
+	    zoomSlider.addChangeListener(this);
 
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -236,12 +252,18 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	}
 
 	public void stateChanged(ChangeEvent e) {
-	    notifyDeltaTimeChanced();
+	    Object source = e.getSource();
+	    if (source == deltaTimeSlider || source == softFactorSlider) {
+		notifyDeltaTimeChanced();
+	    } else if (source == zoomSlider) {
+		setPanel.setZoom(zoomSlider.getValue());
+	    }
 	}
 
 	private void notifyDeltaTimeChanced() {
 	    float deltaTime = deltaTimeSlider.getScaledValue();
-	    Event ev = new DeltaTimeEvent(view, deltaTime);
+	    float softFactor = softFactorSlider.getScaledValue();
+	    Event ev = new DeltaTimeEvent(view, deltaTime, softFactor);
 	    view.notifyEvent(ev);
 
 	}

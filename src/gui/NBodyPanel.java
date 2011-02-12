@@ -13,6 +13,13 @@ import nbody.PlanetsMap;
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {
 
+    private double zoomW;
+    private double zoomH;
+    private double translateW;
+    private double translateH;
+    private float radius;
+    private final float pointSize = 0.005f;
+
     private BufferedImage image;
     private int w, h;
 
@@ -20,18 +27,27 @@ public class NBodyPanel extends JPanel {
 	this.image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 	this.w = w;
 	this.h = h;
+	this.zoomW = w;
+	this.zoomH = h;
+	this.translateH = 0;
+	this.translateW = 0;
+	this.radius = pointSize;
     }
 
     public void updateImage(PlanetsMap pm) {
-	// TODO ci deve essere un modo per lavorare su un pannello di dimensioni
-	// fisse come in OpenGL
+
 	Graphics2D g2d = image.createGraphics();
 	g2d.clearRect(0, 0, w, h);
-	g2d.setColor(Color.red);
-	g2d.translate(w / 2, h / 2);
-	g2d.scale(w / 10, h / 10); // Pixel rispetto alla mia unità di misura
-	float radius = 0.05f;
-	for (int i = pm.getNumBodies() - 1; i >= 0; i--) {// le cordinate sono
+	g2d.translate(translateW, translateH);
+	g2d.scale(zoomW, zoomH); // Pixel rispetto alla mia unità di misura
+	for (int i = pm.getNumBodies() - 1; i >= 0; i--) {
+
+	    if (i % 3 == 0)
+		g2d.setColor(Color.red);
+	    else if (i % 3 == 1)
+		g2d.setColor(Color.blue);
+	    else if (i % 3 == 2)
+		g2d.setColor(Color.green);
 	    // nella mia unità di misura
 	    g2d.fill(new Ellipse2D.Float(pm.getPosition(i)[0], pm
 		    .getPosition(i)[1], radius, radius));
@@ -41,7 +57,15 @@ public class NBodyPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
 	super.paintComponent(g);
-	Graphics2D g2 = (Graphics2D) g;
-	g2.drawImage(image, 0, 0, null);
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.drawImage(image, 0, 0, null);
+    }
+
+    public void setZoom(int zoom) {
+	this.zoomW = w / zoom;
+	this.zoomH = h / zoom;
+	this.translateW = (w - zoomW) / 2;
+	this.translateH = (h - zoomH) / 2;
+	this.radius = zoom * pointSize;
     }
 }

@@ -6,26 +6,23 @@ public class ComputeMutualAcceleration implements Runnable {
     private InteractionMatrix interactionMatrix;
     private PlanetsMap map;
     private float softFactor;
-    private float G;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, PlanetsMap map) {
+	    InteractionMatrix interactionMatrix, PlanetsMap map, float softFactor) {
 	this.a = indexA;
 	this.b = indexB;
 	this.interactionMatrix = interactionMatrix;
 	this.map = map;
-	this.softFactor = Float.parseFloat(System.getProperty("softFactor",
-		"1.0"));
-	this.G = Float.parseFloat(System.getProperty("gravityConst", "1.0"));
+	this.softFactor = softFactor;
     }
 
     @Override
     public void run() {
-	// TODO controllare soft
 	bodyBodyInteraction(a, b, softFactor);
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {
+	
 	PlanetGenerics a = Planets.getInstance().getPlanet(indexA);
 	PlanetGenerics b = Planets.getInstance().getPlanet(indexB);
 	float[] bi = map.getPosition(indexA);
@@ -43,7 +40,7 @@ public class ComputeMutualAcceleration implements Runnable {
 	distSqr += soft2;
 
 	// invDistCube = G / distSqr^(3/2)
-	float invDistCube = (float) (G / Math.sqrt(distSqr * distSqr * distSqr));
+	float invDistCube = (float) (1.0 / Math.sqrt(distSqr * distSqr * distSqr));
 
 	float[] ai = new float[dimension];
 	float[] aj = new float[dimension];
