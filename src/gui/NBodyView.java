@@ -2,7 +2,8 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -143,21 +144,19 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
 
-	    System.getProperty("deltaTime", "0.01");
-	    // The interval between 0 and 1 in 100 steps.
-	    deltaTimeSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
-	    deltaTimeSlider.setOrientation(SwingConstants.VERTICAL);
-
-	    softFactorSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
-	    softFactorSlider.setOrientation(SwingConstants.VERTICAL);
-
-	    zoomSlider = new JSlider(1, 100, 50);
-	    zoomSlider.setOrientation(SwingConstants.VERTICAL);
-
 	    startButton.setEnabled(false);
 	    stopButton.setEnabled(false);
 	    pauseButton.setEnabled(false);
 	    stepButton.setEnabled(false);
+
+	    deltaTimeSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
+	    deltaTimeSlider.setOrientation(SwingConstants.HORIZONTAL);
+
+	    softFactorSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
+	    softFactorSlider.setOrientation(SwingConstants.HORIZONTAL);
+
+	    zoomSlider = new JSlider(1, 1000, 500);
+	    zoomSlider.setOrientation(SwingConstants.HORIZONTAL);
 
 	    JPanel controlPanel = new JPanel();
 	    controlPanel.add(new JLabel("Num Bodies"));
@@ -175,26 +174,43 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 
 	    setPanel = new NBodyPanel(w, h);
 	    setPanel.setPreferredSize(new Dimension(w, h));
+	    setPanel.setZoom(zoomSlider.getValue());
 
-	    JPanel infoPanel = new JPanel();
 	    state = new JTextField(20);
 	    state.setText("Idle");
 	    state.setEditable(false);
-	    infoPanel.add(new JLabel("State"));
-	    infoPanel.add(state);
-	    JPanel cp = new JPanel();
-	    LayoutManager layout = new BorderLayout();
-	    cp.setLayout(layout);
+
+	    JPanel cp = new JPanel(new BorderLayout());
 	    cp.add(BorderLayout.NORTH, controlPanel);
 	    cp.add(BorderLayout.CENTER, setPanel);
-	    cp.add(BorderLayout.SOUTH, infoPanel);
-	    JPanel sliderPanel = new JPanel();
-	    sliderPanel.add(deltaTimeSlider);
-	    sliderPanel.add(softFactorSlider);
-	    sliderPanel.add(zoomSlider);
-	    cp.add(BorderLayout.WEST, sliderPanel);
 
+	    // EastPanel ------------------------------------------
+	    JPanel eastPanel = new JPanel(new GridBagLayout());
+	    GridBagConstraints c = new GridBagConstraints();
 
+	    c.gridx = 0;
+	    c.gridy = 0;
+	    eastPanel.add(new JLabel("Delta Time:"), c);
+	    c.gridy = 1;
+	    eastPanel.add(deltaTimeSlider, c);
+	    c.gridy = 2;
+	    eastPanel.add(new JLabel("Soft Factor:"), c);
+	    c.gridy = 3;
+	    eastPanel.add(softFactorSlider, c);
+	    c.gridy = 4;
+	    eastPanel.add(new JLabel("Zoom:"), c);
+	    c.gridy = 5;
+	    eastPanel.add(zoomSlider, c);
+	    c.gridy = 6;
+	    eastPanel.add(new JLabel(" "), c);
+	    c.gridy = 7;
+	    eastPanel.add(new JLabel("State "), c);
+	    c.gridy = 8;
+	    eastPanel.add(state, c);
+
+	    cp.add(BorderLayout.EAST, eastPanel);
+
+	    // ------------------------------------------------------
 	    setContentPane(cp);
 	    pack();
 	    setResizable(false);
@@ -210,10 +226,12 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    zoomSlider.addChangeListener(this);
 
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
+
 	}
 
 	public void actionPerformed(ActionEvent ev) {
 	    String cmd = ev.getActionCommand();
+
 	    if (cmd.equals("start")) {
 		startButton.setEnabled(false);
 		stopButton.setEnabled(true);
@@ -221,6 +239,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(false);
 		notifyStarted();
+
 	    } else if (cmd.equals("stop")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(false);
@@ -228,6 +247,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(true);
 		notifyStopped();
+
 	    } else if (cmd.equals("pause")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(true);
@@ -235,6 +255,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
 		notifyPaused();
+
 	    } else if (cmd.equals("step")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(true);
@@ -242,25 +263,27 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(false);
 		notifySingleStep();
+
 	    } else if (cmd.equals("randomize")) {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
 		notifyRandomize();
+
 	    }
 	}
 
 	public void stateChanged(ChangeEvent e) {
 	    Object source = e.getSource();
 	    if (source == deltaTimeSlider || source == softFactorSlider) {
-		notifyDeltaTimeChanced();
+		notifyParameterChanged();
 	    } else if (source == zoomSlider) {
 		setPanel.setZoom(zoomSlider.getValue());
 	    }
 	}
 
-	private void notifyDeltaTimeChanced() {
+	private void notifyParameterChanged() {
 	    float deltaTime = deltaTimeSlider.getScaledValue();
 	    float softFactor = softFactorSlider.getScaledValue();
 	    Event ev = new DeltaTimeEvent(view, deltaTime, softFactor);

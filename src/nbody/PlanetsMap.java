@@ -11,7 +11,7 @@ public class PlanetsMap {
 	this.numBody = numBody;
 	positions = new float[numBody][dimension];
     }
-
+    
     public int getDimensions() {
 	return dimension;
     }
@@ -30,7 +30,7 @@ public class PlanetsMap {
     }
 
     public void generateRandomMap() {
-
+	
 	Random rand = new Random();
 
 	for (int i = 0; i < numBody; i++) {
