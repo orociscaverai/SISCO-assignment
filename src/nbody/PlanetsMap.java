@@ -47,7 +47,7 @@ public class PlanetsMap {
 
 	String out = "";
 	for (int i = 0; i < numBody; i++) {
-	    out += "Position body " + i + ":";
+	    out += "Body " + i + ": Position:";
 
 	    for (int d = 0; d < dimension; d++) {
 		out += " " + positions[i][d];

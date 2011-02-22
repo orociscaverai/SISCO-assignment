@@ -49,9 +49,9 @@ public class PlanetGenerics {
 	    out += " " + velocity[d];
 	}
 
-	out += "\n";
+	out += "\t";
 
-	out += "Mass: " + mass + "\n";
+	out += "Mass: " + mass;
 	return out;
     }
 

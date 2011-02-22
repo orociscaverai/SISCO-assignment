@@ -51,7 +51,7 @@ public class Planets {
 	String out = "";
 	int i = 0;
 	for (PlanetGenerics p : planets) {
-	    out += "Planet " + i + "\n";
+	    out += "Body " + i + ": ";
 	    out += p.toString() + "\n";
 	    i++;
 	}
