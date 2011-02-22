@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,8 +20,8 @@ import javax.swing.event.ChangeListener;
 
 import nbody.ObservableComponent;
 import nbody.PlanetsMap;
-import nbody.event.ParameterEvent;
 import nbody.event.Event;
+import nbody.event.ParameterEvent;
 import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
@@ -38,28 +37,21 @@ import nbody.event.StoppedEvent;
 public class NBodyView extends ObservableComponent implements NBodySetListener {
 
     private NBodyFrame frame;
-    private ArrayBlockingQueue<PlanetsMap> coda;
 
     /**
      * Costruisce una finestra che ha le dimensioni di disegno pari ai due
      * paramentri più le dimensioni dei menù.
      * */
-    public NBodyView(int w, int h, ArrayBlockingQueue<PlanetsMap> coda) {
+    public NBodyView(int w, int h) {
 	frame = new NBodyFrame(this, w, h);
 	frame.setVisible(true);
-	this.coda = coda;
     }
 
     // TODO Ma perchè deve essere final????????
     public void setUpdated(final PlanetsMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-
-		try {
-		    frame.setPanel.updateImage(coda.take());
-		} catch (InterruptedException e) {
-		    e.printStackTrace();
-		}
+		frame.setPanel.updateImage(map);
 	    }
 	});
     }

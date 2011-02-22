@@ -2,7 +2,6 @@ package nbody;
 
 import gui.NBodyView;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,19 +16,17 @@ public class Master extends ControllerAgent {
     private PlanetsMap map;
     private NBodyView view;
     private int numBodies;
-    private ArrayBlockingQueue<PlanetsMap> coda;
     private int poolSize;
     private float deltaTime;
     private float softFactor;
 
-    public Master(NBodyView view, ArrayBlockingQueue<PlanetsMap> coda) {
+    public Master(NBodyView view) {
 	super("Master");
 
 	this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
 	this.deltaTime = Float.parseFloat(System
 		.getProperty("deltaTime", "0.5"));
 	this.view = view;
-	this.coda = coda;
 	this.numBodies = 0;
 	this.softFactor = 1f;
 
@@ -75,7 +72,6 @@ public class Master extends ControllerAgent {
 
 	executor.shutdown();
 	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-	coda.add(newMap);
 	view.setUpdated(newMap);
 	this.map = newMap;
 
@@ -91,59 +87,12 @@ public class Master extends ControllerAgent {
 	Planets.getInstance().makeRandomBodies(numBodies);
 
 	map.generateRandomMap();
-	coda.add(map);
-	view.setUpdated(null);
+	view.setUpdated(map);
 
 	log("\n" + map.toString());
 	log("\n" + Planets.getInstance().toString());
 
-	// preset();
-
     }// doRandomize()
-
-    public void preset() {
-	this.map = new PlanetsMap(3);
-	Planets p = Planets.getInstance();
-	p.addPlanet(new PlanetGenerics(0.2f));
-	p.addPlanet(new PlanetGenerics(0.01f));
-	p.addPlanet(new PlanetGenerics(0.000001f));
-
-	float[] pos = new float[2];
-	pos[0] = 0;
-	pos[1] = 0;
-	map.setPosition(0, pos);
-
-	pos = new float[2];
-	pos[0] = 0.16f;
-	pos[1] = 0;
-	map.setPosition(1, pos);
-
-	pos = new float[2];
-	pos[0] = 0.14f;
-	pos[1] = 0;
-	map.setPosition(2, pos);
-	// //////////////////////////////////////////////
-	pos = new float[2];
-	pos[0] = 0;
-	pos[1] = 0;
-	p.getPlanet(0).setVelocity(pos);
-
-	pos = new float[2];
-	pos[0] = 0;
-	pos[1] = 0.12f;
-	p.getPlanet(1).setVelocity(pos);
-
-	pos = new float[2];
-	pos[0] = 0;
-	pos[1] = 0.053f;
-	p.getPlanet(2).setVelocity(pos);
-
-	coda.add(map);
-	view.setUpdated(null);
-
-	log(map.toString());
-	log(Planets.getInstance().toString());
-    }
 
     public void run() {
 	boolean processing = false;
@@ -198,20 +147,6 @@ public class Master extends ControllerAgent {
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	}
-    }
-
-    float normalize(float[] vector) {
-	float dist = (float) Math.sqrt((vector[0] * vector[0] + vector[1]
-		* vector[1]));
-	if (dist > 1e-6) {
-	    vector[0] /= dist;
-	    vector[1] /= dist;
-	}
-	return dist;
-    }
-
-    float dot(float[] v0, float[] v1) {
-	return v0[0] * v1[0] + v0[1] * v1[1];
     }
 
 }

@@ -4,6 +4,7 @@ package nbody;
 
 // TODO definirla statica visto che ne deve esistere solo una? ma se la passo di volta in volta?
 public class InteractionMatrix {
+    
     final private static int dimension = 2;
     private float[][][] matrix;
     private int numBodies;
@@ -13,17 +14,21 @@ public class InteractionMatrix {
 	this.numBodies = numBodies;
     }
 
-    // TODO cercare un nome più significativo per questo metodo
-    public float[][] getRow(int planet) {
-	return matrix[planet];
+    /**
+     * Restituisce la riga della matrice. Utile più che altro per motivi di
+     * Debug
+     */
+    public float[][] getRow(int bodyIndex) {
+	return matrix[bodyIndex];
     }
 
     public float[] getResultAcceleration(int planet) {
+
 	float[] out = new float[dimension];
 	for (int i = 0; i < numBodies; i++) {
 	    if (i != planet) {
-		for (int k = 0; k < dimension; k++) {
-		    out[k] += matrix[planet][i][k];
+		for (int d = 0; d < dimension; d++) {
+		    out[d] += matrix[planet][i][d];
 		}
 	    }
 	}
@@ -34,16 +39,9 @@ public class InteractionMatrix {
      * 
      * Permette l'inserimento di una forza tra due pianeti
      * 
-     * @param TODO
-     * 
-     *            tenere presente che il pianeta B dovrà avere la forza inversa
      */
     public void setAcceleration(int planetA, int planetB, float[] acceleration) {
 	this.matrix[planetA][planetB] = acceleration;
-	/*
-	 * for (int i = 0; i < dimension; i++) this.matrix[planetB][planetA][i]
-	 * = -acceleration[i];++
-	 */
     }
 
     public String toString() {
