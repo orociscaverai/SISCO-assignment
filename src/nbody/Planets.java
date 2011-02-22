@@ -27,7 +27,7 @@ public class Planets {
 	planets.clear();
 	for (int i = 0; i < numBodies; i++) {
 	    mass = rand.nextFloat()
-	     * 0.001f
+	     * 0.01f
 	    ;
 	    planets.add(new PlanetGenerics(mass));
 	}
