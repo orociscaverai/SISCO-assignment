@@ -7,8 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import nbody.event.DeltaTimeEvent;
 import nbody.event.Event;
+import nbody.event.ParameterEvent;
 import nbody.event.RandomizeEvent;
 
 public class Master extends ControllerAgent {
@@ -26,15 +26,15 @@ public class Master extends ControllerAgent {
 	super("Master");
 
 	this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
-	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime",
-		"0.005"));
+	this.deltaTime = Float.parseFloat(System
+		.getProperty("deltaTime", "0.5"));
 	this.view = view;
 	this.coda = coda;
 	this.numBodies = 0;
 	this.softFactor = 1f;
 
 	view.register(this);
-
+	view.setParameter(deltaTime, softFactor);
 	log("Pool size: " + poolSize);
     }
 
@@ -80,6 +80,11 @@ public class Master extends ControllerAgent {
 	this.map = newMap;
 
     } // doCompute()
+
+    private void doReset() {
+	this.numBodies = 0;
+	doRandomize();
+    }
 
     private void doRandomize() {
 	this.map = new PlanetsMap(numBodies);
@@ -149,7 +154,7 @@ public class Master extends ControllerAgent {
 		if (!processing) {
 		    ev = fetchEvent();
 		} else {
-		    // processing = true
+		    // processing == true
 		    ev = fetchEventIfPresent();
 		}
 
@@ -170,13 +175,19 @@ public class Master extends ControllerAgent {
 
 		    } else if (ev.getDescription().equals("stopped")) {
 			processing = false;
+			// TODO controllare la terminazione: vengono mandati
+			// alla view sempre 2 model dopo la pressione del
+			// Pulsante STOP. Provare con 2000 corpi ed usare la
+			// stampa PIPPO in NBodyPanel
+			doReset();
 
 		    } else if (ev.getDescription().equals("singleStep")) {
-			processing = false;
+			// Effettua una sola computazione
+			doCompute();
 
 		    } else if (ev.getDescription().equals("deltaTime")) {
-			this.deltaTime = ((DeltaTimeEvent) ev).getDeltaTime();
-			this.softFactor = ((DeltaTimeEvent) ev).getSoftFactor();
+			this.deltaTime = ((ParameterEvent) ev).getDeltaTime();
+			this.softFactor = ((ParameterEvent) ev).getSoftFactor();
 			log("\nDelta " + deltaTime + "\nSoft " + softFactor);
 		    }
 		} else {

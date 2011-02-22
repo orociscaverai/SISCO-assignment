@@ -21,7 +21,7 @@ import javax.swing.event.ChangeListener;
 
 import nbody.ObservableComponent;
 import nbody.PlanetsMap;
-import nbody.event.DeltaTimeEvent;
+import nbody.event.ParameterEvent;
 import nbody.event.Event;
 import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
@@ -92,6 +92,15 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	});
     }
 
+    public void setParameter(final float deltaTime, final float softFactor) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		frame.deltaTimeSlider.setScaledValue(deltaTime);
+		frame.softFactorSlider.setScaledValue(softFactor);
+	    }
+	});
+    }
+
     @SuppressWarnings("serial")
     class FloatJSlider extends JSlider {
 
@@ -110,6 +119,10 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 
 	public float getScaledValue() {
 	    return ((float) super.getValue()) / this.scale;
+	}
+
+	public void setScaledValue(float value) {
+	    super.setValue((int) (value * scale));
 	}
     }
 
@@ -144,6 +157,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
 
+	    randomizeButton.setEnabled(true);
 	    startButton.setEnabled(false);
 	    stopButton.setEnabled(false);
 	    pauseButton.setEnabled(false);
@@ -155,7 +169,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    softFactorSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
 	    softFactorSlider.setOrientation(SwingConstants.HORIZONTAL);
 
-	    zoomSlider = new JSlider(1, 1000, 500);
+	    zoomSlider = new JSlider(1, 4, 2);
 	    zoomSlider.setOrientation(SwingConstants.HORIZONTAL);
 
 	    JPanel controlPanel = new JPanel();
@@ -241,7 +255,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		notifyStarted();
 
 	    } else if (cmd.equals("stop")) {
-		startButton.setEnabled(true);
+		startButton.setEnabled(false);
 		stopButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
@@ -260,7 +274,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(true);
 		pauseButton.setEnabled(false);
-		stepButton.setEnabled(false);
+		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
 		notifySingleStep();
 
@@ -286,9 +300,8 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	private void notifyParameterChanged() {
 	    float deltaTime = deltaTimeSlider.getScaledValue();
 	    float softFactor = softFactorSlider.getScaledValue();
-	    Event ev = new DeltaTimeEvent(view, deltaTime, softFactor);
+	    Event ev = new ParameterEvent(view, deltaTime, softFactor);
 	    view.notifyEvent(ev);
-
 	}
 
 	private void notifyStarted() {

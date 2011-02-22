@@ -12,7 +12,7 @@ import nbody.PlanetsMap;
 
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {
-
+    private int pippo = 0;
     private double zoomW;
     private double zoomH;
     private double translateW;
@@ -35,6 +35,8 @@ public class NBodyPanel extends JPanel {
     }
 
     public void updateImage(PlanetsMap pm) {
+	// TODO stampa pippo per valutare la terminazione
+	System.out.println("Pippo " + pippo++);
 
 	Graphics2D g2d = image.createGraphics();
 	g2d.clearRect(0, 0, w, h);
@@ -62,6 +64,7 @@ public class NBodyPanel extends JPanel {
     }
 
     public void setZoom(int zoom) {
+	zoom *= 100;
 	this.zoomW = w / zoom;
 	this.zoomH = h / zoom;
 	this.translateW = (w - zoomW) / 2;
