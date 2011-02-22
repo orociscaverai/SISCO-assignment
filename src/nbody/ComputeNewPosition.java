@@ -1,15 +1,16 @@
 package nbody;
 
+
 public class ComputeNewPosition implements Runnable {
     final private static int dimension = 2;
     private int bodyIndex;
     private float deltatime;
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
-    private PlanetsMap map;
+    private BodiesMap map;
 
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
-	    InteractionMatrix interactionMatrix, PlanetsMap map) {
+	    InteractionMatrix interactionMatrix, BodiesMap map) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
 	this.deltatime = deltaTime;
@@ -21,7 +22,7 @@ public class ComputeNewPosition implements Runnable {
     public void run() {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
 
-	PlanetGenerics old = Planets.getInstance().getPlanet(bodyIndex);
+	Body old = Bodies.getInstance().getPlanet(bodyIndex);
 	float[] vel = old.getVelocity();
 
 	old.setVelocity(computeVelocity(acc, vel));

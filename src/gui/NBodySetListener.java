@@ -1,8 +1,8 @@
 package gui;
 
-import nbody.PlanetsMap;
+import nbody.BodiesMap;
 
 public interface NBodySetListener {
 
-    void setUpdated(PlanetsMap planets);
+    void setUpdated(BodiesMap planets);
 }

@@ -13,7 +13,7 @@ import nbody.event.RandomizeEvent;
 public class Master extends ControllerAgent {
     private ExecutorService executor;
     private InteractionMatrix interactionMatrix;
-    private PlanetsMap map;
+    private BodiesMap map;
     private NBodyView view;
     private int numBodies;
     private int poolSize;
@@ -53,7 +53,7 @@ public class Master extends ControllerAgent {
 	    }
 	}
 
-	PlanetsMap newMap = new PlanetsMap(numBodies);
+	BodiesMap newMap = new BodiesMap(numBodies);
 	executor.shutdown();
 	executor.awaitTermination(3600, TimeUnit.SECONDS);
 	executor = Executors.newFixedThreadPool(poolSize);
@@ -83,14 +83,14 @@ public class Master extends ControllerAgent {
     }
 
     private void doRandomize() {
-	this.map = new PlanetsMap(numBodies);
-	Planets.getInstance().makeRandomBodies(numBodies);
+	this.map = new BodiesMap(numBodies);
+	Bodies.getInstance().makeRandomBodies(numBodies);
 
 	map.generateRandomMap();
 	view.setUpdated(map);
 
 	log("\n" + map.toString());
-	log("\n" + Planets.getInstance().toString());
+	log("\n" + Bodies.getInstance().toString());
 
     }// doRandomize()
 

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import nbody.PlanetsMap;
+import nbody.BodiesMap;
 
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {
@@ -34,7 +34,7 @@ public class NBodyPanel extends JPanel {
 	this.radius = pointSize;
     }
 
-    public void updateImage(PlanetsMap pm) {
+    public void updateImage(BodiesMap pm) {
 	// TODO stampa pippo per valutare la terminazione
 	// System.out.println("Pippo " + pippo++);
 

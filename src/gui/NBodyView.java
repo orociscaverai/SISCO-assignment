@@ -19,7 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import nbody.ObservableComponent;
-import nbody.PlanetsMap;
+import nbody.BodiesMap;
 import nbody.event.Event;
 import nbody.event.ParameterEvent;
 import nbody.event.PausedEvent;
@@ -48,7 +48,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
     }
 
     // TODO Ma perchè deve essere final????????
-    public void setUpdated(final PlanetsMap map) {
+    public void setUpdated(final BodiesMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		frame.setPanel.updateImage(map);

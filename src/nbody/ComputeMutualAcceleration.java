@@ -1,19 +1,20 @@
 package nbody;
 
+
 public class ComputeMutualAcceleration implements Runnable {
     private int a, b;
     private final static int dimension = 2;
     private InteractionMatrix interactionMatrix;
-    private PlanetsMap map;
+    private BodiesMap map;
     private float softFactor;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, PlanetsMap map, float softFactor) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor) {
+	this.map = map;
 	this.a = indexA;
 	this.b = indexB;
-	this.interactionMatrix = interactionMatrix;
-	this.map = map;
 	this.softFactor = softFactor;
+	this.interactionMatrix = interactionMatrix;
     }
 
     @Override
@@ -23,8 +24,8 @@ public class ComputeMutualAcceleration implements Runnable {
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {
 	
-	PlanetGenerics a = Planets.getInstance().getPlanet(indexA);
-	PlanetGenerics b = Planets.getInstance().getPlanet(indexB);
+	Body a = Bodies.getInstance().getPlanet(indexA);
+	Body b = Bodies.getInstance().getPlanet(indexB);
 	float[] bi = map.getPosition(indexA);
 	float[] bj = map.getPosition(indexB);
 	float[] rij = new float[dimension];
