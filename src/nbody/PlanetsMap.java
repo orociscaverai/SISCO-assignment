@@ -9,6 +9,10 @@ public class PlanetsMap {
 	this.numBody = numBody;
 	positions = new float[numBody][dimension];
     }
+    
+    public int getDimensions() {
+	return dimension;
+    }
 
     public int getNumBodies() {
 	return numBody;
@@ -24,18 +28,29 @@ public class PlanetsMap {
     }
 
     public void generateRandomMap() {
+
 	for (int i = 0; i < numBody; i++) {
-	    for (int k = 0; k < dimension; k++) {
-		positions[i][k] = (float) Math.random();
+
+	    for (int d = 0; d < dimension; d++) {
+		positions[i][d] = (float) Math.random();
 	    }
+
 	}
+
     }
 
     public String toString() {
+
 	String out = "";
-	for (int i = 0; i < numBody; i++)
-	    out += "Position: " + positions[i][0] + " " + positions[i][1]
-		    + "\n";
+	for (int i = 0; i < numBody; i++) {
+	    out += "Position body " + i + ":";
+
+	    for (int d = 0; d < dimension; d++) {
+		out += " " + positions[i][d];
+	    }
+
+	    out += "\n";
+	}
 
 	return out;
     }

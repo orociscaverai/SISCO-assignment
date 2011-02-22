@@ -151,7 +151,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    softFactorSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
 	    softFactorSlider.setOrientation(SwingConstants.VERTICAL);
 
-	    zoomSlider = new JSlider(1, 100, 1);
+	    zoomSlider = new JSlider(1, 100, 50);
 	    zoomSlider.setOrientation(SwingConstants.VERTICAL);
 
 	    startButton.setEnabled(false);

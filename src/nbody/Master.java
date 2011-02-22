@@ -35,7 +35,7 @@ public class Master extends ControllerAgent {
 
 	view.register(this);
 
-	log(" " + poolSize);
+	log("Pool size: " + poolSize);
     }
 
     private void doCompute() throws InterruptedException {
@@ -89,8 +89,8 @@ public class Master extends ControllerAgent {
 	coda.add(map);
 	view.setUpdated(null);
 
-	log(map.toString());
-	log(Planets.getInstance().toString());
+	log("\n" + map.toString());
+	log("\n" + Planets.getInstance().toString());
 
 	// preset();
 

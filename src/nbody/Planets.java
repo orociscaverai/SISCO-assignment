@@ -5,13 +5,11 @@ import java.util.Vector;
 
 public class Planets {
     private Vector<PlanetGenerics> planets;
-    final private static int dimension = 2;
 
     private static class SingletonHolder {
 	private final static Planets instance = new Planets();
     }
 
-    // TODO singleton ThreadSafe
     public static Planets getInstance() {
 	return SingletonHolder.instance;
     }
@@ -28,7 +26,9 @@ public class Planets {
 	float mass;
 	planets.clear();
 	for (int i = 0; i < numBodies; i++) {
-	    mass = rand.nextFloat() * 0.0006f;
+	    mass = rand.nextFloat()
+	     * 0.001f
+	    ;
 	    planets.add(new PlanetGenerics(mass));
 	}
     }
