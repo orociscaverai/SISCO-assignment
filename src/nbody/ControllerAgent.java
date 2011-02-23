@@ -1,6 +1,7 @@
 package nbody;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import nbody.event.Event;
 

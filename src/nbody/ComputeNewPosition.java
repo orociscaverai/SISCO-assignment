@@ -47,9 +47,9 @@ public class ComputeNewPosition implements Runnable {
 	float[] newPos = new float[dimension];
 
 	// System.out.println("Init:" + newPos[0] + " " + newPos[1]);
-	for (int i = 0; i < dimension; i++) {
-	    newPos[i] = 0.5f * acceleration[i] * deltatime * deltatime + vel[i]
-		    * deltatime + oldPos[i];
+	for (int d = 0; d < dimension; d++) {
+	    newPos[d] = 0.5f * acceleration[d] * deltatime * deltatime + vel[d]
+		    * deltatime + oldPos[d];
 	}
 
 	return newPos;
