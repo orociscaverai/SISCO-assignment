@@ -33,6 +33,7 @@ public class Master extends ControllerAgent {
 	view.register(this);
 	view.setParameter(deltaTime, softFactor);
 	log("Pool size: " + poolSize);
+
     }
 
     private void doCompute() throws InterruptedException {
@@ -74,7 +75,6 @@ public class Master extends ControllerAgent {
 	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 	view.setUpdated(newMap);
 	this.map = newMap;
-
     } // doCompute()
 
     private void doReset() {
@@ -89,8 +89,8 @@ public class Master extends ControllerAgent {
 	map.generateRandomMap();
 	view.setUpdated(map);
 
-	log("\n" + map.toString());
-	log("\n" + Bodies.getInstance().toString());
+	// log("\n" + map.toString());
+	// log("\n" + Bodies.getInstance().toString());
 
     }// doRandomize()
 

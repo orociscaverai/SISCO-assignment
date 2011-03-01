@@ -12,7 +12,6 @@ import nbody.BodiesMap;
 
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {
-    // private int pippo = 0;
     private double zoomW;
     private double zoomH;
     private double translateW;
@@ -34,10 +33,11 @@ public class NBodyPanel extends JPanel {
 	this.radius = pointSize;
     }
 
+    private int pippo = 0;
+
     public void updateImage(BodiesMap pm) {
 	// TODO stampa pippo per valutare la terminazione
-	// System.out.println("Pippo " + pippo++);
-
+	// System.out.println("Iterazione " + pippo++);
 	Graphics2D g2d = image.createGraphics();
 	g2d.clearRect(0, 0, w, h);
 	g2d.translate(translateW, translateH);

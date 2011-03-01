@@ -18,7 +18,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import nbody.ObservableComponent;
 import nbody.BodiesMap;
 import nbody.event.Event;
 import nbody.event.ParameterEvent;

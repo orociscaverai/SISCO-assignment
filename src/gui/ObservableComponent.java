@@ -1,7 +1,8 @@
-package nbody;
+package gui;
 
 import java.util.*;
 
+import nbody.ControllerAgent;
 import nbody.event.Event;
 
 /**
