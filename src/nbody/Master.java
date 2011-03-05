@@ -1,55 +1,58 @@
 package nbody;
 
-import java.util.concurrent.ArrayBlockingQueue;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import nbody.exceptions.StoppedException;
 
 public class Master extends Thread {
 	private ExecutorService executor;
 	private InteractionMatrix interactionMatrix;
 	private BodiesMap map;
-	//private NBodyView view;
-	private int numBodies;
 	private int poolSize;
 	private float deltaTime;
 	private float softFactor;
-	private ArrayBlockingQueue<BodiesMap> mapQueue;
+	private StateMonitor state;
+	private StateVariables var;
+	private int numBodies;
 
-	public Master(int numBodies,ArrayBlockingQueue<BodiesMap> mapQueue) {
+	public Master(StateMonitor state, StateVariables var) {
 		super("Master");
 
 		this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
-		this.deltaTime = Float.parseFloat(System
-				.getProperty("deltaTime", "0.5"));
-		this.numBodies = 0;
-		this.softFactor = 1f;
-		this.mapQueue = mapQueue;
-		this.numBodies = numBodies;
+		this.var = var;
+		this.state = state;
 
 	}
 
-	private void doCompute() throws InterruptedException {
+	private void doCompute() throws StoppedException,InterruptedException {
 
 		executor = Executors.newFixedThreadPool(poolSize);
+		deltaTime = var.getDeltaTime();
+		softFactor = var.getSoftFactor();
 
 		// Combinazioni senza ripetizioni di tutti i Bodies
 		// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
 		for (int i = 0; i < numBodies; i++) {
 			for (int j = i + 1; j < numBodies; j++) {
-				try {
-					executor.execute(new ComputeMutualAcceleration(i, j,
-							interactionMatrix, map, softFactor));
-					// log("submitted task " + i + " " + j);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				executor.execute(new ComputeMutualAcceleration(i, j,
+						interactionMatrix, map, softFactor));
+				// log("submitted task " + i + " " + j);
 			}
 		}
 
 		BodiesMap newMap = new BodiesMap(numBodies);
 		executor.shutdown();
-		executor.awaitTermination(3600, TimeUnit.SECONDS);
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+		} catch (InterruptedException e1) {
+			log("Catch Exception 1... shutting down now");
+			executor.shutdownNow();
+			log("shutdown passed");
+			throw new StoppedException();
+		}
 		executor = Executors.newFixedThreadPool(poolSize);
 
 		for (int i = 0; i < numBodies; i++) {
@@ -65,24 +68,34 @@ public class Master extends Thread {
 		}
 
 		executor.shutdown();
-		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		mapQueue.put(newMap);
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+		} catch (InterruptedException e1) {
+			log("Catch Exception ... shutting down now");
+			executor.shutdownNow();
+			log("shutdown passed");
+			throw new StoppedException();
+		}
+		var.putMap(newMap);
 		this.map = newMap;
 	} // doCompute()
 
-	private void doReset() throws InterruptedException{
-		this.numBodies = 0;
-		mapQueue.clear();
+
+//TODO unused
+/*	private void doReset() throws InterruptedException{
+		//this.numBodies = 0;
+		//TODO
+		var.clearPendingMaps();
 		doRandomize();
 	}
-
+*/
 	private void doRandomize() throws InterruptedException {
 		this.map = new BodiesMap(numBodies);
 		Bodies.getInstance().makeRandomBodies(numBodies);
 
 		map.generateRandomMap();
 		System.out.println("messo");
-		mapQueue.put(map);
+		var.putMap(map);
 
 		// log("\n" + map.toString());
 		// log("\n" + Bodies.getInstance().toString());
@@ -90,16 +103,25 @@ public class Master extends Thread {
 	}// doRandomize()
 
 	public void run() {
-		interactionMatrix = new InteractionMatrix(numBodies);
-		try {
-			doRandomize();
-			while (true) {
-				doCompute();
-			}
+		while(true){
+			try {
+				state.waitRandomize();
+				numBodies = var.getNumBodies();
+				interactionMatrix = new InteractionMatrix(numBodies);
+				doRandomize();
+				while (true) {
+					state.waitStart();
+					doCompute();
+				}
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				log("restarting");
+			}
 		}
 	}
+	private void log(String error) {
+		System.out.println("[MASTER] : "+error);
 
+	}
 }

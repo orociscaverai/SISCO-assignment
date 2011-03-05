@@ -33,8 +33,6 @@ public class NBodyPanel extends JPanel {
 	this.radius = pointSize;
     }
 
-    private int pippo = 0;
-
     public void updateImage(BodiesMap pm) {
 	// TODO stampa pippo per valutare la terminazione
 	// System.out.println("Iterazione " + pippo++);

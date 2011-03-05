@@ -1,39 +1,41 @@
 package nbody;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import nbody.event.Event;
+import nbody.event.ParameterEvent;
 import nbody.event.RandomizeEvent;
 
 import gui.NBodyView;
 
 public class Controller extends ControllerAgent{
+	private StateMonitor state;
+	private StateVariables var;
 	private Master m;
 	private NBodyView view;
-	private ArrayBlockingQueue<BodiesMap> mapQueue;
 	private long timeStep;
 
 	public Controller(NBodyView view) {
 		super("Controller");
 		this.view = view;
-		mapQueue = new ArrayBlockingQueue<BodiesMap>(50, true);
 		float deltaTime = Float.parseFloat(System
 				.getProperty("deltaTime", "0.5"));
 		float softFactor = 1f;
 		view.register(this);
 		view.setParameter(deltaTime, softFactor);
+		state = new StateMonitor();
+		var = new StateVariables();
 		timeStep = 10;
 
 	}
 
 	public void run(){
-		boolean processing = false;
+		m = new Master(state,var);
+		m.start();
 		long nextComputeTime;
 		nextComputeTime = System.currentTimeMillis() + timeStep;
 		try {
 			while (true) {
 				Event ev;
-				if (!processing) {
+				if (state.isSuspended()) {
 					ev = fetchEvent();
 				} else {
 					// processing == true
@@ -45,36 +47,35 @@ public class Controller extends ControllerAgent{
 
 					if (ev.getDescription().equals("randomize")){
 						RandomizeEvent rev = (RandomizeEvent)ev;
-						if (m != null)
-							m.interrupt();
-						mapQueue.clear();
-						m = new Master(rev.getNumBodies(),mapQueue);
-						m.start();
-						view.setUpdated(mapQueue.take());
+						var.clearPendingMaps();
+						var.setNumBodies(rev.getNumBodies());
+						state.notifyRandomize();
+						view.setUpdated(var.getMap());
 					}
 
 					if (ev.getDescription().equals("started")) {
-						processing = true;
-					}
-					if (ev.getDescription().equals("paused")) {
-						processing = false;
+						state.startProcess();
+					} else if (ev.getDescription().equals("paused")) {
+						state.pauseProcess();
 					} else if (ev.getDescription().equals("stopped")) {
-						processing = false;
+						state.stopProcess();
 						m.interrupt();
-						mapQueue.clear();
+						var.clearPendingMaps();
 
 					} else if (ev.getDescription().equals("singleStep")) {
 						// Effettua una sola computazione
-						view.setUpdated(mapQueue.take());
+						state.step();
+						view.setUpdated(var.getMap());
 
 					} else if (ev.getDescription().equals("deltaTime")) {
-						//this.deltaTime = ((ParameterEvent) ev).getDeltaTime();
-						//this.softFactor = ((ParameterEvent) ev).getSoftFactor();
+						//TODO migliorare questa routine
+						var.setDeltaTime(((ParameterEvent) ev).getDeltaTime());
+						var.setSoftFactor(((ParameterEvent) ev).getSoftFactor());
 						//log("\nDelta " + deltaTime + "\nSoft " + softFactor);
 					}
 				}else{
 					if(System.currentTimeMillis()> nextComputeTime){
-						view.setUpdated(mapQueue.take());
+						view.setUpdated(var.getMap());
 						nextComputeTime = System.currentTimeMillis() + timeStep;
 					}
 				}
