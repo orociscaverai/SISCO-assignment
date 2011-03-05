@@ -1,15 +1,16 @@
 package nbody;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class StateVariables {
 
 	private float deltaTime;
-	private Object dtLock;
+	private ReentrantReadWriteLock dtLock;
 	private float softFactor;
-	private Object sfLock;
+	private ReentrantReadWriteLock sfLock;
 	private int numBodies;
-	private Object nbLock;
+	private ReentrantReadWriteLock nbLock;
 	private ArrayBlockingQueue<BodiesMap> mapQueue;
 
 	
@@ -17,40 +18,58 @@ public class StateVariables {
 		this.deltaTime = Float.parseFloat(System.getProperty("deltaTime", "0.5"));
 		this.softFactor =  Float.parseFloat(System.getProperty("softFactor", "1.0"));
 		this.numBodies = 0;
-		this.dtLock = new Object();
-		this.sfLock = new Object();
-		this.nbLock = new Object();
+		this.dtLock = new ReentrantReadWriteLock();
+		this.sfLock = new ReentrantReadWriteLock();
+		this.nbLock = new ReentrantReadWriteLock();
 		this.mapQueue = new ArrayBlockingQueue<BodiesMap>(50, true);
 	}
 	
 	public void setDeltaTime(float value){
-		synchronized(dtLock){
+		dtLock.writeLock().lock();
+		try{
 			this.deltaTime = value;
+		}finally{
+			dtLock.writeLock().unlock();
 		}
 	}
 	public float getDeltaTime(){
-		synchronized(dtLock){
+		dtLock.readLock().lock();
+		try{
 			return this.deltaTime;
+		}finally{
+			dtLock.readLock().unlock();
 		}
 	}
 	public void setSoftFactor(float value){
-		synchronized(sfLock){
+		sfLock.writeLock().lock();
+		try{
 			this.softFactor = value;
+		}finally{
+			sfLock.writeLock().unlock();
 		}
 	}
 	public float getSoftFactor(){
-		synchronized(sfLock){
+		sfLock.readLock().lock();
+		try{
 			return this.softFactor;
+		}finally{
+			sfLock.readLock().unlock();
 		}
 	}
 	public void setNumBodies(int value){
-		synchronized(nbLock){
+		nbLock.writeLock().lock();
+		try{
 			this.numBodies = value;
+		}finally{
+			nbLock.writeLock().unlock();
 		}
 	}
 	public int getNumBodies(){
-		synchronized(nbLock){
+		nbLock.readLock().lock();
+		try{
 			return this.numBodies;
+		}finally{
+			nbLock.readLock().unlock();
 		}
 	}
 	public BodiesMap getMap() throws InterruptedException{
