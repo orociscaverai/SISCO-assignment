@@ -9,11 +9,10 @@ import gui.NBodyView;
 public class Controller extends ControllerAgent{
 	private StateMonitor state;
 	private StateVariables var;
-	private Master m;
 	private NBodyView view;
 	private long timeStep;
 
-	public Controller(NBodyView view) {
+	public Controller(NBodyView view, StateMonitor state, StateVariables var) {
 		super("Controller");
 		this.view = view;
 		float deltaTime = Float.parseFloat(System
@@ -21,15 +20,13 @@ public class Controller extends ControllerAgent{
 		float softFactor = 1f;
 		view.register(this);
 		view.setParameter(deltaTime, softFactor);
-		state = new StateMonitor();
-		var = new StateVariables();
+		this.state = state;
+		this.var = var;
 		timeStep = 10;
 
 	}
 
 	public void run(){
-		m = new Master(state,var);
-		m.start();
 		long nextComputeTime;
 		nextComputeTime = System.currentTimeMillis();
 		try {
@@ -59,8 +56,9 @@ public class Controller extends ControllerAgent{
 					} else if (ev.getDescription().equals("paused")) {
 						state.pauseProcess();
 					} else if (ev.getDescription().equals("stopped")) {
+						log("Sending stop"+ System.currentTimeMillis());
 						state.stopProcess();
-						m.interrupt();
+						//stopFlag.set();
 						var.clearPendingMaps();
 
 					} else if (ev.getDescription().equals("singleStep")) {

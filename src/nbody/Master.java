@@ -5,6 +5,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import nbody.exception.StoppedException;
+
 public class Master extends Thread {
 	private ExecutorService executor;
 	private InteractionMatrix interactionMatrix;
@@ -89,14 +91,21 @@ public class Master extends Thread {
 				numBodies = var.getNumBodies();
 				interactionMatrix = new InteractionMatrix(numBodies);
 				doRandomize();
+				boolean stopped = true;
 				while (true) {
-					state.waitStart();
+					if(stopped){
+						state.waitStart();
+						stopped = false;
+					}
 					doCompute();
+					if(state.isStopped()){
+						throw new StoppedException();
+					}
 				}
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				log("restarting");
+				log("restartingTime "+System.currentTimeMillis());
 			}
 		}
 	}
