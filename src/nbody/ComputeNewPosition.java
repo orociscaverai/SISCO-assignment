@@ -8,14 +8,16 @@ public class ComputeNewPosition implements Runnable {
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private BodiesMap map;
-
+    private BoundedCounter count;
+    
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
-	    InteractionMatrix interactionMatrix, BodiesMap map) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, BoundedCounter count) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
 	this.deltatime = deltaTime;
 	this.map = map;
 	this.oldPos = oldPos;
+	this.count = count;
     }
 
     @Override
@@ -28,6 +30,7 @@ public class ComputeNewPosition implements Runnable {
 	old.setVelocity(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
+	count.inc();
 
     }
 

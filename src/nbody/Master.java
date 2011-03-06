@@ -3,9 +3,6 @@ package nbody;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import nbody.exceptions.StoppedException;
 
 public class Master extends Thread {
 	private ExecutorService executor;
@@ -22,73 +19,56 @@ public class Master extends Thread {
 		super("Master");
 
 		this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
+		executor = Executors.newFixedThreadPool(poolSize);
 		this.var = var;
 		this.state = state;
 
 	}
 
-	private void doCompute() throws StoppedException,InterruptedException {
+	private void doCompute() throws InterruptedException {
 
-		executor = Executors.newFixedThreadPool(poolSize);
 		deltaTime = var.getDeltaTime();
 		softFactor = var.getSoftFactor();
 
 		// Combinazioni senza ripetizioni di tutti i Bodies
-		// int numTask = (numBodies * (numBodies - 1) * (numBodies - 2)) / 2;
-		for (int i = 0; i < numBodies; i++) {
+		int numTask = (numBodies * (numBodies - 1) ) / 2;
+		BoundedCounter count = new BoundedCounter(numTask);
+		for (int i = 0; i < numBodies-1; i++) {
 			for (int j = i + 1; j < numBodies; j++) {
 				executor.execute(new ComputeMutualAcceleration(i, j,
-						interactionMatrix, map, softFactor));
+						interactionMatrix, map, softFactor, count));
 				// log("submitted task " + i + " " + j);
 			}
 		}
 
 		BodiesMap newMap = new BodiesMap(numBodies);
-		executor.shutdown();
-		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		} catch (InterruptedException e1) {
-			log("Catch Exception 1... shutting down now");
-			executor.shutdownNow();
-			log("shutdown passed");
-			throw new StoppedException();
-		}
-		executor = Executors.newFixedThreadPool(poolSize);
-
+		log("in attesa del max");
+		count.awaitForMax();
+		log("max raggiunto");
+		
+		numTask = numBodies;
+		count = new BoundedCounter(numTask);
 		for (int i = 0; i < numBodies; i++) {
-
-			try {
-				executor.execute(new ComputeNewPosition(i, map.getPosition(i),
-						deltaTime, interactionMatrix, newMap));
-				// log("submitted task " + i + " " + j);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+			executor.execute(new ComputeNewPosition(i, map.getPosition(i),
+					deltaTime, interactionMatrix, newMap, count));
+			// log("submitted task " + i + " " + j);
 		}
-
-		executor.shutdown();
-		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		} catch (InterruptedException e1) {
-			log("Catch Exception ... shutting down now");
-			executor.shutdownNow();
-			log("shutdown passed");
-			throw new StoppedException();
-		}
+		
+		count.awaitForMax();
+		
 		var.putMap(newMap);
 		this.map = newMap;
 	} // doCompute()
 
 
-//TODO unused
-/*	private void doReset() throws InterruptedException{
+	//TODO unused
+	/*	private void doReset() throws InterruptedException{
 		//this.numBodies = 0;
 		//TODO
 		var.clearPendingMaps();
 		doRandomize();
 	}
-*/
+	 */
 	private void doRandomize() throws InterruptedException {
 		this.map = new BodiesMap(numBodies);
 		Bodies.getInstance().makeRandomBodies(numBodies);

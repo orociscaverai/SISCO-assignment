@@ -7,19 +7,22 @@ public class ComputeMutualAcceleration implements Runnable {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private float softFactor;
+    private BoundedCounter count;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor,BoundedCounter count) {
 	this.map = map;
 	this.a = indexA;
 	this.b = indexB;
 	this.softFactor = softFactor;
 	this.interactionMatrix = interactionMatrix;
+	this.count = count;
     }
 
     @Override
     public void run() {
 	bodyBodyInteraction(a, b, softFactor);
+	count.inc();
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {

@@ -3,6 +3,7 @@ package nbody;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Questo monitor serve a gestire lo stato dell'applicazione per garantire la
@@ -21,43 +22,61 @@ public class StateMonitor {
 	private boolean isRunning;
 	private boolean isPaused;
 	private boolean singleStep;
+	private ReentrantReadWriteLock rwl;
 	private Lock lock;
-	private Condition waitRandomize;
+	private Condition waitRandomize,waitStart;
 
 	public StateMonitor() {
 		this.isRunning = false;
 		this.isPaused = false;
 		this.singleStep = false;
 		lock = new ReentrantLock();
+		rwl = new ReentrantReadWriteLock();
 		waitRandomize = lock.newCondition();
+		waitStart = rwl.writeLock().newCondition();
 	}
 
-	public synchronized void startProcess() {
-
-		if (!isRunning || isPaused) {
-			isPaused = false;
-			isRunning = true;
-			notifyAll();
-		} else {
-			log("StateMonitor: è stata richiesto lo Start, ma lo stato dell'applicazione non è Paused o Stopped");
+	public void startProcess() {
+		rwl.writeLock().lock();
+		try{
+			if (!isRunning || isPaused) {
+				isPaused = false;
+				isRunning = true;
+				singleStep = false;
+				waitStart.signalAll();
+			} else {
+				log("StateMonitor: è stata richiesto lo Start, ma lo stato dell'applicazione non è Paused o Stopped");
+			}
+		}finally{
+			rwl.writeLock().unlock();
 		}
 	}
 
-	public synchronized void pauseProcess() {
-		if (isRunning) {
-			isPaused = true;
-			isRunning = false;
-		} else {
-			log("StateMonitor: è stata richiesta la Pause, ma lo stato dell'applicazione non è Runing");
+	public void pauseProcess() {
+		rwl.writeLock().lock();
+		try{
+			if (isRunning) {
+				isPaused = true;
+				isRunning = false;
+			} else {
+				log("StateMonitor: è stata richiesta la Pause, ma lo stato dell'applicazione non è Runing");
+			}
+		}finally{
+			rwl.writeLock().unlock();
 		}
 	}
 
-	public synchronized void step() {
-		if (!isRunning) {
-			singleStep = true;
-			notifyAll();
-		} else {
-			log("StateMonitor: è stato richiesto lo Step, ma lo stato dell'applicazione non è Runing");
+	public void step() {
+		rwl.writeLock().lock();
+		try{
+			if (!isRunning) {
+				singleStep = true;
+				waitStart.signalAll();
+			} else {
+				log("StateMonitor: è stato richiesto lo Step, ma lo stato dell'applicazione non è Runing");
+			}
+		}finally{
+			rwl.writeLock().unlock();
 		}
 
 	}
@@ -67,13 +86,18 @@ public class StateMonitor {
 	 * maniera immediata, ma verrà settato un flag interno che servirà a
 	 * notificare all'intera applicazione di interrompere la computazione
 	 */
-	public synchronized void stopProcess() {
-		if (isRunning || isPaused) {
-			isPaused = false;
-			isRunning = false;
-			singleStep = false;
-		} else {
-			log("StateMonitor: è stato richiesto lo Stop, ma lo stato dell'applicazione non è Runing");
+	public void stopProcess() {
+		rwl.writeLock().lock();
+		try{
+			if (isRunning || isPaused) {
+				isPaused = false;
+				isRunning = false;
+				singleStep = false;
+			} else {
+				log("StateMonitor: è stato richiesto lo Stop, ma lo stato dell'applicazione non è Runing");
+			}
+		}finally{
+			rwl.writeLock().unlock();
 		}
 	}
 
@@ -81,26 +105,51 @@ public class StateMonitor {
 	 * È un metodo bloccante che, nel caso lo stato è Stopped o Paused, blocca
 	 * il Thread chiamante sino a quando non viene richiesto lo Start o lo Step
 	 */
-	public synchronized void waitStart() throws InterruptedException {
-		//log("Attendo? " + ((!isRunning || isPaused) && !singleStep));
-		while ((!isRunning || isPaused) && !singleStep) {
-			wait();
+	public void waitStart() throws InterruptedException {
+		rwl.readLock().lock();
+		try{
+			//log("Attendo? " + ((!isRunning || isPaused) && !singleStep));
+			//TODO mi sembra che in questo caso ci vada l'if... non sono sicuro però
+			if ((isRunning && !isPaused) || singleStep) {
+				return;
+			}
+		}finally{
+			rwl.readLock().unlock();
 		}
-		singleStep = false;
+		rwl.writeLock().lock();
+		try{
+			log("Attendo? " + ((!isRunning || isPaused) && !singleStep));
+			//TODO mi sembra che in questo caso ci vada l'if... non sono sicuro però
+			if ((!isRunning || isPaused) && !singleStep) {
+				waitStart.await();
+			}
+		}finally{
+			rwl.writeLock().unlock();
+		}
 	}
 
-	public synchronized boolean isStopped() {
-		if (!isRunning && !isPaused) {
-			return true;
-		} else {
-			return false;
+	public boolean isStopped() {
+		rwl.readLock().lock();
+		try{
+			if (!isRunning && !isPaused) {
+				return true;
+			} else {
+				return false;
+			}
+		}finally{
+			rwl.readLock().unlock();
 		}
 	}
-	public synchronized boolean isSuspended() {
-		if (!isRunning || isPaused) {
-			return true;
-		} else {
-			return false;
+	public boolean isSuspended() {
+		rwl.readLock().lock();
+		try{
+			if (!isRunning || isPaused) {
+				return true;
+			} else {
+				return false;
+			}
+		}finally{
+			rwl.readLock().unlock();
 		}
 	}
 
