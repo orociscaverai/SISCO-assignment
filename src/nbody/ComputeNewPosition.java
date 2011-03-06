@@ -1,5 +1,7 @@
 package nbody;
 
+import java.util.concurrent.CountDownLatch;
+
 
 public class ComputeNewPosition implements Runnable {
     final private static int dimension = 2;
@@ -8,10 +10,10 @@ public class ComputeNewPosition implements Runnable {
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private BodiesMap map;
-    private BoundedCounter count;
+    private CountDownLatch count;
     
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
-	    InteractionMatrix interactionMatrix, BodiesMap map, BoundedCounter count) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, CountDownLatch count) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
 	this.deltatime = deltaTime;
@@ -30,7 +32,7 @@ public class ComputeNewPosition implements Runnable {
 	old.setVelocity(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
-	count.inc();
+	count.countDown();
 
     }
 

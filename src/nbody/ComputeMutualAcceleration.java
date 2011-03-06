@@ -1,5 +1,7 @@
 package nbody;
 
+import java.util.concurrent.CountDownLatch;
+
 
 public class ComputeMutualAcceleration implements Runnable {
     private int a, b;
@@ -7,10 +9,10 @@ public class ComputeMutualAcceleration implements Runnable {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private float softFactor;
-    private BoundedCounter count;
+    private CountDownLatch count;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor,BoundedCounter count) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor,CountDownLatch count) {
 	this.map = map;
 	this.a = indexA;
 	this.b = indexB;
@@ -22,7 +24,7 @@ public class ComputeMutualAcceleration implements Runnable {
     @Override
     public void run() {
 	bodyBodyInteraction(a, b, softFactor);
-	count.inc();
+	count.countDown();
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {

@@ -1,6 +1,7 @@
 package nbody;
 
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +33,8 @@ public class Master extends Thread {
 
 		// Combinazioni senza ripetizioni di tutti i Bodies
 		int numTask = (numBodies * (numBodies - 1) ) / 2;
-		BoundedCounter count = new BoundedCounter(numTask);
+		CountDownLatch count = new CountDownLatch(numTask);
+		//BoundedCounter count = new BoundedCounter(numTask);
 		for (int i = 0; i < numBodies-1; i++) {
 			for (int j = i + 1; j < numBodies; j++) {
 				executor.execute(new ComputeMutualAcceleration(i, j,
@@ -42,19 +44,17 @@ public class Master extends Thread {
 		}
 
 		BodiesMap newMap = new BodiesMap(numBodies);
-		log("in attesa del max");
-		count.awaitForMax();
-		log("max raggiunto");
+		count.await();
 		
 		numTask = numBodies;
-		count = new BoundedCounter(numTask);
+		count = new CountDownLatch(numTask);
 		for (int i = 0; i < numBodies; i++) {
 			executor.execute(new ComputeNewPosition(i, map.getPosition(i),
 					deltaTime, interactionMatrix, newMap, count));
 			// log("submitted task " + i + " " + j);
 		}
 		
-		count.awaitForMax();
+		count.await();
 		
 		var.putMap(newMap);
 		this.map = newMap;

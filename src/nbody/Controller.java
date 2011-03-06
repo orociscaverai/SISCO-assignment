@@ -31,7 +31,7 @@ public class Controller extends ControllerAgent{
 		m = new Master(state,var);
 		m.start();
 		long nextComputeTime;
-		nextComputeTime = System.currentTimeMillis() + timeStep;
+		nextComputeTime = System.currentTimeMillis();
 		try {
 			while (true) {
 				Event ev;
@@ -55,6 +55,7 @@ public class Controller extends ControllerAgent{
 
 					if (ev.getDescription().equals("started")) {
 						state.startProcess();
+						nextComputeTime = System.currentTimeMillis();
 					} else if (ev.getDescription().equals("paused")) {
 						state.pauseProcess();
 					} else if (ev.getDescription().equals("stopped")) {
@@ -76,7 +77,7 @@ public class Controller extends ControllerAgent{
 				}else{
 					if(System.currentTimeMillis()> nextComputeTime){
 						view.setUpdated(var.getMap());
-						nextComputeTime = System.currentTimeMillis() + timeStep;
+						nextComputeTime += timeStep;
 					}
 				}
 
