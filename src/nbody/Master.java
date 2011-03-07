@@ -5,8 +5,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import nbody.exception.StoppedException;
-
 public class Master extends Thread {
 	private ExecutorService executor;
 	private InteractionMatrix interactionMatrix;
@@ -99,7 +97,7 @@ public class Master extends Thread {
 					}
 					doCompute();
 					if(state.isStopped()){
-						throw new StoppedException();
+						break;
 					}
 				}
 
