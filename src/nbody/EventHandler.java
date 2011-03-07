@@ -32,7 +32,6 @@ public class EventHandler extends ControllerAgent{
 				log("received ev: " + ev.getDescription());
 				if (ev.getDescription().equals("randomize")){
 					RandomizeEvent rev = (RandomizeEvent)ev;
-					var.clearPendingMaps();
 					var.setNumBodies(rev.getNumBodies());
 					state.notifyRandomize();
 				}
@@ -44,12 +43,10 @@ public class EventHandler extends ControllerAgent{
 				} else if (ev.getDescription().equals("stopped")) {
 					log("Sending stop"+ System.currentTimeMillis());
 					state.stopProcess();
-					var.clearPendingMaps();
 
 				} else if (ev.getDescription().equals("singleStep")) {
 					// Effettua una sola computazione
 					state.step();
-					view.setUpdated(var.getMap());
 
 				} else if (ev.getDescription().equals("deltaTime")) {
 					//TODO migliorare questa routine

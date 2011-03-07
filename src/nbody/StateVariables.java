@@ -1,6 +1,5 @@
 package nbody;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class StateVariables {
@@ -11,7 +10,6 @@ public class StateVariables {
 	private ReentrantReadWriteLock sfLock;
 	private int numBodies;
 	private ReentrantReadWriteLock nbLock;
-	private ArrayBlockingQueue<BodiesMap> mapQueue;
 
 	
 	public StateVariables(){
@@ -21,7 +19,6 @@ public class StateVariables {
 		this.dtLock = new ReentrantReadWriteLock();
 		this.sfLock = new ReentrantReadWriteLock();
 		this.nbLock = new ReentrantReadWriteLock();
-		this.mapQueue = new ArrayBlockingQueue<BodiesMap>(50, true);
 	}
 	
 	public void setDeltaTime(float value){
@@ -71,14 +68,5 @@ public class StateVariables {
 		}finally{
 			nbLock.readLock().unlock();
 		}
-	}
-	public BodiesMap getMap() throws InterruptedException{
-		return mapQueue.take();
-	}
-	public void putMap(BodiesMap map) throws InterruptedException{
-		mapQueue.put(map);
-	}
-	public void clearPendingMaps() throws InterruptedException{
-		mapQueue.clear();
 	}
 }

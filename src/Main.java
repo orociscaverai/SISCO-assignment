@@ -1,5 +1,8 @@
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 import gui.NBodyView;
+import nbody.BodiesMap;
 import nbody.EventHandler;
 import nbody.FrameRateUpdater;
 import nbody.Master;
@@ -15,10 +18,11 @@ public class Main {
 
 	StateMonitor state = new StateMonitor();
 	EventHandler c = new EventHandler(view,state,var);
+	ArrayBlockingQueue<BodiesMap> mapQueue = new ArrayBlockingQueue<BodiesMap>(50, true);
 	c.start();
-	Master m = new Master(state,var);
+	Master m = new Master(state,var,mapQueue);
 	m.start();
-	FrameRateUpdater u = new FrameRateUpdater(var);
+	FrameRateUpdater u = new FrameRateUpdater(state,mapQueue);
 	u.addListener(view);
 	u.start();	
     }

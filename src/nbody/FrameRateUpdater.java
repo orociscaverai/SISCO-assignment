@@ -3,16 +3,19 @@ package nbody;
 import gui.NBodySetListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 
 public class FrameRateUpdater extends Thread{
 
 	private ArrayList<NBodySetListener> listeners;
-	private StateVariables var;
+	private StateMonitor state;
 	private long timestep = 30;
+	private ArrayBlockingQueue<BodiesMap> mapQueue;
 
-	public FrameRateUpdater(StateVariables var) {
-		this.var = var;
+	public FrameRateUpdater(StateMonitor state, ArrayBlockingQueue<BodiesMap> mapQueue) {
+		this.state = state;
+		this.mapQueue = mapQueue;
 		listeners = new ArrayList<NBodySetListener>();
 	}
 
@@ -23,10 +26,14 @@ public class FrameRateUpdater extends Thread{
 		while(true){
 			try{
 				long ready = nextComputeTime - System.currentTimeMillis();
-				
-				if(ready>0){
-					log("sleep for "+ready+" ms");
-					Thread.sleep(ready);
+				if(!state.isSuspended()){
+					if(ready>0){
+						log("sleep for "+ready+" ms");
+						Thread.sleep(ready);
+					}
+				}else{
+					state.waitStart();
+					nextComputeTime = System.currentTimeMillis();
 				}
 				notifyListeners();
 				nextComputeTime += timestep;
@@ -44,7 +51,7 @@ public class FrameRateUpdater extends Thread{
 
 	private void notifyListeners() throws InterruptedException{
 		for (NBodySetListener l: listeners){
-			l.setUpdated(var.getMap());
+			l.setUpdated(mapQueue.take());
 		}
 	}	
 	private void log(String log){

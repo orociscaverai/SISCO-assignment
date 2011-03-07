@@ -1,6 +1,7 @@
 package nbody;
 
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,15 +15,17 @@ public class Master extends Thread {
 	private float softFactor;
 	private StateMonitor state;
 	private StateVariables var;
+	private ArrayBlockingQueue<BodiesMap> mapQueue;
 	private int numBodies;
 
-	public Master(StateMonitor state, StateVariables var) {
+	public Master(StateMonitor state, StateVariables var, ArrayBlockingQueue<BodiesMap> mapQueue) {
 		super("Master");
 
 		this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
 		executor = Executors.newFixedThreadPool(poolSize);
 		this.var = var;
 		this.state = state;
+		this.mapQueue = mapQueue;
 
 	}
 
@@ -56,7 +59,7 @@ public class Master extends Thread {
 		
 		count.await();
 		
-		var.putMap(newMap);
+		mapQueue.put(newMap);
 		this.map = newMap;
 	} // doCompute()
 
@@ -75,7 +78,7 @@ public class Master extends Thread {
 
 		map.generateRandomMap();
 		System.out.println("messo");
-		var.putMap(map);
+		mapQueue.put(map);
 
 		// log("\n" + map.toString());
 		// log("\n" + Bodies.getInstance().toString());
@@ -97,6 +100,8 @@ public class Master extends Thread {
 					}
 					doCompute();
 					if(state.isStopped()){
+						log("Stopped "+System.currentTimeMillis());
+						mapQueue.clear();
 						break;
 					}
 				}

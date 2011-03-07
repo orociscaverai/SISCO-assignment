@@ -110,7 +110,7 @@ public class StateMonitor {
 		try{
 			//log("Attendo? " + ((!isRunning || isPaused) && !singleStep));
 			//TODO mi sembra che in questo caso ci vada l'if... non sono sicuro per˜
-			if ((isRunning && !isPaused) || singleStep) {
+			if ((isRunning && !isPaused)/* || singleStep*/) {
 				return;
 			}
 		}finally{
@@ -118,9 +118,9 @@ public class StateMonitor {
 		}
 		rwl.writeLock().lock();
 		try{
-			log("Attendo? " + ((!isRunning || isPaused) && !singleStep));
+			log("Attendo? " + ((!isRunning || isPaused)/* && !singleStep*/));
 			//TODO mi sembra che in questo caso ci vada l'if... non sono sicuro per˜
-			if ((!isRunning || isPaused) && !singleStep) {
+			if ((!isRunning || isPaused)/* && !singleStep*/) {
 				waitStart.await();
 			}
 		}finally{
