@@ -33,7 +33,8 @@ public class EventHandler extends ControllerAgent{
 				if (ev.getDescription().equals("randomize")){
 					RandomizeEvent rev = (RandomizeEvent)ev;
 					var.setNumBodies(rev.getNumBodies());
-					state.notifyRandomize();
+					//TODO
+					//state.notifyRandomize();
 				}
 
 				if (ev.getDescription().equals("started")) {
@@ -46,7 +47,7 @@ public class EventHandler extends ControllerAgent{
 
 				} else if (ev.getDescription().equals("singleStep")) {
 					// Effettua una sola computazione
-					state.step();
+					state.stepProcess();
 
 				} else if (ev.getDescription().equals("deltaTime")) {
 					//TODO migliorare questa routine

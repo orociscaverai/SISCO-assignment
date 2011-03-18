@@ -49,6 +49,9 @@ public class Master extends Thread {
 		BodiesMap newMap = new BodiesMap(numBodies);
 		count.await();
 		
+		if(state.isStopped())
+			return;
+		
 		numTask = numBodies;
 		count = new CountDownLatch(numTask);
 		for (int i = 0; i < numBodies; i++) {
@@ -58,6 +61,9 @@ public class Master extends Thread {
 		}
 		
 		count.await();
+		
+		if(state.isStopped())
+			return;
 		
 		mapQueue.put(newMap);
 		this.map = newMap;
