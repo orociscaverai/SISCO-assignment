@@ -1,125 +1,179 @@
 package nbody;
 
-
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Master extends Thread {
-	private ExecutorService executor;
-	private InteractionMatrix interactionMatrix;
-	private BodiesMap map;
-	private int poolSize;
-	private float deltaTime;
-	private float softFactor;
-	private StateMonitor state;
-	private StateVariables var;
-	private ArrayBlockingQueue<BodiesMap> mapQueue;
-	private int numBodies;
+    private InteractionMatrix interactionMatrix;
+    private BodiesMap map;
+    private int poolSize;
+    private float deltaTime;
+    private float softFactor;
+    private int numBodies;
+    private StateMonitor state;
+    private StateVariables var;
+    private ArrayBlockingQueue<BodiesMap> mapQueue;
 
-	public Master(StateMonitor state, StateVariables var, ArrayBlockingQueue<BodiesMap> mapQueue) {
-		super("Master");
+    private ExecutorService ex;
+    private ExecutorCompletionService<Boolean> compServ;
 
-		this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
-		executor = Executors.newFixedThreadPool(poolSize);
-		this.var = var;
-		this.state = state;
-		this.mapQueue = mapQueue;
+    public Master(StateMonitor state, StateVariables var,
+	    ArrayBlockingQueue<BodiesMap> mapQueue) {
+	super("Master");
 
+	this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
+
+	this.var = var;
+	this.state = state;
+	this.mapQueue = mapQueue;
+
+    }
+
+    private void initPool() {
+	ex = Executors.newFixedThreadPool(poolSize);
+	this.compServ = new ExecutorCompletionService<Boolean>(ex);
+    }
+
+    private void shutdownAndReset() throws InterruptedException {
+	ex.shutdownNow();
+	ex.awaitTermination(2, TimeUnit.MINUTES);
+	int debug = 0;
+	while (compServ.poll() != null) {
+	    debug++;
+	}
+	log("Numero di risultati già terminati: " + debug);
+
+	initPool();
+
+	doReset();
+    }
+
+    private void doCompute() throws InterruptedException {
+
+	int numBodies = var.getNumBodies();
+	float deltaTime = var.getDeltaTime();
+	float softFactor = var.getSoftFactor();
+	interactionMatrix = new InteractionMatrix(numBodies);
+
+	// Inizio la fase 1
+	try {
+	    for (int i = 0; i < numBodies - 1; i++) {
+		for (int j = i + 1; j < numBodies; j++) {
+		    compServ.submit(new ComputeMutualAcceleration(i, j,
+			    interactionMatrix, map, softFactor));
+		    // log("submitted task " + i + " " + j);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
 
-	private void doCompute() throws InterruptedException {
+	// Combinazioni senza ripetizioni di tutti i Bodies
+	int numTask = (numBodies * (numBodies - 1)) / 2;
 
-		deltaTime = var.getDeltaTime();
-		softFactor = var.getSoftFactor();
-
-		// Combinazioni senza ripetizioni di tutti i Bodies
-		int numTask = (numBodies * (numBodies - 1) ) / 2;
-		CountDownLatch count = new CountDownLatch(numTask);
-		//BoundedCounter count = new BoundedCounter(numTask);
-		for (int i = 0; i < numBodies-1; i++) {
-			for (int j = i + 1; j < numBodies; j++) {
-				executor.execute(new ComputeMutualAcceleration(i, j,
-						interactionMatrix, map, softFactor, count));
-				// log("submitted task " + i + " " + j);
-			}
+	// La creo qui per guadagnare tempo
+	BodiesMap newMap = new BodiesMap(numBodies);
+	try {
+	    for (int n = 0; n < numTask; n++) {
+		compServ.take();
+		if (state.isStopped()) {
+		    log("Stop alla Fase 1");
+		    shutdownAndReset();
+		    return;
 		}
+	    }
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	    // Mi assicuro di tornare ad uno stato consistente
+	    shutdownAndReset();
+	    return;
+	}
 
-		BodiesMap newMap = new BodiesMap(numBodies);
-		count.await();
-		
-		if(state.isStopped())
-			return;
-		
-		numTask = numBodies;
-		count = new CountDownLatch(numTask);
-		for (int i = 0; i < numBodies; i++) {
-			executor.execute(new ComputeNewPosition(i, map.getPosition(i),
-					deltaTime, interactionMatrix, newMap, count));
-			// log("submitted task " + i + " " + j);
+	// Inizio la fase 2
+	for (int i = 0; i < numBodies; i++) {
+
+	    compServ.submit(new ComputeNewPosition(i, map.getPosition(i),
+		    deltaTime, interactionMatrix, newMap));
+	    // log("submitted task " + i + " " + j);
+	}
+
+	try {
+	    for (int n = 0; n < numBodies; n++) {
+
+		compServ.take();
+		if (state.isStopped()) {
+		    log("Stop alla Fase 2");
+		    shutdownAndReset();
+		    return;
 		}
-		
-		count.await();
-		
-		if(state.isStopped())
-			return;
-		
-		mapQueue.put(newMap);
-		this.map = newMap;
-	} // doCompute()
+	    }
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	    // Mi assicuro di tornare ad uno stato consistente
+	    shutdownAndReset();
+	    return;
+	}
 
+	// Posso usarla anche se l'ho inviata alla vista, dato che d'ora
+	// in poi verrà acceduta solo in lettura
+	map = newMap;
 
-	//TODO unused
-	/*	private void doReset() throws InterruptedException{
-		//this.numBodies = 0;
-		//TODO
-		var.clearPendingMaps();
+	mapQueue.put(newMap);
+
+    }// doCompute()
+
+    private void doReset() throws InterruptedException {
+	var.setNumBodies(0);
+	map = new BodiesMap(0);
+	interactionMatrix = new InteractionMatrix(0);
+    }
+
+    private void doRandomize() throws InterruptedException {
+	numBodies = var.getNumBodies();
+	this.map = new BodiesMap(numBodies);
+	interactionMatrix = new InteractionMatrix(numBodies);
+	Bodies.getInstance().makeRandomBodies(numBodies);
+
+	map.generateRandomMap();
+	System.out.println("messo");
+	mapQueue.put(map);
+
+	// log("\n" + map.toString());
+	// log("\n" + Bodies.getInstance().toString());
+
+    }// doRandomize()
+
+    public void run() {
+	while (true) {
+	    try {
+		// state.waitRandomize();
 		doRandomize();
-	}
-	 */
-	private void doRandomize() throws InterruptedException {
-		this.map = new BodiesMap(numBodies);
-		Bodies.getInstance().makeRandomBodies(numBodies);
-
-		map.generateRandomMap();
-		System.out.println("messo");
-		mapQueue.put(map);
-
-		// log("\n" + map.toString());
-		// log("\n" + Bodies.getInstance().toString());
-
-	}// doRandomize()
-
-	public void run() {
-		while(true){
-			try {
-				state.waitRandomize();
-				numBodies = var.getNumBodies();
-				interactionMatrix = new InteractionMatrix(numBodies);
-				doRandomize();
-				boolean stopped = true;
-				while (true) {
-					if(stopped){
-						state.waitStart();
-						stopped = false;
-					}
-					doCompute();
-					if(state.isStopped()){
-						log("Stopped "+System.currentTimeMillis());
-						mapQueue.clear();
-						break;
-					}
-				}
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				log("restartingTime "+System.currentTimeMillis());
-			}
+		boolean stopped = true;
+		while (true) {
+		    if (stopped) {
+			state.waitStart();
+			stopped = false;
+		    }
+		    doCompute();
+		    if (state.isStopped()) {
+			log("Stopped " + System.currentTimeMillis());
+			mapQueue.clear();
+			break;
+		    }
 		}
-	}
-	private void log(String error) {
-		System.out.println("[MASTER] : "+error);
 
+	    } catch (Exception ex) {
+		ex.printStackTrace();
+		log("restartingTime " + System.currentTimeMillis());
+	    }
 	}
+    }
+
+    private void log(String error) {
+	System.out.println("[MASTER] : " + error);
+
+    }
 }
