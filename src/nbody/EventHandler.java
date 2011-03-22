@@ -35,6 +35,7 @@ public class EventHandler extends ControllerAgent{
 					var.setNumBodies(rev.getNumBodies());
 					//TODO
 					//state.notifyRandomize();
+					state.randomizeProcess();
 				}
 
 				if (ev.getDescription().equals("started")) {
