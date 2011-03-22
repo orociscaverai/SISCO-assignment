@@ -24,11 +24,11 @@ public class StateMonitor {
     static final int STOP = 2;
     static final int STOPPED = 3;
 
-    private boolean singleStep,randomize;
+    private boolean singleStep;
 
     private ReentrantReadWriteLock lock;
     private Lock r,w;
-    private Condition isStarted,isStopped,actionPerformed;
+    private Condition isStarted,isStopped;
 
     public StateMonitor() {
 	lock = new ReentrantReadWriteLock();
@@ -36,7 +36,6 @@ public class StateMonitor {
 	w = lock.writeLock();
 	isStarted = w.newCondition();
 	isStopped = w.newCondition();
-	actionPerformed = w.newCondition();
 
 	this.runState = STOP;
 	this.singleStep = false;
@@ -48,23 +47,12 @@ public class StateMonitor {
 	    if (runState > START) {
 		runState = START;
 		isStarted.signalAll();
-		actionPerformed.signalAll();
 	    } else {
 		log("StateMonitor: è stata richiesto lo START, ma lo stato dell'applicazione non è Pause o Stop");
 	    }
 	} finally {
 	    w.unlock();
 	}
-    }
-    public void randomizeProcess(){
-    	w.lock();
-    	try{
-    		randomize = true;
-    		runState = PAUSE;	
-    		actionPerformed.signalAll();
-    	}finally{
-    		w.unlock();
-    	}
     }
 
 
@@ -74,7 +62,6 @@ public class StateMonitor {
 	    if (runState == PAUSE) {
 		singleStep = true;
 		isStarted.signalAll();
-		actionPerformed.signalAll();
 	    } else {
 		log("StateMonitor: è stato richiesto lo Step, ma lo stato dell'applicazione non è PAUSE");
 	    }
@@ -116,33 +103,6 @@ public class StateMonitor {
 	}
     }
 
-
-    public Action waitAction() throws InterruptedException{
-    	r.lock();
-    	try{
-    		if (runState == START)
-    			return Action.START;
-    	}finally{
-    		r.unlock();
-    	}
-    	w.lock();
-    	try{
-    		while(runState != START && !singleStep && !randomize){
-    			actionPerformed.await();
-    		}
-    		if(singleStep){
-    			singleStep = false;
-    			return Action.STEP;
-    		}
-    		if (randomize){
-    			randomize = false;
-    			return Action.RANDOMIZE;
-    		}
-    		return Action.START;
-    	}finally{
-    		w.unlock();
-    	}
-    }
     /**
      * È un metodo bloccante che, nel caso lo stato è Stopped o Paused, blocca
      * il Thread chiamante sino a quando non viene richiesto lo Start o lo Step
@@ -151,7 +111,7 @@ public class StateMonitor {
     	
     r.lock();
     try{
-    	if (runState == START){
+    	if (runState == START || singleStep){
     		return;
     	}
     }finally{
@@ -198,18 +158,6 @@ public class StateMonitor {
 	    r.unlock();
 	}
     }
-	public boolean isSuspended() {
-	r.lock();
-	try{
-		if (runState == STOP && !singleStep) {
-			return true;
-		} else {
-			return false;
-		}
-	}finally{
-		r.unlock();
-	}
-}
 
     private void log(String message) {
 	System.out.println(message);

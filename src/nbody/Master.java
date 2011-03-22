@@ -79,8 +79,6 @@ public class Master extends Thread {
 	}
 	 */
 	private void doRandomize() throws InterruptedException {
-		numBodies = var.getNumBodies();
-		interactionMatrix = new InteractionMatrix(numBodies);
 		this.map = new BodiesMap(numBodies);
 		Bodies.getInstance().makeRandomBodies(numBodies);
 
@@ -96,21 +94,17 @@ public class Master extends Thread {
 	public void run() {
 		while(true){
 			try {
-				Action act;
+				state.waitRandomize();
+				numBodies = var.getNumBodies();
+				interactionMatrix = new InteractionMatrix(numBodies);
+				doRandomize();
+				boolean stopped = true;
 				while (true) {
-						act = state.waitAction();
-						switch (act){
-						case START:
-						case STEP:
-							doCompute();
-							break;
-						case RANDOMIZE:
-							doRandomize();
-							break;
-						default:
-							log("Errore azione non riconosciuta = "+act);
-							break;	
-						}
+					if(stopped){
+						state.waitStart();
+						stopped = false;
+					}
+					doCompute();
 					if(state.isStopped()){
 						log("Stopped "+System.currentTimeMillis());
 						mapQueue.clear();

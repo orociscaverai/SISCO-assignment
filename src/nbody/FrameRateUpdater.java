@@ -25,7 +25,6 @@ public class FrameRateUpdater extends Thread{
 		nextComputeTime = System.currentTimeMillis();
 		while(true){
 			try{
-				log("ciclo");
 				long ready = nextComputeTime - System.currentTimeMillis();
 				if(!state.isSuspended()){
 					if(ready>0){
@@ -33,9 +32,7 @@ public class FrameRateUpdater extends Thread{
 						Thread.sleep(ready);
 					}
 				}else{
-					log("dormo");
-					state.waitAction();
-					log("sveglio");
+					state.waitStart();
 					nextComputeTime = System.currentTimeMillis();
 				}
 				notifyListeners();
