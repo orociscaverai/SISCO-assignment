@@ -1,30 +1,28 @@
 package nbody;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
 
 
-public class ComputeMutualAcceleration implements Runnable {
+public class ComputeMutualAcceleration implements Callable<Boolean> {
     private int a, b;
     private final static int dimension = 2;
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private float softFactor;
-    private CountDownLatch count;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor,CountDownLatch count) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor) {
 	this.map = map;
 	this.a = indexA;
 	this.b = indexB;
 	this.softFactor = softFactor;
 	this.interactionMatrix = interactionMatrix;
-	this.count = count;
     }
 
     @Override
-    public void run() {
+    public Boolean call() {
 	bodyBodyInteraction(a, b, softFactor);
-	count.countDown();
+	return null;
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {

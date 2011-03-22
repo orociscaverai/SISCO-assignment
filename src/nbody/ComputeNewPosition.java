@@ -1,29 +1,25 @@
 package nbody;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
 
-
-public class ComputeNewPosition implements Runnable {
+public class ComputeNewPosition implements Callable<Boolean> {
     final private static int dimension = 2;
     private int bodyIndex;
     private float deltatime;
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private BodiesMap map;
-    private CountDownLatch count;
-    
+
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
-	    InteractionMatrix interactionMatrix, BodiesMap map, CountDownLatch count) {
+	    InteractionMatrix interactionMatrix, BodiesMap map) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
 	this.deltatime = deltaTime;
 	this.map = map;
 	this.oldPos = oldPos;
-	this.count = count;
     }
 
-    @Override
-    public void run() {
+    public Boolean call() {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
 
 	Body old = Bodies.getInstance().getPlanet(bodyIndex);
@@ -32,7 +28,8 @@ public class ComputeNewPosition implements Runnable {
 	old.setVelocity(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
-	count.countDown();
+
+	return null;
 
     }
 
