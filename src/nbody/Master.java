@@ -147,27 +147,27 @@ public class Master extends Thread {
     }// doRandomize()
 
     public void run() {
+    	initPool();
 	while (true) {
 	    try {
-		// state.waitRandomize();
-		doRandomize();
-		boolean stopped = true;
 		while (true) {
-		    if (stopped) {
-			state.waitStart();
-			stopped = false;
+			state.waitAction();
+		    if(!state.isStopped()){
+		    	doCompute();
+		    	log("do Compute");
 		    }
-		    doCompute();
+		    else
+		    	doRandomize();
 		    if (state.isStopped()) {
 			log("Stopped " + System.currentTimeMillis());
 			mapQueue.clear();
-			break;
 		    }
 		}
 
 	    } catch (Exception ex) {
 		ex.printStackTrace();
 		log("restartingTime " + System.currentTimeMillis());
+		break;
 	    }
 	}
     }

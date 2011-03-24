@@ -34,7 +34,7 @@ public class EventHandler extends ControllerAgent{
 					RandomizeEvent rev = (RandomizeEvent)ev;
 					var.setNumBodies(rev.getNumBodies());
 					//TODO
-					//state.notifyRandomize();
+					state.notifyRandomize();
 				}
 
 				if (ev.getDescription().equals("started")) {
