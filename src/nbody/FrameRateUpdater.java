@@ -31,13 +31,13 @@ public class FrameRateUpdater extends Thread {
 			Thread.sleep(ready);
 		    }
 		} else {
-			log("Attendo Update");
+		    log("Attendo Update");
 		    state.WaitUpdate();
 		    log("sblocco Update");
 		    if (!state.isStopped())
-		    	nextComputeTime = System.currentTimeMillis();
+			nextComputeTime = System.currentTimeMillis();
 		    else
-		    	mapQueue.clear();
+			mapQueue.clear();
 		}
 		notifyListeners();
 		nextComputeTime += timestep;

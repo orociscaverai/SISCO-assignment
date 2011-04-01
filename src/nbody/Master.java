@@ -10,8 +10,6 @@ public class Master extends Thread {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private int poolSize;
-    private float deltaTime;
-    private float softFactor;
     private int numBodies;
     private StateMonitor state;
     private StateVariables var;
@@ -56,7 +54,6 @@ public class Master extends Thread {
 	int numBodies = var.getNumBodies();
 	float deltaTime = var.getDeltaTime();
 	float softFactor = var.getSoftFactor();
-	interactionMatrix = new InteractionMatrix(numBodies);
 
 	// Inizio la fase 1
 	try {
@@ -147,17 +144,16 @@ public class Master extends Thread {
     }// doRandomize()
 
     public void run() {
-    	initPool();
+	initPool();
 	while (true) {
 	    try {
 		while (true) {
-			state.waitAction();
-		    if(!state.isStopped()){
-		    	doCompute();
-		    	log("do Compute");
-		    }
-		    else
-		    	doRandomize();
+		    state.waitAction();
+		    if (!state.isStopped()) {
+			doCompute();
+			log("do Compute");
+		    } else
+			doRandomize();
 		    if (state.isStopped()) {
 			log("Stopped " + System.currentTimeMillis());
 			mapQueue.clear();
