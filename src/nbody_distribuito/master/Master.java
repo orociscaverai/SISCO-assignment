@@ -1,7 +1,6 @@
 package nbody_distribuito.master;
 
 import pcd.actors.Actor;
-import nbody_distribuito.MyStrategy;
 
 public class Master extends Actor {
 

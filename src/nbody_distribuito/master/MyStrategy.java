@@ -1,7 +1,5 @@
-package nbody_distribuito;
+package nbody_distribuito.master;
 
-import nbody_distribuito.master.Tree;
-import nbody_distribuito.master.PartitionStrategy;
 
 /**
  * @author Boccacci Andrea, Cicora Saverio
