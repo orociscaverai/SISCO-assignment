@@ -6,14 +6,13 @@ public class Test
 {
 	public static void main(String[] args)
 	{
-		// è é à çò
 		MessageDispatcher.getInstance().start();
 		
 		ClientActor client1 = new ClientActor("Client1", "Server1", null);
 		ClientActor client2 = new ClientActor("Client2", "Server1", null);
 		
-		ServerActor server1 = new ServerActor("Server1");
-		server1.start();
+//		ServerActor server1 = new ServerActor("Server1");
+//		server1.start();
 		
 		try
 		{
