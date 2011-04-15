@@ -26,12 +26,11 @@ public class StateMonitor {
 
     private boolean singleStep;
     private boolean randomize;
-    private boolean updateSignaled,stepSignaled;
-    
+    private boolean updateSignaled, stepSignaled;
+
     private ReentrantReadWriteLock lock;
     private Lock r, w;
-    private Condition isStarted, isStopped, canUpdate,canCompute;
-	
+    private Condition isStarted, isStopped, canUpdate, canCompute;
 
     public StateMonitor() {
 	lock = new ReentrantReadWriteLock();
@@ -81,16 +80,17 @@ public class StateMonitor {
 	}
 
     }
-    public void notifyRandomize(){
-    	w.lock();
-    	try{
-    		randomize = true;
-    		updateSignaled = true;
-    		canCompute.signal();
-    		canUpdate.signal();
-    	}finally{
-    		w.unlock();
-    	}
+
+    public void notifyRandomize() {
+	w.lock();
+	try {
+	    randomize = true;
+	    updateSignaled = true;
+	    canCompute.signal();
+	    canUpdate.signal();
+	} finally {
+	    w.unlock();
+	}
     }
 
     public void pauseProcess() {
@@ -170,48 +170,51 @@ public class StateMonitor {
 	    w.unlock();
 	}
     }
-    public void WaitUpdate() throws InterruptedException{
-    	r.lock();
-    	try{
-    		if(runState == START)
-    			return;
-    	}finally{
-    		r.unlock();
-    	}
-    	w.lock();
-    	try{
-    		while(runState != START && !updateSignaled){
-    			canUpdate.await();
-    		}
-    		updateSignaled = false;
-    	}finally{
-    		w.unlock();
-    	}
+
+    public void WaitUpdate() throws InterruptedException {
+	r.lock();
+	try {
+	    if (runState == START)
+		return;
+	} finally {
+	    r.unlock();
+	}
+	w.lock();
+	try {
+	    while (runState != START && !updateSignaled) {
+		canUpdate.await();
+	    }
+	    updateSignaled = false;
+	} finally {
+	    w.unlock();
+	}
     }
-    public void waitAction() throws InterruptedException{
-    	r.lock();
-    	try{
-    		while(runState<STOP)
-    			return;
-    	}finally{
-    		r.unlock();
-    	}
-    	w.lock();
-    	try{
-    		while(runState >= STOP && !randomize)
-    			canCompute.await();
-    		randomize = false;
-    	}finally{
-    		w.unlock();
-    	}
+
+    public void waitAction() throws InterruptedException {
+	r.lock();
+	try {
+	    while (runState < STOP)
+		return;
+	} finally {
+	    r.unlock();
+	}
+	w.lock();
+	try {
+	    while (runState >= STOP && !randomize)
+		canCompute.await();
+	    randomize = false;
+	} finally {
+	    w.unlock();
+	}
     }
-    public boolean isSuspended(){
-    	r.lock();
-    	try{
-    		return runState>START;
-    	}finally{
-    		r.unlock();
-    	}
+
+    public boolean isSuspended() {
+	r.lock();
+	try {
+	    return runState > START;
+	} finally {
+	    r.unlock();
+	}
     }
 
     public boolean isStopped() {
