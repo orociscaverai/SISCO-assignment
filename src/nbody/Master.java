@@ -10,8 +10,6 @@ public class Master extends Thread {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private int poolSize;
-    private float deltaTime;
-    private float softFactor;
     private int numBodies;
     private StateMonitor state;
     private StateVariables var;

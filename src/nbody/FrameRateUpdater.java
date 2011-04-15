@@ -34,10 +34,9 @@ public class FrameRateUpdater extends Thread {
 			log("Attendo Update");
 		    state.WaitUpdate();
 		    log("sblocco Update");
-		    if (!state.isStopped())
-		    	nextComputeTime = System.currentTimeMillis();
-		    else
+		    if (state.isStopped())
 		    	mapQueue.clear();
+	    	nextComputeTime = System.currentTimeMillis();
 		}
 		notifyListeners();
 		nextComputeTime += timestep;
