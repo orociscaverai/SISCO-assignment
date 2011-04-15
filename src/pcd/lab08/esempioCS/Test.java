@@ -6,6 +6,7 @@ public class Test
 {
 	public static void main(String[] args)
 	{
+		// è é à çò
 		MessageDispatcher.getInstance().start();
 		
 		ClientActor client1 = new ClientActor("Client1", "Server1", null);
