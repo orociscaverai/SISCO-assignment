@@ -1,0 +1,1 @@
+﻿Server                                                     Client<-  tipo: Associate, arg: [Port]-> tipo ACK_Associate, arg: eventualmente [Port]-> tipo Refuse_Associate, arg: []<- tipo: Dissociate, arg[]-> tipo: Ack_Dissociate, arg[]-> tipo DoJob , arg[Planet_Map,Variables(softFact,ecc..)]<- tipo ResultCompute, arg[Planet_map, CentroDiMassa]
