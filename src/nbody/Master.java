@@ -50,7 +50,7 @@ public class Master extends Thread {
     }
 
     private void doCompute() throws InterruptedException {
-
+	// TODO perchè il numero di corpi non viene preso dalla BodiesMap?
 	int numBodies = var.getNumBodies();
 	float deltaTime = var.getDeltaTime();
 	float softFactor = var.getSoftFactor();

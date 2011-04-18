@@ -3,6 +3,7 @@ package nbody_distribuito.worker;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import nbody_distribuito.BodiesMap;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -19,7 +20,7 @@ public class Worker extends Actor {
 	masterPort = new Port(serverName, serverAddress);
     }
 
-    private boolean connect() {
+    private boolean associate() {
 	Message m;
 	// invio la richiesta per associarmi al Master
 	try {
@@ -48,9 +49,21 @@ public class Worker extends Actor {
 
     @Override
     public void run() {
-	boolean connected = connect();
+	boolean connected = associate();
 	if (connected) {
-	    while (true) {
+
+	    ComputeUtils cu = new ComputeUtils();
+	    Message m = receive();
+	    if (m.getType().equalsIgnoreCase("doJob")) {
+		BodiesMap bm = (BodiesMap) m.getArg(0);
+		float deltaTime = (Float) m.getArg(2);
+		float softFactor = (Float) m.getArg(1);
+		try {
+		    BodiesMap newBM = cu.doCompute(bm, deltaTime, softFactor);
+		    send(masterPort, new Message("response", newBM));
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 	    }
 
 	}
@@ -61,4 +74,5 @@ public class Worker extends Actor {
     private void log(String msg) {
 	System.out.println(getActorName() + ": " + msg);
     }
+
 }
