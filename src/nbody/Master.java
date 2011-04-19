@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 public class Master extends Thread {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
-    private int poolSize;
     private int numBodies;
     private StateMonitor state;
     private StateVariables var;
@@ -22,7 +21,6 @@ public class Master extends Thread {
 	    ArrayBlockingQueue<BodiesMap> mapQueue) {
 	super("Master");
 
-	this.poolSize = Runtime.getRuntime().availableProcessors() * 3;
 
 	this.var = var;
 	this.state = state;
@@ -31,6 +29,7 @@ public class Master extends Thread {
     }
 
     private void initPool() {
+	int poolSize = Runtime.getRuntime().availableProcessors() * 3;
 	ex = Executors.newFixedThreadPool(poolSize);
 	this.compServ = new ExecutorCompletionService<Boolean>(ex);
     }

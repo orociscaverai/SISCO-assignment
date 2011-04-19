@@ -1,11 +1,8 @@
 package nbody_distribuito.worker;
 
-import java.util.concurrent.CountDownLatch;
-
 import nbody_distribuito.Bodies;
 import nbody_distribuito.BodiesMap;
 import nbody_distribuito.Body;
-
 
 public class ComputeMutualAcceleration implements Runnable {
     private int a, b;
@@ -13,14 +10,12 @@ public class ComputeMutualAcceleration implements Runnable {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
     private float softFactor;
-    private CountDownLatch cdl;
 
     public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor, CountDownLatch cdl) {
+	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor) {
 	this.map = map;
 	this.a = indexA;
 	this.b = indexB;
-	this.cdl = cdl;
 	this.softFactor = softFactor;
 	this.interactionMatrix = interactionMatrix;
     }
@@ -28,11 +23,10 @@ public class ComputeMutualAcceleration implements Runnable {
     @Override
     public void run() {
 	bodyBodyInteraction(a, b, softFactor);
-	cdl.countDown();
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {
-	
+
 	Body a = Bodies.getInstance().getPlanet(indexA);
 	Body b = Bodies.getInstance().getPlanet(indexB);
 	float[] bi = map.getPosition(indexA);
@@ -50,7 +44,8 @@ public class ComputeMutualAcceleration implements Runnable {
 	distSqr += soft2;
 
 	// invDistCube = G / distSqr^(3/2)
-	float invDistCube = (float) (1.0 / Math.sqrt(distSqr * distSqr * distSqr));
+	float invDistCube = (float) (1.0 / Math.sqrt(distSqr * distSqr
+		* distSqr));
 
 	float[] ai = new float[dimension];
 	float[] aj = new float[dimension];
