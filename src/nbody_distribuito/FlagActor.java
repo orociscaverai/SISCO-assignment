@@ -1,0 +1,64 @@
+package nbody_distribuito;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+
+import pcd.actors.Actor;
+import pcd.actors.Message;
+import pcd.actors.Port;
+
+public class FlagActor extends Actor {
+
+    private boolean isSet = false;
+
+    protected FlagActor(String actorName) {
+	super(actorName);
+    }
+
+    private boolean isSet() {
+	return isSet;
+    }
+
+    private void setFlag() {
+	isSet = true;
+    }
+
+    private void resetFlag() {
+	isSet = false;
+    }
+
+    @Override
+    public void run() {
+	while (true) {
+	    log("in attesa di richieste ...");
+
+	    Message message = receive();
+	    log("messaggio ricevuto: " + message);
+	    String kind = (String) message.getArg(0);
+	    Port portActor = (Port) message.getArg(1);
+
+	    try {
+		if (kind.equals(Constants.IS_SET)) {
+		    Boolean b = new Boolean(isSet());
+		    send(portActor, new Message(Constants.IS_SET_RESULT, b));
+		} else if (kind.equals(Constants.SET_FLAG)) {
+		    setFlag();
+		    send(portActor, new Message(Constants.SET_FLAG));
+		} else if (kind.equals(Constants.RESET_FLAG)) {
+		    resetFlag();
+		    send(portActor, new Message(Constants.RESET_FLAG));
+		}
+	    } catch (UnknownHostException e) {
+		e.printStackTrace();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+
+	}
+    }
+
+    private void log(String msg) {
+	System.out.println(getActorName() + ": " + msg);
+    }
+
+}

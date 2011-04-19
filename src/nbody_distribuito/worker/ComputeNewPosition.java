@@ -1,7 +1,5 @@
 package nbody_distribuito.worker;
 
-import java.util.concurrent.CountDownLatch;
-
 import nbody_distribuito.Bodies;
 import nbody_distribuito.BodiesMap;
 import nbody_distribuito.Body;
@@ -13,17 +11,14 @@ public class ComputeNewPosition implements Runnable {
     private InteractionMatrix interactionMatrix;
     private float[] oldPos;
     private BodiesMap map;
-    private CountDownLatch cdl;
 
     public ComputeNewPosition(int bodyIndex, float[] oldPos, float deltaTime,
-	    InteractionMatrix interactionMatrix, BodiesMap map,
-	    CountDownLatch cdl) {
+	    InteractionMatrix interactionMatrix, BodiesMap map) {
 	this.interactionMatrix = interactionMatrix;
 	this.bodyIndex = bodyIndex;
 	this.deltatime = deltaTime;
 	this.map = map;
 	this.oldPos = oldPos;
-	this.cdl = cdl;
     }
 
     @Override
@@ -36,8 +31,7 @@ public class ComputeNewPosition implements Runnable {
 	old.setVelocity(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
-	
-	cdl.countDown();
+
 
     }
 

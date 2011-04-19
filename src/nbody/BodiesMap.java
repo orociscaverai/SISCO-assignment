@@ -11,7 +11,7 @@ public class BodiesMap {
 	this.numBody = numBody;
 	positions = new float[numBody][dimension];
     }
-    
+
     public int getDimensions() {
 	return dimension;
     }
@@ -30,7 +30,7 @@ public class BodiesMap {
     }
 
     public void generateRandomMap() {
-	
+
 	Random rand = new Random();
 
 	for (int i = 0; i < numBody; i++) {

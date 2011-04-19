@@ -8,12 +8,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Questo monitor serve a gestire lo stato dell'applicazione per garantire la
  * coerenza d'esecuzione
  * 
- * Gli stati possibili possono essere: Runned, Paused, Stopped. In pi� �
+ * Gli stati possibili possono essere: Runned, Paused, Stopped. In più è
  * possibile eseguire un singolo step.
  * 
- * Se lo stato � Runned � possibile passare in Paused o Stopped Se lo stato �
- * Paused � possibile passare in Stopped, Runned oppure richiedere l'esecuzione
- * di un singolo step. Se lo stato � Stopped � possibile passare in Started.
+ * Se lo stato è Runned è possibile passare in Paused o Stopped
+ * Se lo stato è Paused è possibile passare in Stopped, Runned oppure richiedere l'esecuzione
+ * di un singolo step.
+ * Se lo stato è Stopped è possibile passare in Started.
  * 
  * */
 public class StateMonitor {
