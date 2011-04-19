@@ -1,6 +1,6 @@
 package gui;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import nbody.ControllerAgent;
 import nbody.event.Event;

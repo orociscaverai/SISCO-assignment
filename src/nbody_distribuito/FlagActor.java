@@ -34,17 +34,18 @@ public class FlagActor extends Actor {
 
 	    Message message = receive();
 	    log("messaggio ricevuto: " + message);
-	    String kind = (String) message.getArg(0);
+	    
+	    String type = (String) message.getType();
 	    Port portActor = (Port) message.getArg(1);
 
 	    try {
-		if (kind.equals(Constants.IS_SET)) {
+		if (type.equals(Constants.IS_SET)) {
 		    Boolean b = new Boolean(isSet());
 		    send(portActor, new Message(Constants.IS_SET_RESULT, b));
-		} else if (kind.equals(Constants.SET_FLAG)) {
+		} else if (type.equals(Constants.SET_FLAG)) {
 		    setFlag();
 		    send(portActor, new Message(Constants.SET_FLAG));
-		} else if (kind.equals(Constants.RESET_FLAG)) {
+		} else if (type.equals(Constants.RESET_FLAG)) {
 		    resetFlag();
 		    send(portActor, new Message(Constants.RESET_FLAG));
 		}

@@ -1,7 +1,8 @@
 
+import gui.NBodyView;
+
 import java.util.concurrent.ArrayBlockingQueue;
 
-import gui.NBodyView;
 import nbody.BodiesMap;
 import nbody.EventHandler;
 import nbody.FrameRateUpdater;

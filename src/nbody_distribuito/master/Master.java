@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Vector;
 
+import nbody_distribuito.Constants;
+
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -29,36 +31,38 @@ public class Master extends Actor {
 	    try {
 		log("wait");
 		Message res = receive();
-		if (res.getType().equalsIgnoreCase("associate")) {
-		    log("" + res.getArg(0));
+		if (res.getType().equals(Constants.ASSOCIATE)) {
+
 		    Port p = (Port) res.getArg(0);
 		    workers.add(p);
-		    log("porta = " + p.toString());
-		    Message m = new Message("ack_associate");
+		    Message m = new Message(Constants.ACK_ASSOCIATE);
 		    send(p, m);
-		} else if (res.getType().equalsIgnoreCase("dissociate")) {
+
+		} else if (res.getType().equals(Constants.DISSOCIATE)) {
+
 		    Port p = (Port) res.getArg(0);
 		    workers.remove(p);
-		    Message m = new Message("ack_dissociate");
+		    Message m = new Message(Constants.ACK_DISSOCIATE);
 		    send(p, m);
-		} else if (res.getType().equalsIgnoreCase("client_queue")) {
-		    send(computeAct, new Message("Client_Queue_Response",
-			    workers));
+
+		} else if (res.getType().equals(Constants.CLIENT_QUEUE)) {
+
+		    Message m = new Message(Constants.CLIENT_QUEUE_RESP, workers);
+		    send(computeAct, m);
+
 		} else {
+
 		    log("Messaggio non riconosciuto : " + res.toString());
 		}
 	    } catch (UnknownHostException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    } catch (IOException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	}
     }
 
-    protected void send(Port p, Message m) throws UnknownHostException,
-	    IOException {
+    protected void send(Port p, Message m) throws UnknownHostException, IOException {
 	super.send(p, m);
 	log("message sent: " + m.toString());
     }

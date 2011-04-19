@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import java.util.Vector;
 
 import nbody_distribuito.BodiesMap;
+import nbody_distribuito.Constants;
 import nbody_distribuito.master.filter.QueueFilter;
-
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -48,10 +48,13 @@ public class ComputeActor extends Actor {
 	    try {
 		PartitionStrategy ps = new MyStrategy();
 		Tree tr = ps.partitionMap();
+		
 		send(masterPort, new Message("Client_Queue"));
+		
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
+		
 		// send dei primi messaggi a tutti i worker
 		int waitCompleteJobs = 0;
 		for (int i = 0; i < workers.size(); i++) {
@@ -60,9 +63,11 @@ public class ComputeActor extends Actor {
 			break;
 		    BodiesMap map = (BodiesMap) n.getValue();
 		    Port worker = workers.elementAt(i);
-		    send(worker, new Message("DoJob", map));
+		    // FIXME mancano nell'ordine il deltaTIme e softFactor
+		    send(worker, new Message(Constants.DO_JOB, map));
 		    waitCompleteJobs++;
 		}
+		
 		BodiesMap newMap = new BodiesMap(numBody);
 		while (waitCompleteJobs != 0) {
 		    res = receive();

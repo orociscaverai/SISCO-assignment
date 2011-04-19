@@ -1,9 +1,8 @@
 package nbody;
 
-import java.util.concurrent.Callable;
 
 
-public class ComputeMutualAcceleration implements Callable<Boolean> {
+public class ComputeMutualAcceleration implements Runnable {
     private int a, b;
     private final static int dimension = 2;
     private InteractionMatrix interactionMatrix;
@@ -20,9 +19,8 @@ public class ComputeMutualAcceleration implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() {
+    public void run() {
 	bodyBodyInteraction(a, b, softFactor);
-	return null;
     }
 
     private void bodyBodyInteraction(int indexA, int indexB, float soft2) {

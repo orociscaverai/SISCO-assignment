@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class Master extends Thread {
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
-    private int numBodies;
+    // private int numBodies;
     private StateMonitor state;
     private StateVariables var;
     private ArrayBlockingQueue<BodiesMap> mapQueue;
@@ -17,10 +17,8 @@ public class Master extends Thread {
     private ExecutorService ex;
     private ExecutorCompletionService<Boolean> compServ;
 
-    public Master(StateMonitor state, StateVariables var,
-	    ArrayBlockingQueue<BodiesMap> mapQueue) {
+    public Master(StateMonitor state, StateVariables var, ArrayBlockingQueue<BodiesMap> mapQueue) {
 	super("Master");
-
 
 	this.var = var;
 	this.state = state;
@@ -49,8 +47,8 @@ public class Master extends Thread {
     }
 
     private void doCompute() throws InterruptedException {
-	// TODO perchè il numero di corpi non viene preso dalla BodiesMap?
-	int numBodies = var.getNumBodies();
+
+	int numBodies = map.getNumBodies();
 	float deltaTime = var.getDeltaTime();
 	float softFactor = var.getSoftFactor();
 
@@ -58,8 +56,8 @@ public class Master extends Thread {
 	try {
 	    for (int i = 0; i < numBodies - 1; i++) {
 		for (int j = i + 1; j < numBodies; j++) {
-		    compServ.submit(new ComputeMutualAcceleration(i, j,
-			    interactionMatrix, map, softFactor));
+		    compServ.submit(new ComputeMutualAcceleration(i, j, interactionMatrix, map,
+			    softFactor), true);
 		    // log("submitted task " + i + " " + j);
 		}
 	    }
@@ -91,8 +89,8 @@ public class Master extends Thread {
 	// Inizio la fase 2
 	for (int i = 0; i < numBodies; i++) {
 
-	    compServ.submit(new ComputeNewPosition(i, map.getPosition(i),
-		    deltaTime, interactionMatrix, newMap));
+	    compServ.submit(new ComputeNewPosition(i, map.getPosition(i), deltaTime,
+		    interactionMatrix, newMap), true);
 	    // log("submitted task " + i + " " + j);
 	}
 
@@ -128,7 +126,7 @@ public class Master extends Thread {
     }
 
     private void doRandomize() throws InterruptedException {
-	numBodies = var.getNumBodies();
+	int numBodies = var.getNumBodies();
 	this.map = new BodiesMap(numBodies);
 	interactionMatrix = new InteractionMatrix(numBodies);
 	Bodies.getInstance().makeRandomBodies(numBodies);

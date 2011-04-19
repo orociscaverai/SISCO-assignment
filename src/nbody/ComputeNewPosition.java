@@ -2,7 +2,7 @@ package nbody;
 
 import java.util.concurrent.Callable;
 
-public class ComputeNewPosition implements Callable<Boolean> {
+public class ComputeNewPosition implements Runnable {
     final private static int dimension = 2;
     private int bodyIndex;
     private float deltatime;
@@ -19,7 +19,7 @@ public class ComputeNewPosition implements Callable<Boolean> {
 	this.oldPos = oldPos;
     }
 
-    public Boolean call() {
+    public void run() {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
 
 	Body old = Bodies.getInstance().getPlanet(bodyIndex);
@@ -28,8 +28,6 @@ public class ComputeNewPosition implements Callable<Boolean> {
 	old.setVelocity(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
-
-	return null;
 
     }
 
@@ -43,15 +41,14 @@ public class ComputeNewPosition implements Callable<Boolean> {
 	return newVel;
     }
 
-    private float[] computePosition(float[] acceleration, float[] vel,
-	    float[] oldPos) {
+    private float[] computePosition(float[] acceleration, float[] vel, float[] oldPos) {
 
 	float[] newPos = new float[dimension];
 
 	// System.out.println("Init:" + newPos[0] + " " + newPos[1]);
 	for (int d = 0; d < dimension; d++) {
-	    newPos[d] = 0.5f * acceleration[d] * deltatime * deltatime + vel[d]
-		    * deltatime + oldPos[d];
+	    newPos[d] = 0.5f * acceleration[d] * deltatime * deltatime + vel[d] * deltatime
+		    + oldPos[d];
 	}
 
 	return newPos;
