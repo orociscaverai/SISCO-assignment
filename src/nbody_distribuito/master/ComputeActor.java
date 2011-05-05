@@ -17,21 +17,25 @@ public class ComputeActor extends Actor {
     private Port masterPort = new Port("Master", "localhost");
     private int numBody;
 
-    protected ComputeActor(String actorName) {
+    public ComputeActor(String actorName) {
 	super(actorName);
     }
 
     @Override
     public void run() {
+	
 	while (true) {
+	    
 	    Message res = receive();
-	    if (res.getType().equalsIgnoreCase("start")) {
+	    if (res.getType().equals(Constants.START_EVENT)) {
 
 		doStart();
-	    } else if (res.getType().equalsIgnoreCase("randomize")) {
+	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
+		
 		numBody = (Integer) res.getArg(0);
 		doRandomize();
 	    } else {
+		
 		log("messaggio non riconosciuto " + res.toString());
 	    }
 	}
@@ -39,17 +43,18 @@ public class ComputeActor extends Actor {
     }
 
     private void doRandomize() {
-	// TODO Auto-generated method stub
 
+	// TODO Auto-generated method stub
     }
 
     private void doStart() {
+	
 	while (true) {
 	    try {
 		PartitionStrategy ps = new MyStrategy();
 		Tree tr = ps.partitionMap();
 		
-		send(masterPort, new Message("Client_Queue"));
+		send(masterPort, new Message(Constants.CLIENT_QUEUE));
 		
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);

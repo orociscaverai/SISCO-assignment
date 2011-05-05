@@ -1,17 +1,20 @@
-package nbody;
+package nbody_distribuito.controller;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import nbody.event.Event;
 import controller.ControllerInterface;
 
-public class ControllerAgent extends Thread implements ControllerInterface {
+import nbody.event.Event;
+import pcd.actors.Actor;
+
+public abstract class ControllerAgent extends Actor implements ControllerInterface {
 
     private BlockingQueue<Event> queue;
 
-    public ControllerAgent(String name) {
-	super(name);
+
+    protected ControllerAgent(String actorName) {
+	super(actorName);
 	queue = new ArrayBlockingQueue<Event>(100);
     }
 
@@ -27,14 +30,11 @@ public class ControllerAgent extends Thread implements ControllerInterface {
 	return queue.poll();
     }
 
-    @Override
     public void notifyEvent(Event ev) {
 	queue.add(ev);
     }
 
     protected void log(String msg) {
-	synchronized (System.out) {
-	    System.out.println("[ " + getName() + " ] " + msg);
-	}
+	System.out.println(getActorName() + ": " + msg);
     }
 }

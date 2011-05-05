@@ -2,8 +2,8 @@ package gui;
 
 import java.util.ArrayList;
 
-import nbody.ControllerAgent;
 import nbody.event.Event;
+import controller.ControllerInterface;
 
 /**
  * Base class for representing passive components generating events.
@@ -13,10 +13,10 @@ import nbody.event.Event;
  */
 public class ObservableComponent {
 
-    private ArrayList<ControllerAgent> observers;
+    private ArrayList<ControllerInterface> observers;
 
     public ObservableComponent() {
-	observers = new ArrayList<ControllerAgent>();
+	observers = new ArrayList<ControllerInterface>();
     }
 
     /**
@@ -24,7 +24,7 @@ public class ObservableComponent {
      * 
      * @param agent
      */
-    public void register(ControllerAgent agent) {
+    public void register(ControllerInterface agent) {
 	synchronized (observers) {
 	    observers.add(agent);
 	}
@@ -37,7 +37,7 @@ public class ObservableComponent {
      */
     protected void notifyEvent(Event ev) {
 	synchronized (observers) {
-	    for (ControllerAgent ag : observers) {
+	    for (ControllerInterface ag : observers) {
 		ag.notifyEvent(ev);
 	    }
 	}

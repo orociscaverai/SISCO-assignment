@@ -20,7 +20,7 @@ import javax.swing.event.ChangeListener;
 
 import nbody.BodiesMap;
 import nbody.event.Event;
-import nbody.event.ParameterEvent;
+import nbody.event.ChangeParamEvent;
 import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
@@ -291,7 +291,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	private void notifyParameterChanged() {
 	    float deltaTime = deltaTimeSlider.getScaledValue();
 	    float softFactor = softFactorSlider.getScaledValue();
-	    Event ev = new ParameterEvent(view, deltaTime, softFactor);
+	    Event ev = new ChangeParamEvent(view, deltaTime, softFactor);
 	    view.notifyEvent(ev);
 	}
 

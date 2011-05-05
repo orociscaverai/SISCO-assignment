@@ -3,6 +3,7 @@ package nbody_distribuito;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -11,7 +12,7 @@ public class FlagActor extends Actor {
 
     private boolean isSet = false;
 
-    protected FlagActor(String actorName) {
+    public FlagActor(String actorName) {
 	super(actorName);
     }
 

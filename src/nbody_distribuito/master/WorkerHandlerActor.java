@@ -10,12 +10,12 @@ import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
 
-public class Master extends Actor {
+public class WorkerHandlerActor extends Actor {
 
     private Vector<Port> workers;
     private Port computeAct = new Port("Compute", "localhost");
 
-    public Master(String actorName) {
+    public WorkerHandlerActor(String actorName) {
 	super(actorName);
 	workers = new Vector<Port>();
     }

@@ -2,12 +2,12 @@ package nbody.event;
 
 import gui.NBodyView;
 
-public class ParameterEvent extends Event {
+public class ChangeParamEvent extends Event {
     private float deltaTime;
     private float softFactor;
 
-    public ParameterEvent(NBodyView source, float deltaTime, float softFactor) {
-	super("deltaTime", source);
+    public ChangeParamEvent(NBodyView source, float deltaTime, float softFactor) {
+	super("ChangeParam", source);
 	this.deltaTime = deltaTime;
 	this.softFactor = softFactor;
     }
