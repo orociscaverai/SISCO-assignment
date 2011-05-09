@@ -3,12 +3,12 @@ package nbody_distribuito.controller;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import controller.ControllerInterface;
+import controller.ObserverInterface;
 
 import nbody.event.Event;
 import pcd.actors.Actor;
 
-public abstract class ControllerAgent extends Actor implements ControllerInterface {
+public abstract class ControllerAgent extends Actor implements ObserverInterface {
 
     private BlockingQueue<Event> queue;
 

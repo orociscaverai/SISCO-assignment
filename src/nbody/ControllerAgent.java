@@ -4,9 +4,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import nbody.event.Event;
-import controller.ControllerInterface;
+import controller.ObserverInterface;
 
-public class ControllerAgent extends Thread implements ControllerInterface {
+public class ControllerAgent extends Thread implements ObserverInterface {
 
     private BlockingQueue<Event> queue;
 

@@ -16,26 +16,37 @@ public class ComputeActor extends Actor {
 
     private Port masterPort = new Port("Master", "localhost");
     private int numBody;
+    private float deltaTime, softFactor;
+    private BodiesMap map;
 
     public ComputeActor(String actorName) {
 	super(actorName);
+	deltaTime = 0.5f;
+	softFactor = 0.5f;
     }
 
     @Override
     public void run() {
-	
+
 	while (true) {
-	    
+
 	    Message res = receive();
 	    if (res.getType().equals(Constants.START_EVENT)) {
 
 		doStart();
-	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
 		
+	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
+
 		numBody = (Integer) res.getArg(0);
 		doRandomize();
+
+	    } else if (res.getType().equals(Constants.CHANGE_PARAM)) {
+
+		deltaTime = (Float) res.getArg(0);
+		softFactor = (Float) res.getArg(1);
+
 	    } else {
-		
+
 		log("messaggio non riconosciuto " + res.toString());
 	    }
 	}
@@ -48,31 +59,37 @@ public class ComputeActor extends Actor {
     }
 
     private void doStart() {
-	
+
 	while (true) {
 	    try {
-		PartitionStrategy ps = new MyStrategy();
-		Tree tr = ps.partitionMap();
-		
+		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
+		// dei worker, quali siano quelli associati.
 		send(masterPort, new Message(Constants.CLIENT_QUEUE));
-		
+
+		// Ricevo una struttura dati contenente le porte dei vari worker
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
-		
+
+		// Suddivido il carico di lavoro in base al numero di worker
+		// disponibili. Il tipo di strategia usata per suddividere il
+		// lavoro dipende dal tipo di implementazione realizzata
+		PartitionStrategy ps = new SimpleSplitStrategy();
+		Tree tr = ps.partitionMap(workers.size(), map);
+
 		// send dei primi messaggi a tutti i worker
 		int waitCompleteJobs = 0;
 		for (int i = 0; i < workers.size(); i++) {
 		    AbstractNode n = tr.navigateInOrder();
 		    if (n == null)
 			break;
-		    BodiesMap map = (BodiesMap) n.getValue();
+		    BodiesMap partialMap = (BodiesMap) n.getValue();
 		    Port worker = workers.elementAt(i);
-		    // FIXME mancano nell'ordine il deltaTIme e softFactor
-		    send(worker, new Message(Constants.DO_JOB, map));
+
+		    send(worker, new Message(Constants.DO_JOB, partialMap, deltaTime, softFactor));
 		    waitCompleteJobs++;
 		}
-		
+
 		BodiesMap newMap = new BodiesMap(numBody);
 		while (waitCompleteJobs != 0) {
 		    res = receive();
@@ -90,8 +107,7 @@ public class ComputeActor extends Actor {
 			    // ResultCompute
 			    int id = 0;
 			    BodiesMap map = (BodiesMap) n.getValue();
-			    send(workers.elementAt(id), new Message("DoJob",
-				    map));
+			    send(workers.elementAt(id), new Message(Constants.DO_JOB, map, deltaTime, softFactor));
 			} else {
 			    waitCompleteJobs--;
 			}
@@ -120,8 +136,7 @@ public class ComputeActor extends Actor {
 
     }
 
-    protected void send(Port p, Message m) throws UnknownHostException,
-	    IOException {
+    protected void send(Port p, Message m) throws UnknownHostException, IOException {
 	super.send(p, m);
 	log("message sent: " + m.toString());
     }

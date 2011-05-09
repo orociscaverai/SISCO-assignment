@@ -10,6 +10,10 @@ import nbody.event.Event;
 import nbody.event.RandomizeEvent;
 import nbody.event.StartedEvent;
 import nbody_distribuito.Constants;
+import nbody_distribuito.FlagActor;
+import nbody_distribuito.master.ComputeActor;
+import nbody_distribuito.master.WorkerHandlerActor;
+import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
 
@@ -28,27 +32,44 @@ import pcd.actors.Port;
 
 public class EventHandler extends ControllerAgent {
 
-    private Port computePort = new Port("Compute", "localhost");
-    private String computeActorName, stopActorName, workerHandlerActorName;
 
-    public EventHandler(String actorName, NBodyView view, String computeActorName,
-	    String stopActorName, String workerHandlerActorName) {
+    private Port computeActor;
+    private Port stopActor;
+    private Port workerHandlerActor;
+
+    public EventHandler(String actorName, NBodyView view) {
 	super(actorName);
-	
+
 	view.register(this);
-	
-	this.computeActorName = computeActorName;
-	this.stopActorName = stopActorName;
-	this.workerHandlerActorName = workerHandlerActorName;
 
     }
 
+    /**
+     * Questo metodo serve per creare tutti gli attori che serviranno lato
+     * server per realizzare la computazione. La libreria non prevede un metodo
+     * factory per creare attori, per questo li creo qui.
+     * */
     private void init() {
+	new ComputeActor("compute").start();
+	this.computeActor = new Port("computeActor");
 
+	new FlagActor("stop").start();
+	this.stopActor = new Port("stopActor");
+
+	new WorkerHandlerActor("workerHandler").start();
+	this.workerHandlerActor = new Port("workerHandlerActor");
     }
 
     @Override
     public void run() {
+
+	// Creo gli attori che mi serviranno per realizzare la computazione
+	// FIXME: da come era parso dalla teoria è gisto che questi attori
+	// vengano creati dal primo attore coordinatore e non nel metodo main.
+	// Valutare insieme la cosa.
+
+	init();
+
 	try {
 	    while (true) {
 		Event ev;
@@ -59,21 +80,22 @@ public class EventHandler extends ControllerAgent {
 		    RandomizeEvent rev = (RandomizeEvent) ev;
 		    int numBodies = rev.getNumBodies();
 		    Message m = new Message(Constants.RANDOMIZE_EVENT, numBodies);
-		    send(new Port(computeActorName), m);
+		    send(computeActor, m);
 
 		} else if (ev instanceof StartedEvent) {
 
 		    Message m = new Message(Constants.START_EVENT);
-		    send(new Port(computeActorName), m);
+		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("paused")) {
 
 		    Message m = new Message(Constants.PAUSE_EVENT);
+		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("stopped")) {
 
 		    Message m = new Message(Constants.STOP_EVENT);
-		    send(new Port(stopActorName), m);
+		    send(stopActor, m);
 
 		} else if (ev.getDescription().equals("singleStep")) {
 

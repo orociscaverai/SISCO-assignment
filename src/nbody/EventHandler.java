@@ -28,7 +28,7 @@ public class EventHandler extends ControllerAgent {
 		Event ev;
 		ev = fetchEvent();
 		log("received ev: " + ev.getDescription());
-		if (ev.getDescription().equals("randomize")) {
+		if (ev instanceof RandomizeEvent) {
 		    RandomizeEvent rev = (RandomizeEvent) ev;
 		    var.setNumBodies(rev.getNumBodies());
 		    // TODO
@@ -46,7 +46,6 @@ public class EventHandler extends ControllerAgent {
 		    // Effettua una sola computazione
 		    state.stepProcess();
 
-		    // TODO chiamare l'evento parameter o qualcosa di simile
 		} else if (ev.getDescription().equals("changeParam")) {
 		    // TODO migliorare questa routine
 		    var.setDeltaTime(((ChangeParamEvent) ev).getDeltaTime());
