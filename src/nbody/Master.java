@@ -27,7 +27,7 @@ public class Master extends Thread {
     }
 
     private void initPool() {
-	int poolSize = Runtime.getRuntime().availableProcessors() * 3;
+	int poolSize = Runtime.getRuntime().availableProcessors() + 1;
 	ex = Executors.newFixedThreadPool(poolSize);
 	this.compServ = new ExecutorCompletionService<Boolean>(ex);
     }
