@@ -1,43 +1,49 @@
 package nbody_distribuito;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class BodiesMap {
-    private final static int dimension = 2;
-    private float[][] positions;
-    private int numBody;
+import nbody_distribuito.Body;
 
-    public BodiesMap(int numBody) {
-	this.numBody = numBody;
-	positions = new float[numBody][dimension];
+public class BodiesMap {
+
+    private final static int dimension = 2;
+
+    private List<Body> bodies;
+
+    public BodiesMap() {
+	bodies = new ArrayList<Body>();
     }
-    
+
     public int getDimensions() {
 	return dimension;
     }
 
     public int getNumBodies() {
-	return numBody;
+	return bodies.size();
     }
 
-    public float[] getPosition(int planetIndex) {
-	return positions[planetIndex];
+    public Body getBody(int bodyIndex) {
+	return bodies.get(bodyIndex);
     }
 
-    public void setPosition(int planetIndex, float[] pos) {
-	assert (pos.length == numBody);
-	this.positions[planetIndex] = pos;
-    }
+    public void generateRandomMap(int numBodies) {
 
-    public void generateRandomMap() {
-	
+	bodies.clear();
 	Random rand = new Random();
 
-	for (int i = 0; i < numBody; i++) {
+	for (int i = 0; i < numBodies; i++) {
+
+	    float mass = rand.nextFloat() * 0.01f;
+
+	    float[] positions = new float[dimension];
 
 	    for (int d = 0; d < dimension; d++) {
-		positions[i][d] = rand.nextFloat() * 10;
+		positions[d] = rand.nextFloat() * 10;
 	    }
+
+	    bodies.add(new Body(i, mass, positions));
 
 	}
 
@@ -46,12 +52,11 @@ public class BodiesMap {
     public String toString() {
 
 	String out = "";
-	for (int i = 0; i < numBody; i++) {
-	    out += "Body " + i + ": Position:";
+	for (int i = 0; i < bodies.size(); i++) {
 
-	    for (int d = 0; d < dimension; d++) {
-		out += " " + positions[i][d];
-	    }
+	    out += "Body " + i + ": ";
+
+	    out += " " + bodies.get(i).toString();
 
 	    out += "\n";
 	}

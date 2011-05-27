@@ -26,9 +26,9 @@ public class ComputeNewPosition implements Runnable {
 	float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
 
 	Body old = Bodies.getInstance().getPlanet(bodyIndex);
-	float[] vel = old.getVelocity();
+	float[] vel = old.getPosition();
 
-	old.setVelocity(computeVelocity(acc, vel));
+	old.setPosition(computeVelocity(acc, vel));
 
 	map.setPosition(bodyIndex, computePosition(acc, vel, oldPos));
 

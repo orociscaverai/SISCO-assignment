@@ -3,20 +3,37 @@ package nbody_distribuito;
 public class Body {
 
     final private static int dimension = 2;
-    private float mass;
-    private float invMass;
-    private float[] velocity;
 
-    public Body(float mass) {
-	this(mass, new float[dimension]);
+    private int id;
+    private float mass;
+    private float[] velocity;
+    private float[] position;
+
+    public Body(int id, float mass) {
+	this(id, mass, new float[dimension]);
     }
 
-    public Body(float mass, float[] velocity) {
+    public Body(int id, float mass, float[] position) {
+	this.id = id;
 	this.mass = mass;
-	this.velocity = new float[dimension];
+	this.position = new float[dimension];
 
 	for (int d = 0; d < dimension; d++)
-	    this.velocity[d] = velocity[d];
+	    this.position[d] = position[d];
+	
+	this.velocity = new float[dimension];
+    }
+
+    public int getId() {
+	return id;
+    }
+
+    public float[] getPosition() {
+	return position;
+    }
+
+    public void setPosition(float[] pos) {
+	this.position = pos;
     }
 
     public float[] getVelocity() {
@@ -35,23 +52,23 @@ public class Body {
 	this.mass = mass;
     }
 
-    /**
-     * @return the inverse of mass
-     */
-    public float getInvMass() {
-	return invMass;
-    }
-
     public String toString() {
-	String out = "Velocity:";
+	String out = "ID: " + id;
+
+	out += "\tPosition:";
+
+	for (int d = 0; d < dimension; d++) {
+	    out += " " + position[d];
+	}
+
+	out += "\tVelocity:";
 
 	for (int d = 0; d < dimension; d++) {
 	    out += " " + velocity[d];
 	}
 
-	out += "\t";
+	out += "\tMass: " + mass;
 
-	out += "Mass: " + mass;
 	return out;
     }
 

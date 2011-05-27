@@ -8,10 +8,14 @@ import controller.ObserverInterface;
 import nbody.event.Event;
 import pcd.actors.Actor;
 
+/**
+ * Questa classe funge da adattatore tra la gestione ad eventi e la estione a
+ * scambio di messaggi actor like
+ * 
+ * */
 public abstract class ControllerAgent extends Actor implements ObserverInterface {
 
     private BlockingQueue<Event> queue;
-
 
     protected ControllerAgent(String actorName) {
 	super(actorName);

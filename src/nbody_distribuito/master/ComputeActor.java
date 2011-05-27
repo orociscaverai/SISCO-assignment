@@ -7,6 +7,7 @@ import java.util.Vector;
 import nbody_distribuito.BodiesMap;
 import nbody_distribuito.Constants;
 import nbody_distribuito.master.filter.QueueFilter;
+
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -65,17 +66,21 @@ public class ComputeActor extends Actor {
 		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
 		// dei worker, quali siano quelli associati.
 		send(masterPort, new Message(Constants.CLIENT_QUEUE));
-
+		
 		// Ricevo una struttura dati contenente le porte dei vari worker
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
 
+		
+		
+		
+		
 		// Suddivido il carico di lavoro in base al numero di worker
 		// disponibili. Il tipo di strategia usata per suddividere il
 		// lavoro dipende dal tipo di implementazione realizzata
 		PartitionStrategy ps = new SimpleSplitStrategy();
-		Tree tr = ps.partitionMap(workers.size(), map);
+		ps.splitJob(workers.size(), map);
 
 		// send dei primi messaggi a tutti i worker
 		int waitCompleteJobs = 0;
