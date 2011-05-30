@@ -93,8 +93,9 @@ public class ComputeActor extends Actor {
 		    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
 		    waitCompleteJobs++;
 		}
-
-		BodiesMap newMap = new BodiesMap(/*numBody*/);
+		ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
+		computeResult.initialize(map);
+		//BodiesMap newMap = new BodiesMap(/*numBody*/);
 		while (waitCompleteJobs != 0) {
 		    res = receive();
 		    if (res.getType().equalsIgnoreCase("stop")) {
@@ -116,7 +117,7 @@ public class ComputeActor extends Actor {
 			}
 			// TODO aggregazione della mappa
 			JobResult resultJob = (JobResult) res.getArg(0);
-			handleResult(resultJob);
+			computeResult.aggregate(resultJob);
 		    } else {
 			log("messaggio non riconosciuto " + res.toString());
 		    }
@@ -133,14 +134,6 @@ public class ComputeActor extends Actor {
 
 	}
     }
-
-
-    private void handleResult(JobResult resultJob) {
-		// TODO Auto-generated method stub
-    	//TODO qua vanno i calcoli per genrare le nuove posiazioni dei corpi.... 
-    	//è da definire la mappa dei nuovi pianeti?? quale struttura usiamo?
-		
-	}
 
 	protected void send(Port p, Message m) throws UnknownHostException, IOException {
 	super.send(p, m);
