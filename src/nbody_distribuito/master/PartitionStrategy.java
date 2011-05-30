@@ -17,5 +17,5 @@ public interface PartitionStrategy {
      * Restituisce null in caso non ci sono task, FIXME controllare se ci sono
      * meytodi migliori
      */
-    public List<ClientData> getNextJob();
+    public Job getNextJob();
 }

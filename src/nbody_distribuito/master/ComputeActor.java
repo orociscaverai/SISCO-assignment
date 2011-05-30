@@ -85,13 +85,12 @@ public class ComputeActor extends Actor {
 		// send dei primi messaggi a tutti i worker
 		int waitCompleteJobs = 0;
 		for (int i = 0; i < workers.size(); i++) {
-		    AbstractNode n = tr.navigateInOrder();
+		    Job n = ps.getNextJob();
 		    if (n == null)
 			break;
-		    BodiesMap partialMap = (BodiesMap) n.getValue();
 		    Port worker = workers.elementAt(i);
 
-		    send(worker, new Message(Constants.DO_JOB, partialMap, deltaTime, softFactor));
+		    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
 		    waitCompleteJobs++;
 		}
 
@@ -104,15 +103,14 @@ public class ComputeActor extends Actor {
 			// La Mailbox sarà clearata in seguito or TODO switch
 			// mailbox per sicurezza
 		    } else if (res.getType().equalsIgnoreCase("ResultCompute")) {
-			AbstractNode n = tr.navigateInOrder();
+			Job n = ps.getNextJob();
 			if (n != null) {
 			    // TODO per il send serve identificare l'attore che
 			    // ha finito la computazione
 			    // quindi aggiungere un id al messaggio
 			    // ResultCompute
 			    int id = 0;
-			    BodiesMap map = (BodiesMap) n.getValue();
-			    send(workers.elementAt(id), new Message(Constants.DO_JOB, map, deltaTime, softFactor));
+			    send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime, softFactor));
 			} else {
 			    waitCompleteJobs--;
 			}

@@ -1,6 +1,6 @@
 package nbody_distribuito.master;
 
-class ClientData {
+public class ClientData {
 
     private int id;
     private float[] pos = new float[2];
