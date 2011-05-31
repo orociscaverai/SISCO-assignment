@@ -24,7 +24,9 @@ public class Worker extends Actor {
 
     protected Worker(String actorName, String serverName, String serverAddress, MsgFilter filter) {
 	super(actorName);
-	this.setLocalPort(new Port(actorName, "192.168.100.100"));
+	
+	// TODO inserire il metodo per ottenere l'IP
+	this.setLocalPort(new Port(actorName, "137.204.70.6" ));
 	masterPort = new Port(serverName, serverAddress);
     }
 
