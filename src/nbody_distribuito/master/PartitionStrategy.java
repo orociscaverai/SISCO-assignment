@@ -1,9 +1,7 @@
 package nbody_distribuito.master;
 
-import java.util.List;
 
 import nbody_distribuito.BodiesMap;
-import nbody_distribuito.Body;
 
 /**
  * @author Boccacci Andrea, Cicora Saverio

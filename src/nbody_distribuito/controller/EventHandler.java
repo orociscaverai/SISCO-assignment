@@ -50,14 +50,14 @@ public class EventHandler extends ControllerAgent {
      * factory per creare attori, per questo li creo qui.
      * */
     private void init() {
-	new ComputeActor("compute").start();
-	this.computeActor = new Port("computeActor");
+	this.workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR);
+	this.stopActor = new Port(Constants.STOP_ACTOR);
+	this.computeActor = new Port(Constants.COMPUTE_ACTOR);
 
-	new FlagActor("stop").start();
-	this.stopActor = new Port("stopActor");
+	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor).start();
+	new FlagActor(Constants.STOP_ACTOR).start();
+	new WorkerHandlerActor(Constants.WORKER_HANDLER_ACTOR, computeActor).start();
 
-	new WorkerHandlerActor("workerHandler").start();
-	this.workerHandlerActor = new Port("workerHandlerActor");
     }
 
     @Override
