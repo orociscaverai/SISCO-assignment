@@ -13,10 +13,11 @@ import pcd.actors.Port;
 public class WorkerHandlerActor extends Actor {
 
     private Vector<Port> workers;
-    private Port computeAct = new Port("Compute", "localhost");
+    private Port computeActor;
 
-    public WorkerHandlerActor(String actorName) {
+    public WorkerHandlerActor(String actorName, Port computeActor) {
 	super(actorName);
+	this.computeActor = computeActor;
 	workers = new Vector<Port>();
     }
 
@@ -48,7 +49,7 @@ public class WorkerHandlerActor extends Actor {
 		} else if (res.getType().equals(Constants.CLIENT_QUEUE)) {
 
 		    Message m = new Message(Constants.CLIENT_QUEUE_RESP, workers);
-		    send(computeAct, m);
+		    send(computeActor, m);
 
 		} else {
 
@@ -74,7 +75,7 @@ public class WorkerHandlerActor extends Actor {
     }
 
     private void log(String string) {
-	System.out.println("Master : " + string);
+	System.out.println(this.getActorName()+" : "  + string);
 
     }
 }

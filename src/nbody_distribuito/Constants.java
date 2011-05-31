@@ -25,5 +25,11 @@ public class Constants {
     public final static String PAUSE_EVENT = "pauseEvent";
     public final static String RANDOMIZE_EVENT = "randomizeEvent";
     public final static String CHANGE_PARAM = "changeParamEvent";
+    
+    
+    public final static String STOP_ACTOR = "stopActor";
+    public final static String EVENT_CONTROLLER_ACTOR = "eventControllerActor";
+    public final static String COMPUTE_ACTOR = "computeActor";
+    public final static String WORKER_HANDLER_ACTOR = "workerHandler";
 
 }

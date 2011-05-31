@@ -15,15 +15,16 @@ import pcd.actors.filters.MsgFilter;
 
 public class ComputeActor extends Actor {
 
-    private Port masterPort = new Port("Master", "localhost");
+    private Port workerHandler;;
     private int numBody;
     private float deltaTime, softFactor;
     private BodiesMap map;
 
-    public ComputeActor(String actorName) {
+    public ComputeActor(String actorName, Port workerHandler) {
 	super(actorName);
 	deltaTime = 0.5f;
 	softFactor = 0.5f;
+	this.workerHandler = workerHandler;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ComputeActor extends Actor {
 	    try {
 		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
 		// dei worker, quali siano quelli associati.
-		send(masterPort, new Message(Constants.CLIENT_QUEUE));
+		send(workerHandler, new Message(Constants.CLIENT_QUEUE));
 		
 		// Ricevo una struttura dati contenente le porte dei vari worker
 		MsgFilter f = new QueueFilter();

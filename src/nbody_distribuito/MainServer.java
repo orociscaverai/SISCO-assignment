@@ -16,7 +16,7 @@ public class MainServer {
 
 	NBodyView view = new NBodyView(600, 600);
 
-	Actor controller = new EventHandler("controller", view);
+	Actor controller = new EventHandler(Constants.EVENT_CONTROLLER_ACTOR, view);
 	controller.start();
 
     }

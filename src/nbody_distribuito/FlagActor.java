@@ -33,7 +33,10 @@ public class FlagActor extends Actor {
 	while (true) {
 	    log("in attesa di richieste ...");
 
-	    Message message = receive();
+	    Message message;
+	    do{
+	    message = receive();
+	    }while(message != null);
 	    log("messaggio ricevuto: " + message);
 	    
 	    String type = (String) message.getType();
