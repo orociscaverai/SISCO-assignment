@@ -15,159 +15,159 @@ import pcd.actors.filters.MsgFilter;
 
 public class ComputeActor extends Actor {
 
-    private Port workerHandler;
-    private float deltaTime, softFactor;
-    private BodiesMap map;
+	private Port workerHandler;
+	private float deltaTime, softFactor;
+	private BodiesMap map;
 
-    public ComputeActor(String actorName, Port workerHandler) {
-	super(actorName);
-	deltaTime = 0.5f;
-	softFactor = 0.5f;
-	this.workerHandler = workerHandler;
-    }
-
-    @Override
-    public void run() {
-
-	while (true) {
-
-	    Message res = receive();
-	    if (res.getType().equals(Constants.START_EVENT)) {
-
-		doStart();
-
-	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
-
-		int numBodies = (Integer) res.getArg(0);
-		doRandomize(numBodies);
-
-	    } else if (res.getType().equals(Constants.CHANGE_PARAM)) {
-
-		deltaTime = (Float) res.getArg(0);
-		softFactor = (Float) res.getArg(1);
-
-	    } else {
-
-		log("messaggio non riconosciuto " + res.toString());
-	    }
+	public ComputeActor(String actorName, Port workerHandler) {
+		super(actorName);
+		deltaTime = 0.5f;
+		softFactor = 0.5f;
+		this.workerHandler = workerHandler;
 	}
 
-    }
+	@Override
+	public void run() {
 
-    private void doRandomize(int numBodies) {
+		while (true) {
 
-	// TODO Auto-generated method stub
-	map = new BodiesMap();
-	map.generateRandomMap(numBodies);
-    }
+			Message res = receive();
+			if (res.getType().equals(Constants.START_EVENT)) {
 
-    private void doStart() {
+				doStart();
 
-	while (true) {
-	    try {
-		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
-		// dei worker, quali siano quelli associati.
-		send(workerHandler, new Message(Constants.CLIENT_QUEUE));
+			} else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
 
-		// Ricevo una struttura dati contenente le porte dei vari worker
-		MsgFilter f = new QueueFilter();
-		Message res = receive(f);
-		Vector<Port> workers = (Vector<Port>) res.getArg(0);
-		if (workers.size() == 0) {
+				int numBodies = (Integer) res.getArg(0);
+				doRandomize(numBodies);
 
-		    // TODO devo avvisare la gui dell'attesa dei worker
-		    log("Attendo l'associazione dei worker");
-		    send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
-		    res = receive(f);
-		    workers = (Vector<Port>) res.getArg(0);
-		    log("Si è associato almeno un worker, inizio la computazione");
-		}
+			} else if (res.getType().equals(Constants.CHANGE_PARAM)) {
 
-		// Suddivido il carico di lavoro in base al numero di worker
-		// disponibili. Il tipo di strategia usata per suddividere il
-		// lavoro dipende dal tipo di implementazione realizzata
-		PartitionStrategy ps = new SimpleSplitStrategy();
-		ps.splitJob(workers.size(), map);
+				deltaTime = (Float) res.getArg(0);
+				softFactor = (Float) res.getArg(1);
 
-		// send dei primi messaggi a tutti i worker
-		int waitCompleteJobs = 0;
-		for (int i = 0; i < workers.size(); i++) {
-		    Job n = ps.getNextJob();
-		    if (n == null)
-			break;
-		    Port worker = workers.elementAt(i);
-
-		    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
-		    waitCompleteJobs++;
-		}
-		ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
-		computeResult.initialize(map);
-
-		while (waitCompleteJobs != 0) {
-		    res = receive();
-		    if (res.getType().equalsIgnoreCase("stop")) {
-			// this.getMessageBox().getQueue().clear();
-			return;
-			// La Mailbox sarà clearata in seguito or TODO switch
-			// mailbox per sicurezza
-		    } else if (res.getType().equalsIgnoreCase(Constants.JOB_RESULT)) {
-			Job n = ps.getNextJob();
-			if (n != null) {
-			    // TODO per il send serve identificare l'attore che
-			    // ha finito la computazione
-			    // quindi aggiungere un id al messaggio
-			    // ResultCompute
-			    int id = 0;
-			    send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime,
-				    softFactor));
 			} else {
-			    waitCompleteJobs--;
-			}
-			// TODO aggregazione della mappa
-			JobResult resultJob = (JobResult) res.getArg(0);
-			computeResult.aggregate(resultJob);
-		    } else {
-			log("messaggio non riconosciuto " + res.toString());
-		    }
-		}
-		// TODO tutti i job sono completati sendare newMap a qualche
-		// attore?
 
-		map = computeResult.getResultMap();
-		
-		log(map.toString());
-	    } catch (UnknownHostException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    } catch (NumWorkerException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
+				log("messaggio non riconosciuto " + res.toString());
+			}
+		}
 
 	}
-    }
 
-    protected void send(Port p, Message m) throws UnknownHostException, IOException {
-	super.send(p, m);
-	log("message sent: " + m.toString());
-    }
+	private void doRandomize(int numBodies) {
 
-    protected Message receive() {
-	Message res = super.receive();
-	log("message received; " + res.toString());
-	return res;
-    }
+		// TODO Auto-generated method stub
+		map = new BodiesMap();
+		map.generateRandomMap(numBodies);
+	}
 
-    protected Message receive(MsgFilter f) {
-	Message res = super.receive(f);
-	log("message received; " + res.toString());
-	return res;
-    }
+	private void doStart() {
 
-    private void log(String msg) {
-	System.out.println(getActorName() + ": " + msg);
-    }
+		while (true) {
+			try {
+				// Richiedo al WorkerHandlerActor, che gestisce l'associazione
+				// dei worker, quali siano quelli associati.
+				send(workerHandler, new Message(Constants.CLIENT_QUEUE));
+
+				// Ricevo una struttura dati contenente le porte dei vari worker
+				MsgFilter f = new QueueFilter();
+				Message res = receive(f);
+				Vector<Port> workers = (Vector<Port>) res.getArg(0);
+				if (workers.size() == 0) {
+
+					// TODO devo avvisare la gui dell'attesa dei worker
+					log("Attendo l'associazione dei worker");
+					send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
+					res = receive(f);
+					workers = (Vector<Port>) res.getArg(0);
+					log("Si è associato almeno un worker, inizio la computazione");
+				}
+
+				// Suddivido il carico di lavoro in base al numero di worker
+				// disponibili. Il tipo di strategia usata per suddividere il
+				// lavoro dipende dal tipo di implementazione realizzata
+				PartitionStrategy ps = new SimpleSplitStrategy();
+				ps.splitJob(workers.size(), map);
+
+				// send dei primi messaggi a tutti i worker
+				int waitCompleteJobs = 0;
+				for (int i = 0; i < workers.size(); i++) {
+					Job n = ps.getNextJob();
+					if (n == null)
+						break;
+					Port worker = workers.elementAt(i);
+
+					send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
+					waitCompleteJobs++;
+				}
+				ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
+				computeResult.initialize(map);
+
+				while (waitCompleteJobs != 0) {
+					res = receive();
+					if (res.getType().equalsIgnoreCase("stop")) {
+						// this.getMessageBox().getQueue().clear();
+						return;
+						// La Mailbox sarà clearata in seguito or TODO switch
+						// mailbox per sicurezza
+					} else if (res.getType().equalsIgnoreCase(Constants.JOB_RESULT)) {
+						Job n = ps.getNextJob();
+						if (n != null) {
+							// TODO per il send serve identificare l'attore che
+							// ha finito la computazione
+							// quindi aggiungere un id al messaggio
+							// ResultCompute
+							int id = 0;
+							send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime,
+									softFactor));
+						} else {
+							waitCompleteJobs--;
+						}
+						// TODO aggregazione della mappa
+						JobResult resultJob = (JobResult) res.getArg(0);
+						computeResult.aggregate(resultJob);
+					} else {
+						log("messaggio non riconosciuto " + res.toString());
+					}
+				}
+				// TODO tutti i job sono completati sendare newMap a qualche
+				// attore?
+
+				map = computeResult.getResultMap();
+
+				log(map.toString());
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NumWorkerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	protected void send(Port p, Message m) throws UnknownHostException, IOException {
+		super.send(p, m);
+		log("message sent: " + m.toString());
+	}
+
+	protected Message receive() {
+		Message res = super.receive();
+		log("message received; " + res.toString());
+		return res;
+	}
+
+	protected Message receive(MsgFilter f) {
+		Message res = super.receive(f);
+		log("message received; " + res.toString());
+		return res;
+	}
+
+	private void log(String msg) {
+		System.out.println(getActorName() + ": " + msg);
+	}
 }
