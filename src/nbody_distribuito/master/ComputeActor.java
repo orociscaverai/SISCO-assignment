@@ -153,7 +153,7 @@ public class ComputeActor extends Actor {
 	return res;
     }
 
-    private void log(String string) {
-	System.out.println("Compute Actor : " + string);
-    }
+    private void log(String msg) {
+    	System.out.println(getActorName() + ": " + msg);
+        }
 }

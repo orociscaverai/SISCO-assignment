@@ -32,21 +32,22 @@ public class WorkerHandlerActor extends Actor {
 	    try {
 		log("wait");
 		Message res = receive();
-		if (res.getType().equals(Constants.ASSOCIATE)) {
+		if (res.getType().equalsIgnoreCase(Constants.ASSOCIATE)) {
 
 		    Port p = (Port) res.getArg(0);
+		    log("porta "+ p.getActorName() +" "+ p.getHostName());
 		    workers.add(p);
 		    Message m = new Message(Constants.ACK_ASSOCIATE);
 		    send(p, m);
 
-		} else if (res.getType().equals(Constants.DISSOCIATE)) {
+		} else if (res.getType().equalsIgnoreCase(Constants.DISSOCIATE)) {
 
 		    Port p = (Port) res.getArg(0);
 		    workers.remove(p);
 		    Message m = new Message(Constants.ACK_DISSOCIATE);
 		    send(p, m);
 
-		} else if (res.getType().equals(Constants.CLIENT_QUEUE)) {
+		} else if (res.getType().equalsIgnoreCase(Constants.CLIENT_QUEUE)) {
 
 		    Message m = new Message(Constants.CLIENT_QUEUE_RESP, workers);
 		    send(computeActor, m);
