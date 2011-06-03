@@ -52,7 +52,7 @@ public class EventHandler extends ControllerAgent {
     private void init() {
 	this.workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR);
 	this.stopActor = new Port(Constants.STOP_ACTOR);
-	this.computeActor = new Port(Constants.COMPUTE_ACTOR);
+	this.computeActor = new Port(Constants.COMPUTE_ACTOR, "192.168.100.100");
 
 	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor).start();
 	new FlagActor(Constants.STOP_ACTOR).start();

@@ -92,60 +92,63 @@ public class ComputeActor extends Actor {
 				// send dei primi messaggi a tutti i worker
 				int waitCompleteJobs = 0;
 				for (int i = 0; i < workers.size(); i++) {
-					Job n = ps.getNextJob();
-					if (n == null)
-						break;
-					Port worker = workers.elementAt(i);
+				    Job n = ps.getNextJob();
+				    log (n.toString());
+				    
+				    
+				    if (n == null)
+					break;
+				    Port worker = workers.elementAt(i);
 
-					send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
-					waitCompleteJobs++;
+				    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
+				    waitCompleteJobs++;
 				}
+				
 				ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 				computeResult.initialize(map);
 
 				while (waitCompleteJobs != 0) {
-					res = receive();
-					if (res.getType().equalsIgnoreCase("stop")) {
-						// this.getMessageBox().getQueue().clear();
-						return;
-						// La Mailbox sarà clearata in seguito or TODO switch
-						// mailbox per sicurezza
-					} else if (res.getType().equalsIgnoreCase(Constants.JOB_RESULT)) {
-						Job n = ps.getNextJob();
-						if (n != null) {
-							// TODO per il send serve identificare l'attore che
-							// ha finito la computazione
-							// quindi aggiungere un id al messaggio
-							// ResultCompute
-							int id = 0;
-							send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime,
-									softFactor));
-						} else {
-							waitCompleteJobs--;
-						}
-						// TODO aggregazione della mappa
-						JobResult resultJob = (JobResult) res.getArg(0);
-						computeResult.aggregate(resultJob);
+				    res = receive();
+				    if (res.getType().equalsIgnoreCase("stop")) {
+					// this.getMessageBox().getQueue().clear();
+					return;
+					// La Mailbox sarà clearata in seguito or TODO switch
+					// mailbox per sicurezza
+				    } else if (res.getType().equalsIgnoreCase(Constants.JOB_RESULT)) {
+					Job n = ps.getNextJob();
+					if (n != null) {
+					    // TODO per il send serve identificare l'attore che
+					    // ha finito la computazione
+					    // quindi aggiungere un id al messaggio
+					    // ResultCompute
+					    int id = 0;
+					    send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime,
+						    softFactor));
 					} else {
-						log("messaggio non riconosciuto " + res.toString());
+					    waitCompleteJobs--;
 					}
+					// TODO aggregazione della mappa
+					JobResult resultJob = (JobResult) res.getArg(0);
+					computeResult.aggregate(resultJob);
+				    } else {
+					log("messaggio non riconosciuto " + res.getType());
+				    }
 				}
 				// TODO tutti i job sono completati sendare newMap a qualche
 				// attore?
 
 				map = computeResult.getResultMap();
-
-				log(map.toString());
-			} catch (UnknownHostException e) {
+				
+			    } catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
+			    } catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (NumWorkerException e) {
+			    } catch (NumWorkerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			    }
 
 		}
 	}
@@ -157,12 +160,6 @@ public class ComputeActor extends Actor {
 
 	protected Message receive() {
 		Message res = super.receive();
-		log("message received; " + res.toString());
-		return res;
-	}
-
-	protected Message receive(MsgFilter f) {
-		Message res = super.receive(f);
 		log("message received; " + res.toString());
 		return res;
 	}
