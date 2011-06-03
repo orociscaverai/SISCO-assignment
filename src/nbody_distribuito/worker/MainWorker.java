@@ -1,5 +1,6 @@
 package nbody_distribuito.worker;
 
+import nbody_distribuito.Constants;
 import nbody_distribuito.FlagActor;
 import pcd.actors.MessageDispatcher;
 
@@ -12,7 +13,7 @@ public class MainWorker {
 
     protected void doJob() {
 	MessageDispatcher.getInstance().start();
-	Worker w = new Worker("Worker", "Master", "137.204.70.120", null);
+	Worker w = new Worker(Constants.WORKER_ACTOR, Constants.WORKER_HANDLER_ACTOR, "192.168.100.101", null);
 	FlagActor stopFlag = new FlagActor("stopFlag");
 	stopFlag.start();
 	w.start();

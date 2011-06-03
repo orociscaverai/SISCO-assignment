@@ -31,5 +31,7 @@ public class Constants {
     public final static String EVENT_CONTROLLER_ACTOR = "eventControllerActor";
     public final static String COMPUTE_ACTOR = "computeActor";
     public final static String WORKER_HANDLER_ACTOR = "workerHandler";
+    public final static String WORKER_ACTOR = "workerActor";
+    
 
 }

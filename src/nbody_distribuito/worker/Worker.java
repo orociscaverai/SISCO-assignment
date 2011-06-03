@@ -26,7 +26,7 @@ public class Worker extends Actor {
 	super(actorName);
 	
 	// TODO inserire il metodo per ottenere l'IP
-	this.setLocalPort(new Port(actorName, "137.204.70.6" ));
+	this.setLocalPort(new Port(actorName, "192.168.100.100" ));
 	masterPort = new Port(serverName, serverAddress);
     }
 
@@ -34,12 +34,12 @@ public class Worker extends Actor {
 	Message m;
 	// invio la richiesta per associarmi al Master
 	try {
-	    m = new Message("associate", this.getLocalPort());
+	    m = new Message(Constants.ASSOCIATE, this.getLocalPort());
 	    log("Ho preparato il seguente messaggio: " + m.toString());
 	    log("Lo invio a: " + masterPort.toString());
 	    send(masterPort, m);
 
-	    log(" - invio messaggio:" + m);
+	    log("Invio messaggio: " + m);
 	} catch (UnknownHostException e) {
 	    e.printStackTrace();
 	} catch (IOException e) {
@@ -48,7 +48,7 @@ public class Worker extends Actor {
 
 	// ricevo il messaggio di risposta
 	m = receive();
-	if (!m.getType().equalsIgnoreCase("ACK_Associate")) {
+	if (!m.getType().equalsIgnoreCase(Constants.ACK_ASSOCIATE)) {
 	    log("Il master non ha apprezzato la mia associazione");
 	    log("Il master ha risposto con: " + m.toString());
 	    return false;
