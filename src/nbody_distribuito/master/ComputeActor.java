@@ -16,7 +16,6 @@ import pcd.actors.filters.MsgFilter;
 public class ComputeActor extends Actor {
 
     private Port workerHandler;;
-    private int numBody;
     private float deltaTime, softFactor;
     private BodiesMap map;
 
@@ -39,8 +38,8 @@ public class ComputeActor extends Actor {
 		
 	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
 
-		numBody = (Integer) res.getArg(0);
-		doRandomize();
+		int numBodies = (Integer) res.getArg(0);
+		doRandomize(numBodies);
 
 	    } else if (res.getType().equals(Constants.CHANGE_PARAM)) {
 
@@ -55,9 +54,11 @@ public class ComputeActor extends Actor {
 
     }
 
-    private void doRandomize() {
+    private void doRandomize(int numBodies) {
 
 	// TODO Auto-generated method stub
+    map = new BodiesMap();
+    map.generateRandomMap(numBodies);
     }
 
     private void doStart() {
@@ -153,7 +154,7 @@ public class ComputeActor extends Actor {
 	return res;
     }
 
-    private void log(String string) {
-	System.out.println("Compute Actor : " + string);
-    }
+    private void log(String msg) {
+    	System.out.println(getActorName() + ": " + msg);
+        }
 }

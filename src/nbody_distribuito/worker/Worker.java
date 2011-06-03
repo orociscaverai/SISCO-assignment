@@ -26,7 +26,7 @@ public class Worker extends Actor {
 	super(actorName);
 	
 	// TODO inserire il metodo per ottenere l'IP
-	this.setLocalPort(new Port(actorName, "192.168.100.100" ));
+	this.setLocalPort(new Port(actorName, "192.168.100.101" ));
 	masterPort = new Port(serverName, serverAddress);
     }
 
