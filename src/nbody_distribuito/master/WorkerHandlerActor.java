@@ -14,11 +14,13 @@ public class WorkerHandlerActor extends Actor {
 
     private Vector<Port> workers;
     private Port computeActor;
+    private boolean isWaiting;
 
     public WorkerHandlerActor(String actorName, Port computeActor) {
 	super(actorName);
 	this.computeActor = computeActor;
 	workers = new Vector<Port>();
+	isWaiting = false;
     }
 
     // private void compute() {
@@ -39,6 +41,13 @@ public class WorkerHandlerActor extends Actor {
 		    workers.add(p);
 		    Message m = new Message(Constants.ACK_ASSOCIATE);
 		    send(p, m);
+		    //se il Compute Actor sta aspettando l'associazione di un client
+		    //notificargli immediatamente l'avvenuta associazione
+		    if (isWaiting){
+			    Message m1 = new Message(Constants.CLIENT_QUEUE_RESP, workers);
+			    send(computeActor, m1);
+			    isWaiting = false;
+		    }
 
 		} else if (res.getType().equalsIgnoreCase(Constants.DISSOCIATE)) {
 
@@ -52,6 +61,8 @@ public class WorkerHandlerActor extends Actor {
 		    Message m = new Message(Constants.CLIENT_QUEUE_RESP, workers);
 		    send(computeActor, m);
 
+		}else if (res.getType().equalsIgnoreCase(Constants.WAIT_ASSOCIATE)){
+			isWaiting = true;
 		} else {
 
 		    log("Messaggio non riconosciuto : " + res.toString());
