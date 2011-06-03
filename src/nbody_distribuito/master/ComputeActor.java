@@ -93,6 +93,9 @@ public class ComputeActor extends Actor {
 		int waitCompleteJobs = 0;
 		for (int i = 0; i < workers.size(); i++) {
 		    Job n = ps.getNextJob();
+		    log (n.toString());
+		    
+		    
 		    if (n == null)
 			break;
 		    Port worker = workers.elementAt(i);
@@ -100,6 +103,7 @@ public class ComputeActor extends Actor {
 		    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
 		    waitCompleteJobs++;
 		}
+		
 		ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 		computeResult.initialize(map);
 
@@ -127,7 +131,7 @@ public class ComputeActor extends Actor {
 			JobResult resultJob = (JobResult) res.getArg(0);
 			computeResult.aggregate(resultJob);
 		    } else {
-			log("messaggio non riconosciuto " + res.toString());
+			log("messaggio non riconosciuto " + res.getType());
 		    }
 		}
 		// TODO tutti i job sono completati sendare newMap a qualche
@@ -135,7 +139,6 @@ public class ComputeActor extends Actor {
 
 		map = computeResult.getResultMap();
 		
-		log(map.toString());
 	    } catch (UnknownHostException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

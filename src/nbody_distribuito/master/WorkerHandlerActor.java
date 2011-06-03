@@ -37,16 +37,21 @@ public class WorkerHandlerActor extends Actor {
 		if (res.getType().equalsIgnoreCase(Constants.ASSOCIATE)) {
 
 		    Port p = (Port) res.getArg(0);
-		    log("porta "+ p.getActorName() +" "+ p.getHostName());
+		    log("porta " + p.getActorName() + " " + p.getHostName());
 		    workers.add(p);
-		    Message m = new Message(Constants.ACK_ASSOCIATE);
+
+		    // Il computer actor è diverso dal worker handler, ma il
+		    // worker conosce solo quest'ultimo: devo mandare la porta
+		    // del compute actor
+		    Message m = new Message(Constants.ACK_ASSOCIATE, computeActor);
 		    send(p, m);
-		    //se il Compute Actor sta aspettando l'associazione di un client
-		    //notificargli immediatamente l'avvenuta associazione
-		    if (isWaiting){
-			    Message m1 = new Message(Constants.CLIENT_QUEUE_RESP, workers);
-			    send(computeActor, m1);
-			    isWaiting = false;
+		    // se il Compute Actor sta aspettando l'associazione di un
+		    // client
+		    // notificargli immediatamente l'avvenuta associazione
+		    if (isWaiting) {
+			Message m1 = new Message(Constants.CLIENT_QUEUE_RESP, workers);
+			send(computeActor, m1);
+			isWaiting = false;
 		    }
 
 		} else if (res.getType().equalsIgnoreCase(Constants.DISSOCIATE)) {
@@ -61,8 +66,8 @@ public class WorkerHandlerActor extends Actor {
 		    Message m = new Message(Constants.CLIENT_QUEUE_RESP, workers);
 		    send(computeActor, m);
 
-		}else if (res.getType().equalsIgnoreCase(Constants.WAIT_ASSOCIATE)){
-			isWaiting = true;
+		} else if (res.getType().equalsIgnoreCase(Constants.WAIT_ASSOCIATE)) {
+		    isWaiting = true;
 		} else {
 
 		    log("Messaggio non riconosciuto : " + res.toString());
@@ -87,7 +92,7 @@ public class WorkerHandlerActor extends Actor {
     }
 
     private void log(String string) {
-	System.out.println(this.getActorName()+" : "  + string);
+	System.out.println(this.getActorName() + " : " + string);
 
     }
 }

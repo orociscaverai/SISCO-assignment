@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Job implements Serializable{
+public class Job implements Serializable {
 
-   
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
+
     private List<ClientData> set1;
     private List<ClientData> set2;
 
@@ -29,13 +26,13 @@ public class Job implements Serializable{
 	set2.add(data);
     }
 
-//    public void setFistSet(List<ClientData> data) {
-//	set1 = data;
-//    }
-//
-//    public void setSecondSet(List<ClientData> data) {
-//	set2 = data;
-//    }
+    // public void setFistSet(List<ClientData> data) {
+    // set1 = data;
+    // }
+    //
+    // public void setSecondSet(List<ClientData> data) {
+    // set2 = data;
+    // }
 
     public List<ClientData> getFistSet() {
 	return set1;
@@ -43,5 +40,24 @@ public class Job implements Serializable{
 
     public List<ClientData> getSecondSet() {
 	return set2;
+    }
+
+    public String toString() {
+
+	String out = "";
+
+	out += "\nSet 1:\n";
+
+	for (ClientData cd : set1) {
+	    out += cd.toString();
+	}
+
+	out += "\nSet 2:\n";
+
+	for (ClientData cd : set2) {
+	    out += cd.toString();
+	}
+
+	return out;
     }
 }
