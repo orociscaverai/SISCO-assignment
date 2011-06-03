@@ -16,6 +16,14 @@ public class BodiesMap {
 	bodies = new ArrayList<Body>();
     }
 
+    public BodiesMap(int numBodies) {
+	bodies = new ArrayList<Body>(numBodies);
+    }
+
+    public void addBody(Body b) {
+	bodies.add(b);
+    }
+
     public int getDimensions() {
 	return dimension;
     }

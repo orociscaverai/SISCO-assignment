@@ -1,9 +1,12 @@
 package nbody_distribuito.master;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class JobResult {
-    private List<ClientResponse> response;
+public class JobResult implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	private List<ClientResponse> response;
 
     public List<ClientResponse> getResultList() {
 	return response;

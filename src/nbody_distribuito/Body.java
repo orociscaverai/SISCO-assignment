@@ -20,7 +20,7 @@ public class Body {
 
 	for (int d = 0; d < dimension; d++)
 	    this.position[d] = position[d];
-	
+
 	this.velocity = new float[dimension];
     }
 
@@ -29,15 +29,18 @@ public class Body {
     }
 
     public float[] getPosition() {
-	return position;
+	return position.clone();
     }
 
     public void setPosition(float[] pos) {
+
+	// TODO valutare le prestazioni mettondo un clone()
+
 	this.position = pos;
     }
 
     public float[] getVelocity() {
-	return velocity;
+	return velocity.clone();
     }
 
     public void setVelocity(float[] velocity) {

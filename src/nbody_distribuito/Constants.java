@@ -11,6 +11,7 @@ public class Constants {
     public final static String CLIENT_QUEUE_RESP = "clientQueueResp";
     public static final String WAIT_ASSOCIATE = "waitAssociate";
     public final static String DO_JOB = "doJob";
+    public final static String JOB_RESULT = "jobResult";
 
     // Costanti per lo scambio di messaggi che coinvolgono il FlagActor
     public final static String IS_SET = "isSet";

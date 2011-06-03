@@ -74,7 +74,7 @@ public class ComputeActor extends Actor {
 		Message res = receive(f);
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
 		if (workers.size() == 0) {
-		    
+
 		    // TODO devo avvisare la gui dell'attesa dei worker
 		    log("Attendo l'associazione dei worker");
 		    send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
@@ -102,7 +102,7 @@ public class ComputeActor extends Actor {
 		}
 		ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 		computeResult.initialize(map);
-		// BodiesMap newMap = new BodiesMap(/*numBody*/);
+
 		while (waitCompleteJobs != 0) {
 		    res = receive();
 		    if (res.getType().equalsIgnoreCase("stop")) {
@@ -110,7 +110,7 @@ public class ComputeActor extends Actor {
 			return;
 			// La Mailbox sarà clearata in seguito or TODO switch
 			// mailbox per sicurezza
-		    } else if (res.getType().equalsIgnoreCase("ResultCompute")) {
+		    } else if (res.getType().equalsIgnoreCase(Constants.JOB_RESULT)) {
 			Job n = ps.getNextJob();
 			if (n != null) {
 			    // TODO per il send serve identificare l'attore che
@@ -132,6 +132,10 @@ public class ComputeActor extends Actor {
 		}
 		// TODO tutti i job sono completati sendare newMap a qualche
 		// attore?
+
+		map = computeResult.getResultMap();
+		
+		log(map.toString());
 	    } catch (UnknownHostException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
