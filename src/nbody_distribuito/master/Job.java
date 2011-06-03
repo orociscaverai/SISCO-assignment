@@ -1,10 +1,16 @@
 package nbody_distribuito.master;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Job {
+public class Job implements Serializable{
 
+   
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private List<ClientData> set1;
     private List<ClientData> set2;
 

@@ -9,7 +9,7 @@ public class Constants {
     public final static String ACK_DISSOCIATE = "ackDissociate";
     public final static String CLIENT_QUEUE = "clientQueue";
     public final static String CLIENT_QUEUE_RESP = "clientQueueResp";
-
+    public static final String WAIT_ASSOCIATE = "waitAssociate";
     public final static String DO_JOB = "doJob";
 
     // Costanti per lo scambio di messaggi che coinvolgono il FlagActor
@@ -32,6 +32,7 @@ public class Constants {
     public final static String COMPUTE_ACTOR = "computeActor";
     public final static String WORKER_HANDLER_ACTOR = "workerHandler";
     public final static String WORKER_ACTOR = "workerActor";
+	
     
 
 }

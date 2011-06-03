@@ -1,12 +1,18 @@
 package nbody_distribuito.master;
 
-public class ClientData {
+import java.io.Serializable;
 
+public class ClientData implements Serializable{
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private int id;
     private float[] pos = new float[2];
     private float mass;
 
-    public ClientData(int id, float pos[], float mass) {
+    public ClientData(int id, float pos[], float mass)  {
 
 	this.id = id;
 	this.pos = pos;

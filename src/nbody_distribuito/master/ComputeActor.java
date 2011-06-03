@@ -80,6 +80,7 @@ public class ComputeActor extends Actor {
 		    send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
 		    res = receive(f);
 		    workers = (Vector<Port>) res.getArg(0);
+		    log("Si è associato almeno un worker, inizio la computazione");
 		}
 
 		// Suddivido il carico di lavoro in base al numero di worker
