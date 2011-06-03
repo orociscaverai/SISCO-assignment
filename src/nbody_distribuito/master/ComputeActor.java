@@ -15,7 +15,7 @@ import pcd.actors.filters.MsgFilter;
 
 public class ComputeActor extends Actor {
 
-    private Port workerHandler;;
+    private Port workerHandler;
     private float deltaTime, softFactor;
     private BodiesMap map;
 
@@ -35,7 +35,7 @@ public class ComputeActor extends Actor {
 	    if (res.getType().equals(Constants.START_EVENT)) {
 
 		doStart();
-		
+
 	    } else if (res.getType().equals(Constants.RANDOMIZE_EVENT)) {
 
 		int numBodies = (Integer) res.getArg(0);
@@ -57,8 +57,8 @@ public class ComputeActor extends Actor {
     private void doRandomize(int numBodies) {
 
 	// TODO Auto-generated method stub
-    map = new BodiesMap();
-    map.generateRandomMap(numBodies);
+	map = new BodiesMap();
+	map.generateRandomMap(numBodies);
     }
 
     private void doStart() {
@@ -68,16 +68,20 @@ public class ComputeActor extends Actor {
 		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
 		// dei worker, quali siano quelli associati.
 		send(workerHandler, new Message(Constants.CLIENT_QUEUE));
-		
+
 		// Ricevo una struttura dati contenente le porte dei vari worker
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
+		if (workers.size() == 0) {
+		    
+		    // TODO devo avvisare la gui dell'attesa dei worker
+		    log("Attendo l'associazione dei worker");
+		    send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
+		    res = receive(f);
+		    workers = (Vector<Port>) res.getArg(0);
+		}
 
-		
-		
-		
-		
 		// Suddivido il carico di lavoro in base al numero di worker
 		// disponibili. Il tipo di strategia usata per suddividere il
 		// lavoro dipende dal tipo di implementazione realizzata
@@ -97,7 +101,7 @@ public class ComputeActor extends Actor {
 		}
 		ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 		computeResult.initialize(map);
-		//BodiesMap newMap = new BodiesMap(/*numBody*/);
+		// BodiesMap newMap = new BodiesMap(/*numBody*/);
 		while (waitCompleteJobs != 0) {
 		    res = receive();
 		    if (res.getType().equalsIgnoreCase("stop")) {
@@ -113,7 +117,8 @@ public class ComputeActor extends Actor {
 			    // quindi aggiungere un id al messaggio
 			    // ResultCompute
 			    int id = 0;
-			    send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime, softFactor));
+			    send(workers.elementAt(id), new Message(Constants.DO_JOB, n, deltaTime,
+				    softFactor));
 			} else {
 			    waitCompleteJobs--;
 			}
@@ -132,12 +137,15 @@ public class ComputeActor extends Actor {
 	    } catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
+	    } catch (NumWorkerException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	    }
 
 	}
     }
 
-	protected void send(Port p, Message m) throws UnknownHostException, IOException {
+    protected void send(Port p, Message m) throws UnknownHostException, IOException {
 	super.send(p, m);
 	log("message sent: " + m.toString());
     }
@@ -155,6 +163,6 @@ public class ComputeActor extends Actor {
     }
 
     private void log(String msg) {
-    	System.out.println(getActorName() + ": " + msg);
-        }
+	System.out.println(getActorName() + ": " + msg);
+    }
 }

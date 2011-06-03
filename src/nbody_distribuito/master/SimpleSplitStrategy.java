@@ -19,8 +19,11 @@ public class SimpleSplitStrategy implements PartitionStrategy {
     private int nextJobToGet = 0;
 
     @Override
-    public void splitJob(int numOfWorker, BodiesMap map) {
-	//FIXME num of worker = 0 crash
+    public void splitJob(int numOfWorker, BodiesMap map) throws NumWorkerException {
+
+	if (numOfWorker == 0) {
+	    throw new NumWorkerException("Non posso iniziare il lavoro: numero di worker uguale a zero");
+	}
 	int numOfJob = (int) map.getNumBodies() / numOfWorker;
 
 	int numOfJobR = map.getNumBodies() % numOfWorker;
@@ -50,13 +53,13 @@ public class SimpleSplitStrategy implements PartitionStrategy {
 
 	System.out.println("num of split = " + numOfSplit);
 	for (int i = 0; i < numOfSplit; i++) {
-	    
+
 	    int firstIndex1 = indexList.get(i);
 	    int lastIndex1 = indexList.get(i + 1);
 	    int firstIndex2 = indexList.get(i);
 	    int lastIndex2 = indexList.get(i + 1);
 	    int index = i;
-	    
+
 	    while (true) {
 		Job job = new Job();
 		System.out.println("Create job: " + firstIndex1 + " " + lastIndex1 + " "
