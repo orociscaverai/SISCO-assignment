@@ -46,7 +46,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	frame.setVisible(true);
     }
 
-    // TODO Ma perchè deve essere final????????
+    // TODO Perchè deve essere final????????
     public void setUpdated(final BodiesMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
