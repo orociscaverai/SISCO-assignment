@@ -122,10 +122,8 @@ public class Worker extends Actor {
 		ClientResponse cr = compServ.take().get();
 		response.add(cr);
 	    } catch (InterruptedException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    } catch (ExecutionException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	}
