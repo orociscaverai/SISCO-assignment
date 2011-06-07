@@ -90,6 +90,7 @@ public class Worker extends Actor {
 		log("Numero di risultati già terminati: " + debug);
 
 		initPool();
+
 	}
 
 	private List<ClientResponse> doCompute(Job job, float deltaTime, float softFactor) {
