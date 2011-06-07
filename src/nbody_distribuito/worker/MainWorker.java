@@ -13,14 +13,14 @@ public class MainWorker {
 
     protected void doJob() {
 	MessageDispatcher.getInstance().start();
-	Worker w2 = new Worker(Constants.WORKER_ACTOR, Constants.WORKER_HANDLER_ACTOR,
-		"192.168.100.100", null);
+	//Worker w2 = new Worker(Constants.WORKER_ACTOR, Constants.WORKER_HANDLER_ACTOR,
+	//	"192.168.100.100", null);
 	Worker w = new Worker(Constants.WORKER_ACTOR, Constants.WORKER_HANDLER_ACTOR,
 		"192.168.100.100", null);
 	FlagActor stopFlag = new FlagActor("stopFlag");
 	stopFlag.start();
 	w.start();
-	w2.start();
+	//w2.start();
     }
 
 }
