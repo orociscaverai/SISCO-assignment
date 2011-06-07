@@ -1,21 +1,17 @@
 package nbody_distribuito.worker;
 
-import nbody_distribuito.Bodies;
-import nbody_distribuito.BodiesMap;
-import nbody_distribuito.Body;
+import nbody_distribuito.master.ClientData;
 
 public class ComputeMutualAcceleration implements Runnable {
-    private int a, b;
+    private ClientData a, b;
     private final static int dimension = 2;
     private InteractionMatrix interactionMatrix;
-    private BodiesMap map;
     private float softFactor;
 
-    public ComputeMutualAcceleration(int indexA, int indexB,
-	    InteractionMatrix interactionMatrix, BodiesMap map, float softFactor) {
-	this.map = map;
-	this.a = indexA;
-	this.b = indexB;
+    public ComputeMutualAcceleration(ClientData c1 , ClientData c2,
+	    InteractionMatrix interactionMatrix, float softFactor) {
+    	this.a = c1;
+    	this.b = c2;
 	this.softFactor = softFactor;
 	this.interactionMatrix = interactionMatrix;
     }
@@ -25,12 +21,12 @@ public class ComputeMutualAcceleration implements Runnable {
 	bodyBodyInteraction(a, b, softFactor);
     }
 
-    private void bodyBodyInteraction(int indexA, int indexB, float soft2) {
+    private void bodyBodyInteraction(ClientData c1, ClientData c2, float soft2) {
 
-	Body a = Bodies.getInstance().getPlanet(indexA);
-	Body b = Bodies.getInstance().getPlanet(indexB);
-	float[] bi = map.getPosition(indexA);
-	float[] bj = map.getPosition(indexB);
+	int indexA = c1.getRelativeId();
+	int indexB = c2.getRelativeId();
+	float[] bi = c1.getPos();
+	float[] bj = c2.getPos();
 	float[] rij = new float[dimension];
 
 	// Distanza tra il Body i e il Body j

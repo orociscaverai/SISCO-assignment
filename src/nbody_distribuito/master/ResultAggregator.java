@@ -63,25 +63,26 @@ public class ResultAggregator {
      * l'ultima fase della computazione. Per fare ciò utilizza delle variabili
      * in stile accumulatore.
      * */
-    public void aggregate(JobResult res) {
-	List<ClientResponse> resultList = res.getResultList();
+    public void aggregate(List<ClientResponse> resultList) {
 	for (int i = 0; i < resultList.size(); i++) {
 	    ClientResponse cr = resultList.get(i);
 	    int id = cr.getBodyId();
-	    float[] partialAcceleration = cr.getPartialAccelation();
 
 	    Body b = bm.getBody(id);
 
 	    float[] position = b.getPosition();
 	    float[] velocity = b.getVelocity();
 
+	    float[] partialdisplacement = cr.getPartialDisplacement();
+	    float[] partialVelocity = cr.getPartialVelocity();
 	    for (int j = 0; j < dimension; j++) {
 		// a = SUM(ai);
 		// acceleration[id][j] += partialAcceleration[j];
 
 		// v = a * t
-		velocity[j] += partialAcceleration[j] * deltaTime;
-		position[j] += 0.5 * partialAcceleration[j] * deltaTimeSqr;
+	    //TODO far fare questa roba al client???
+		velocity[j] += partialVelocity[j];
+		position[j] += partialdisplacement[j];
 	    }
 	    b.setVelocity(velocity);
 	    b.setPosition(position);

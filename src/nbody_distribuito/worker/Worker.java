@@ -2,12 +2,19 @@ package nbody_distribuito.worker;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import nbody_distribuito.Constants;
+import nbody_distribuito.master.ClientData;
+import nbody_distribuito.master.ClientResponse;
+import nbody_distribuito.master.Job;
 import nbody_distribuito.master.Job;
 import nbody_distribuito.master.JobResult;
 import pcd.actors.Actor;
@@ -20,7 +27,7 @@ public class Worker extends Actor {
 
 	private Port masterPort, computePort;
 	private ExecutorService ex;
-	private ExecutorCompletionService<Boolean> compServ;
+	private ExecutorCompletionService<ClientResponse> compServ;
 
 	public Worker(String actorName, String serverName, String serverAddress, MsgFilter filter) {
 		super(actorName);
@@ -63,7 +70,7 @@ public class Worker extends Actor {
 	private void initPool() {
 		int poolSize = Runtime.getRuntime().availableProcessors() * 3;
 		ex = Executors.newFixedThreadPool(poolSize);
-		this.compServ = new ExecutorCompletionService<Boolean>(ex);
+		this.compServ = new ExecutorCompletionService<ClientResponse>(ex);
 	}
 
 	private boolean init() {
@@ -87,181 +94,51 @@ public class Worker extends Actor {
 
 		initPool();
 	}
+	
+	private List<ClientResponse> doCompute(Job job, float deltaTime, float softFactor) {
+		int numBodies = job.getNumBodies();
+		InteractionMatrix interactionMatrix = new InteractionMatrix(numBodies);
+		int numTask = job.getNumTask();
+		for(int i = 0; i<numTask;i++){
+			ClientData[] nextData = job.getDataOfNextInteraction();
+			compServ.submit(new ComputeMutualAcceleration(nextData[0], nextData[1], interactionMatrix, softFactor),null);
+			numTask++;
+		}
+		log("numTask = "+numTask);
+		for (int n = 0; n < numTask; n++) {
+			try {
+				compServ.take();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		for(int i= 0; i<numBodies;i++){
+			ClientData c = job.getData(i);
+			//TODO decidere dove scrivere i risultati, per ora non fa nulla..
+			compServ.submit(new ComputeNewPosition(c, deltaTime, interactionMatrix));
+		}
+		List<ClientResponse> response = new ArrayList<ClientResponse>(numBodies);
+		for(int i = 0; i<numBodies;i++){
+			try {
+				ClientResponse cr = compServ.take().get();
+				response.add(cr);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
-	public JobResult doCompute(Job job, float deltaTime, float softFactor) throws Exception {
-
-//		System.out.println("stampa primo set");
-//		for(int i = 0; i<job.getFistSet().size();i++){
-//			System.out.println(job.getFistSet().get(i).getId());
-//
-//		}
-//		System.out.println("stampa secondo set ");
-//		for(int i = 0; i<job.getSecondSet().size();i++){
-//			System.out.println(job.getSecondSet().get(i).getId());
-//		}
-		JobResult j = new JobResult();
-
-		float[] pippo = new float[2];
-		pippo[0] = 1.3f;
-		pippo[1] = 1.3f;
-		j.addResult(job.getFistSet().get(0).getId(), pippo);
-		return j;
-		// int numBodies = bm.getNumBodies();
-		// InteractionMatrix interactionMatrix = new
-		// InteractionMatrix(numBodies);
-		//
-		// // Inizio la fase 1 -----------------------------------------
-		// try {
-		// for (int i = 0; i < numBodies - 1; i++) {
-		// for (int j = i + 1; j < numBodies; j++) {
-		// compServ.submit(new ComputeMutualAcceleration(i, j,
-		// interactionMatrix, bm,
-		// softFactor), true);
-		// // log("submitted task " + i + " " + j);
-		// }
-		// }
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
-		// // Combinazioni senza ripetizioni di tutti i Bodies
-		// int numTask = (numBodies * (numBodies - 1)) / 2;
-		//
-		// // La creo qui per guadagnare tempo
-		// BodiesMap newMap = new BodiesMap(numBodies);
-		//
-		// // Attendo i risultati della fase 1
-		// try {
-		// for (int n = 0; n < numTask; n++) {
-		// compServ.take();
-		// if (isStopped()) {
-		// log("Stop alla Fase 1");
-		// shutdownAndReset();
-		// throw new Exception("Gestito lo stop della computazione");
-		// }
-		// }
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// // Mi assicuro di tornare ad uno stato consistente
-		// shutdownAndReset();
-		// throw new Exception("Gestita l'interrupt exception");
-		// }
-		//
-		// // Inizio la fase 2 -----------------------------------------
-		// for (int i = 0; i < numBodies; i++) {
-		//
-		// compServ.submit(new ComputeNewPosition(i, bm.getPosition(i),
-		// deltaTime,
-		// interactionMatrix, newMap), true);
-		// // log("submitted task " + i + " " + j);
-		// }
-		//
-		// // Attendo i risultati della fase 2
-		// try {
-		// for (int n = 0; n < numBodies; n++) {
-		//
-		// compServ.take();
-		// if (isStopped()) {
-		// log("Stop alla Fase 2");
-		// shutdownAndReset();
-		// throw new Exception("Stop Alla fase 2");
-		//
-		// }
-		// }
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// // Mi assicuro di tornare ad uno stato consistente
-		// shutdownAndReset();
-		// throw new Exception("Gestita l'interrupt exception");
-		// }
-		//
-		// return newMap;
-
-	}// doCompute()
-
-	//
-	//
-	//
-	//
-	//
-	// public BodiesMap doComputeBack(BodiesMap bm, float deltaTime, float
-	// softFactor) throws Exception {
-	//
-	// int numBodies = bm.getNumBodies();
-	// InteractionMatrix interactionMatrix = new InteractionMatrix(numBodies);
-	//
-	// // Inizio la fase 1 -----------------------------------------
-	// try {
-	// for (int i = 0; i < numBodies - 1; i++) {
-	// for (int j = i + 1; j < numBodies; j++) {
-	// compServ.submit(new ComputeMutualAcceleration(i, j, interactionMatrix,
-	// bm,
-	// softFactor), true);
-	// // log("submitted task " + i + " " + j);
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// // Combinazioni senza ripetizioni di tutti i Bodies
-	// int numTask = (numBodies * (numBodies - 1)) / 2;
-	//
-	// // La creo qui per guadagnare tempo
-	// BodiesMap newMap = new BodiesMap(numBodies);
-	//
-	// // Attendo i risultati della fase 1
-	// try {
-	// for (int n = 0; n < numTask; n++) {
-	// compServ.take();
-	// if (isStopped()) {
-	// log("Stop alla Fase 1");
-	// shutdownAndReset();
-	// throw new Exception("Gestito lo stop della computazione");
-	// }
-	// }
-	// } catch (InterruptedException e) {
-	// e.printStackTrace();
-	// // Mi assicuro di tornare ad uno stato consistente
-	// shutdownAndReset();
-	// throw new Exception("Gestita l'interrupt exception");
-	// }
-	//
-	// // Inizio la fase 2 -----------------------------------------
-	// for (int i = 0; i < numBodies; i++) {
-	//
-	// compServ.submit(new ComputeNewPosition(i, bm.getPosition(i), deltaTime,
-	// interactionMatrix, newMap), true);
-	// // log("submitted task " + i + " " + j);
-	// }
-	//
-	// // Attendo i risultati della fase 2
-	// try {
-	// for (int n = 0; n < numBodies; n++) {
-	//
-	// compServ.take();
-	// if (isStopped()) {
-	// log("Stop alla Fase 2");
-	// shutdownAndReset();
-	// throw new Exception("Stop Alla fase 2");
-	//
-	// }
-	// }
-	// } catch (InterruptedException e) {
-	// e.printStackTrace();
-	// // Mi assicuro di tornare ad uno stato consistente
-	// shutdownAndReset();
-	// throw new Exception("Gestita l'interrupt exception");
-	// }
-	//
-	// return newMap;
-	//
-	// }// doCompute()
+		return response;
+	}
 
 	@Override
 	public void run() {
 		if (init()) {
-			
+
 			Message m = receive();
 			if (m.getType().equals(Constants.DO_JOB)) {
 
@@ -269,13 +146,17 @@ public class Worker extends Actor {
 				float deltaTime = (Float) m.getArg(1);
 				float softFactor = (Float) m.getArg(2);
 				log("finito step 1");
-				try {
-					JobResult jr = doCompute(j, deltaTime, softFactor);
+					List<ClientResponse> jr = doCompute(j, deltaTime, softFactor);
 					log("sending JOB_RESULT to "+computePort.getActorName()+ " "+ computePort.getHostName());
-					send(computePort, new Message(Constants.JOB_RESULT, jr));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					try {
+						send(computePort, new Message(Constants.JOB_RESULT, jr));
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 			}
 
 		}

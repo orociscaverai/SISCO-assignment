@@ -2,6 +2,7 @@ package nbody_distribuito.master;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Vector;
 
 import nbody_distribuito.BodiesMap;
@@ -65,50 +66,32 @@ public class ComputeActor extends Actor {
 
 		while (true) {
 			try {
-				// Richiedo al WorkerHandlerActor, che gestisce l'associazione
-				// dei worker, quali siano quelli associati.
-				send(workerHandler, new Message(Constants.CLIENT_QUEUE));
-
-				// Ricevo una struttura dati contenente le porte dei vari worker
-				MsgFilter f = new QueueFilter();
-				Message res = receive(f);
-				Vector<Port> workers = (Vector<Port>) res.getArg(0);
-				if (workers.size() == 0) {
-
-					// TODO devo avvisare la gui dell'attesa dei worker
-					log("Attendo l'associazione dei worker");
-					send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
-					res = receive(f);
-					workers = (Vector<Port>) res.getArg(0);
-					log("Si è associato almeno un worker, inizio la computazione");
-				}
+				
+				Vector<Port> workers = DoAcquireAvailableWorkers();	
 
 				// Suddivido il carico di lavoro in base al numero di worker
 				// disponibili. Il tipo di strategia usata per suddividere il
 				// lavoro dipende dal tipo di implementazione realizzata
-				PartitionStrategy ps = new SimpleSplitStrategy();
+				PartitionStrategy ps = new SplitStrategyUsingNewJob();
 				ps.splitJob(workers.size(), map);
 
 				// send dei primi messaggi a tutti i worker
 				int waitCompleteJobs = 0;
-				for (int i = 0; i < workers.size(); i++) {
+				for (Port worker : workers) {
 				    Job n = ps.getNextJob();
 				    log (n.toString());
 				    
-				    
-				    if (n == null)
-					break;
-				    Port worker = workers.elementAt(i);
-
-				    send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
-				    waitCompleteJobs++;
+				    if(n!=null){
+				    	send(worker, new Message(Constants.DO_JOB, n, deltaTime, softFactor));
+				    	waitCompleteJobs++;
+				    }
 				}
 				
 				ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 				computeResult.initialize(map);
 
-				while (waitCompleteJobs != 0) {
-				    res = receive();
+				while (waitCompleteJobs > 0) {
+				    Message res = receive();
 				    if (res.getType().equalsIgnoreCase("stop")) {
 					// this.getMessageBox().getQueue().clear();
 					return;
@@ -128,7 +111,7 @@ public class ComputeActor extends Actor {
 					    waitCompleteJobs--;
 					}
 					// TODO aggregazione della mappa
-					JobResult resultJob = (JobResult) res.getArg(0);
+					List<ClientResponse> resultJob = (List<ClientResponse>) res.getArg(0);
 					computeResult.aggregate(resultJob);
 				    } else {
 					log("messaggio non riconosciuto " + res.getType());
@@ -151,6 +134,26 @@ public class ComputeActor extends Actor {
 			    }
 
 		}
+	}
+
+	private Vector<Port> DoAcquireAvailableWorkers() throws UnknownHostException, IOException {
+		// Richiedo al WorkerHandlerActor, che gestisce l'associazione
+		// dei worker, quali siano quelli associati.
+		send(workerHandler, new Message(Constants.CLIENT_QUEUE));
+
+		// Ricevo una struttura dati contenente le porte dei vari worker
+		MsgFilter f = new QueueFilter();
+		Message res = receive(f);
+		Vector<Port> workers = (Vector<Port>) res.getArg(0);
+		if (workers.size() == 0) {
+			// TODO devo avvisare la gui dell'attesa dei worker
+			log("Attendo l'associazione dei worker");
+			send(workerHandler, new Message(Constants.WAIT_ASSOCIATE));
+			res = receive(f);
+			workers = (Vector<Port>) res.getArg(0);
+			log("Si è associato almeno un worker, inizio la computazione");
+		}
+		return workers;
 	}
 
 	protected void send(Port p, Message m) throws UnknownHostException, IOException {
