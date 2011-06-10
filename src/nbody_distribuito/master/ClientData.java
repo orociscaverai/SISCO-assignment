@@ -13,14 +13,14 @@ public class ClientData implements Serializable {
     private float mass;
 
     public ClientData(int idRelative, int id, float pos[], float mass) {
-    this.idRelative = idRelative;
+	this.idRelative = idRelative;
 	this.id = id;
 	this.pos = pos;
 	this.mass = mass;
     }
-    
-    public int getRelativeId(){
-    	return idRelative;
+
+    public int getRelativeId() {
+	return idRelative;
     }
 
     /**
@@ -47,7 +47,10 @@ public class ClientData implements Serializable {
     public String toString() {
 	String out = "";
 
-	out += "RelativeIndex: "+idRelative+" ID: " + id + "\t pos: " + pos[0] + " : " + pos[1] + "\tmass: " + mass;
+	out += "RelativeIndex: " + idRelative;
+	out += " ID: " + id;
+	out += "\t pos: " + pos[0] + " : " + pos[1];
+	out += "\tmass: " + mass;
 
 	return out;
 

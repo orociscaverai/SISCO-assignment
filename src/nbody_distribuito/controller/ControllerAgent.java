@@ -3,9 +3,7 @@ package nbody_distribuito.controller;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import controller.ObserverInterface;
-
-import nbody.event.Event;
+import nbody_distribuito.event.Event;
 import pcd.actors.Actor;
 
 /**
