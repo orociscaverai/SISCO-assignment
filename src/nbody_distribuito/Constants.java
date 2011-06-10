@@ -3,16 +3,10 @@ package nbody_distribuito;
 public class Constants {
 
     // Costanti di rete
-    
-<<<<<<< HEAD
-    public final static String WORKER_IP = "192.168.100.101";
-=======
+
     public final static String WORKER_IP = "192.168.100.100";
->>>>>>> 0efe850bc262031de481b84c41c82768f0815e15
     public final static String SERVER_IP = "192.168.100.100";
-    
-    
-    
+
     // Costanti per lo scambio di messaggi che conivolgono il Master TODO
     public final static String ASSOCIATE = "associate";
     public final static String ACK_ASSOCIATE = "ackAssociate";
@@ -37,14 +31,11 @@ public class Constants {
     public final static String PAUSE_EVENT = "pauseEvent";
     public final static String RANDOMIZE_EVENT = "randomizeEvent";
     public final static String CHANGE_PARAM = "changeParamEvent";
-    
-    
+
     public final static String STOP_ACTOR = "stopActor";
     public final static String EVENT_CONTROLLER_ACTOR = "eventControllerActor";
     public final static String COMPUTE_ACTOR = "computeActor";
     public final static String WORKER_HANDLER_ACTOR = "workerHandler";
     public final static String WORKER_ACTOR = "workerActor";
-	
-    
 
 }
