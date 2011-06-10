@@ -17,7 +17,6 @@ import nbody_distribuito.master.Job;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
-import pcd.actors.filters.MsgFilter;
 import pcd.actors.filters.MsgFilterImpl;
 
 public class Worker extends Actor {
@@ -26,12 +25,12 @@ public class Worker extends Actor {
 	private ExecutorService ex;
 	private ExecutorCompletionService<ClientResponse> compServ;
 
-	public Worker(String actorName, String serverName, String serverAddress, MsgFilter filter) {
+	public Worker(String actorName, Port serverPort) {
 		super(actorName);
 
 		// TODO inserire il metodo per ottenere l'IP
-		this.setLocalPort(new Port(actorName, "192.168.100.101"));
-		masterPort = new Port(serverName, serverAddress);
+		this.setLocalPort(new Port(actorName, Constants.WORKER_IP));
+		masterPort = serverPort;
 	}
 
 	private boolean associate() {

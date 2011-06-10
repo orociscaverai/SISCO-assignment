@@ -14,7 +14,6 @@ public class ResultAggregator {
 
     private int numBodies;
     private float deltaTime;
-    private float deltaTimeSqr;
 
     /**
      * 
@@ -27,7 +26,6 @@ public class ResultAggregator {
 	// this.acceleration = new float[numBodies][dimension];
 
 	this.deltaTime = deltaTime;
-	this.deltaTimeSqr = deltaTime * deltaTime;
     }
 
     /**
@@ -80,7 +78,7 @@ public class ResultAggregator {
 		// acceleration[id][j] += partialAcceleration[j];
 
 		// v = a * t
-	    //TODO far fare questa roba al client???
+		// TODO far fare questa roba al client???
 		velocity[j] += partialVelocity[j];
 		position[j] += partialdisplacement[j];
 	    }
