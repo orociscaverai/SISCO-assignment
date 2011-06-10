@@ -47,6 +47,7 @@ public class Worker extends Actor {
 	    e.printStackTrace();
 	} catch (IOException e) {
 	    e.printStackTrace();
+
 	}
 
 	// ricevo il messaggio di risposta

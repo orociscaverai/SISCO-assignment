@@ -4,7 +4,11 @@ public class Constants {
 
     // Costanti di rete
     
+<<<<<<< HEAD
     public final static String WORKER_IP = "192.168.100.101";
+=======
+    public final static String WORKER_IP = "192.168.100.100";
+>>>>>>> 0efe850bc262031de481b84c41c82768f0815e15
     public final static String SERVER_IP = "192.168.100.100";
     
     
