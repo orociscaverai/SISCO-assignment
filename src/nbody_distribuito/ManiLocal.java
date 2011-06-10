@@ -39,6 +39,9 @@ public class ManiLocal {
 	Worker w = new Worker(Constants.WORKER_ACTOR, serverPort);
 
 	w.start();
+	Worker w22 = new Worker(Constants.WORKER_ACTOR, serverPort);
+
+	w22.start();
 
     }
 }

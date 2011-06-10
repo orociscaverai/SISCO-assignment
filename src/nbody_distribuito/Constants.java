@@ -4,8 +4,8 @@ public class Constants {
 
     // Costanti di rete
 
-    public final static String WORKER_IP = "192.168.100.100";
-    public final static String SERVER_IP = "192.168.100.100";
+    public final static String WORKER_IP = "127.0.0.1";
+    public final static String SERVER_IP = "127.0.0.1";
 
     // Costanti per lo scambio di messaggi che conivolgono il Master TODO
     public final static String ASSOCIATE = "associate";
@@ -29,6 +29,7 @@ public class Constants {
     public final static String START_EVENT = "startEvent";
     public final static String STOP_EVENT = "stopEvent";
     public final static String PAUSE_EVENT = "pauseEvent";
+    public static final String STEP_EVENT = "singleStepEvent";
     public final static String RANDOMIZE_EVENT = "randomizeEvent";
     public final static String CHANGE_PARAM = "changeParamEvent";
 
@@ -37,5 +38,6 @@ public class Constants {
     public final static String COMPUTE_ACTOR = "computeActor";
     public final static String WORKER_HANDLER_ACTOR = "workerHandler";
     public final static String WORKER_ACTOR = "workerActor";
+	
 
 }

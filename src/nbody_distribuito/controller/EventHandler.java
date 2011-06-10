@@ -75,16 +75,19 @@ public class EventHandler extends ControllerAgent {
 
 		    Message m = new Message(Constants.STOP_EVENT);
 		    send(stopActor, m);
+		    //TODO prova per vedere se va
+		    send(computeActor,m);
 
 		} else if (ev.getDescription().equals("singleStep")) {
-
+			Message m = new Message(Constants.STEP_EVENT);
+			send (computeActor, m);
 		    // TODO Effettua una sola computazione
 
 		} else if (ev.getDescription().equals("changeParam")) {
-
 		    float deltaTime = ((ChangeParamEvent) ev).getDeltaTime();
 		    float softFactor = ((ChangeParamEvent) ev).getSoftFactor();
 		    Message m = new Message(Constants.CHANGE_PARAM, deltaTime, softFactor);
+		    send(computeActor,m);
 		}
 	    }
 

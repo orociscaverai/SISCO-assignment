@@ -188,7 +188,7 @@ public class Worker extends Actor {
     }
 
     private void log(String msg) {
-	System.out.println(getActorName() + ": " + msg);
+	//System.out.println(getActorName() + ": " + msg);
     }
 
 }

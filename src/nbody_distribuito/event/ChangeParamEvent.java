@@ -7,7 +7,7 @@ public class ChangeParamEvent extends Event {
     private float softFactor;
 
     public ChangeParamEvent(NBodyView source, float deltaTime, float softFactor) {
-	super("ChangeParam", source);
+	super("changeParam", source);
 	this.deltaTime = deltaTime;
 	this.softFactor = softFactor;
     }

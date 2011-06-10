@@ -36,7 +36,7 @@ public class Job implements Serializable {
 	int relativeB = relativeIndexMap.get(indexB);
 	if ((Integer) relativeB == null)
 	    throw new Exception("l'indice B(" + indexB + ") non è presente nel job");
-	interactions.add(new Interaction(indexA, indexB));
+	interactions.add(new Interaction(relativeA, relativeB));
     }
 
     public int getNumTask() {
@@ -48,8 +48,10 @@ public class Job implements Serializable {
 	    return null;
 	ClientData[] out = new ClientData[2];
 	Interaction interaction = interactions.remove(0);
+	
 	int indexA = interaction.getFirstIndex();
 	out[0] = data.get(indexA);
+	
 	int indexB = interaction.getSecondIndex();
 	out[1] = data.get(indexB);
 	return out;
