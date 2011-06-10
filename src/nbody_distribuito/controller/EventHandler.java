@@ -10,10 +10,6 @@ import nbody.event.Event;
 import nbody.event.RandomizeEvent;
 import nbody.event.StartedEvent;
 import nbody_distribuito.Constants;
-import nbody_distribuito.FlagActor;
-import nbody_distribuito.master.ComputeActor;
-import nbody_distribuito.master.WorkerHandlerActor;
-import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
 
@@ -32,31 +28,16 @@ import pcd.actors.Port;
 
 public class EventHandler extends ControllerAgent {
 
-
     private Port computeActor;
     private Port stopActor;
-    private Port workerHandlerActor;
 
-    public EventHandler(String actorName, NBodyView view) {
+    public EventHandler(String actorName, NBodyView view, Port computeActor, Port stopActor) {
 	super(actorName);
 
+	this.computeActor = computeActor;
+	this.stopActor = stopActor;
+
 	view.register(this);
-
-    }
-
-    /**
-     * Questo metodo serve per creare tutti gli attori che serviranno lato
-     * server per realizzare la computazione. La libreria non prevede un metodo
-     * factory per creare attori, per questo li creo qui.
-     * */
-    private void init() {
-	this.workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR);
-	this.stopActor = new Port(Constants.STOP_ACTOR);
-	this.computeActor = new Port(Constants.COMPUTE_ACTOR, "192.168.100.100");
-
-	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor).start();
-	new FlagActor(Constants.STOP_ACTOR).start();
-	new WorkerHandlerActor(Constants.WORKER_HANDLER_ACTOR, computeActor).start();
 
     }
 
@@ -67,8 +48,6 @@ public class EventHandler extends ControllerAgent {
 	// FIXME: da come era parso dalla teoria è gisto che questi attori
 	// vengano creati dal primo attore coordinatore e non nel metodo main.
 	// Valutare insieme la cosa.
-
-	init();
 
 	try {
 	    while (true) {
@@ -110,13 +89,10 @@ public class EventHandler extends ControllerAgent {
 	    }
 
 	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} catch (UnknownHostException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
     }

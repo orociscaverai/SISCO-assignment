@@ -35,15 +35,15 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 	    indexList.add(indexOfBodies);
 	}
 
-	for (int i = 0; i < indexList.size(); i++) {
-	    System.out.println("" + indexList.get(i));
-	}
+//	for (int i = 0; i < indexList.size(); i++) {
+//	    System.out.println("" + indexList.get(i));
+//	}
 	int numOfSplit = indexList.size() - 1;
 	// generazione job
 	int totalJob = numOfSplit * (numOfSplit - 1);
 
 	listOfJob = new ArrayList<Job>(totalJob);
-	log("num of split = " + numOfSplit);
+//	log("num of split = " + numOfSplit);
 
 	for (int i = 0; i < numOfSplit; i++) {
 	    
@@ -56,8 +56,8 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 	    while (true) {
 		Job job = new Job();
 		
-		log("Create job: " + firstIndex1 + " " + lastIndex1 + " "
-			+ firstIndex2 + " " + lastIndex2);
+//		log("Create job: " + firstIndex1 + " " + lastIndex1 + " "
+//			+ firstIndex2 + " " + lastIndex2);
 		for (int j = firstIndex1; j < lastIndex1; j++) {
 		    job.addData(j, map.getBody(j).getPosition(), map.getBody(j).getMass());
 		}

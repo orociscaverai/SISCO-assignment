@@ -119,7 +119,8 @@ public class ComputeActor extends Actor {
 		// attore?
 
 		map = computeResult.getResultMap();
-		log(map.toString());
+		// log(map.toString());
+		 log("Step completato");
 
 	    } catch (UnknownHostException e) {
 		e.printStackTrace();
