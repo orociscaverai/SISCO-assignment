@@ -30,10 +30,6 @@ public class MessageBox implements Iterator<Message>
 	
 	public boolean insert(Message message)
 	{
-		synchronized (token)
-		{
-			token.notify();
-		}
 		//actor.unblock();
 		try
 		{
@@ -43,6 +39,10 @@ public class MessageBox implements Iterator<Message>
 		{
 			e.printStackTrace();
 			return false;
+		}
+		synchronized (token)
+		{
+			token.notify();
 		}
 		return true;
 	}
