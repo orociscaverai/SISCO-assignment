@@ -1,9 +1,9 @@
 package nbody_distribuito;
 
-import gui.NBodyView;
 import nbody_distribuito.controller.EventHandler;
 import nbody_distribuito.master.ComputeActor;
 import nbody_distribuito.master.WorkerHandlerActor;
+import nbody_distribuito.view.NBodyView;
 import nbody_distribuito.worker.Worker;
 import pcd.actors.Actor;
 import pcd.actors.MessageDispatcher;
@@ -20,7 +20,7 @@ public class ManiLocal {
 	Port stopActor = new Port(Constants.STOP_ACTOR, Constants.SERVER_IP);
 	Port computeActor = new Port(Constants.COMPUTE_ACTOR, Constants.SERVER_IP);
 
-	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor).start();
+	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor, view).start();
 	new FlagActor(Constants.STOP_ACTOR).start();
 	new WorkerHandlerActor(Constants.WORKER_HANDLER_ACTOR, computeActor).start();
 
@@ -31,16 +31,14 @@ public class ManiLocal {
 	try {
 	    Thread.sleep(1000);
 	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
 	Port serverPort = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP);
 
 	Worker w = new Worker(Constants.WORKER_ACTOR, serverPort);
-	
+
 	w.start();
-	
 
     }
 }

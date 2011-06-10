@@ -1,9 +1,9 @@
 package nbody_distribuito.master;
 
-import gui.NBodyView;
 import nbody_distribuito.Constants;
 import nbody_distribuito.FlagActor;
 import nbody_distribuito.controller.EventHandler;
+import nbody_distribuito.view.NBodyView;
 import pcd.actors.Actor;
 import pcd.actors.MessageDispatcher;
 import pcd.actors.Port;
@@ -23,7 +23,7 @@ public class MainServer {
 	Port stopActor = new Port(Constants.STOP_ACTOR, Constants.SERVER_IP);
 	Port computeActor = new Port(Constants.COMPUTE_ACTOR, Constants.SERVER_IP);
 
-	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor).start();
+	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor, view).start();
 	new FlagActor(Constants.STOP_ACTOR).start();
 	new WorkerHandlerActor(Constants.WORKER_HANDLER_ACTOR, computeActor).start();
 

@@ -1,15 +1,15 @@
 package nbody_distribuito.controller;
 
-import gui.NBodyView;
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import nbody.event.ChangeParamEvent;
-import nbody.event.Event;
-import nbody.event.RandomizeEvent;
-import nbody.event.StartedEvent;
 import nbody_distribuito.Constants;
+import nbody_distribuito.event.ChangeParamEvent;
+import nbody_distribuito.event.Event;
+import nbody_distribuito.event.RandomizeEvent;
+import nbody_distribuito.event.StartedEvent;
+import nbody_distribuito.message.RandomizeMessage;
+import nbody_distribuito.view.NBodyView;
 import pcd.actors.Message;
 import pcd.actors.Port;
 
@@ -58,7 +58,7 @@ public class EventHandler extends ControllerAgent {
 
 		    RandomizeEvent rev = (RandomizeEvent) ev;
 		    int numBodies = rev.getNumBodies();
-		    Message m = new Message(Constants.RANDOMIZE_EVENT, numBodies);
+		    Message m = new RandomizeMessage(numBodies);
 		    send(computeActor, m);
 
 		} else if (ev instanceof StartedEvent) {

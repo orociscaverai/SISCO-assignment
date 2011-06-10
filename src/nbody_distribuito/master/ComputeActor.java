@@ -8,7 +8,7 @@ import java.util.Vector;
 import nbody_distribuito.BodiesMap;
 import nbody_distribuito.Constants;
 import nbody_distribuito.master.filter.QueueFilter;
-
+import nbody_distribuito.view.NBodyView;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -19,6 +19,16 @@ public class ComputeActor extends Actor {
     private Port workerHandler;
     private float deltaTime, softFactor;
     private BodiesMap map;
+
+    private NBodyView view;
+
+    public ComputeActor(String actorName, Port workerHandler, NBodyView view) {
+	super(actorName);
+	deltaTime = 0.5f;
+	softFactor = 0.5f;
+	this.workerHandler = workerHandler;
+	this.view = view;
+    }
 
     public ComputeActor(String actorName, Port workerHandler) {
 	super(actorName);
@@ -120,7 +130,8 @@ public class ComputeActor extends Actor {
 
 		map = computeResult.getResultMap();
 		// log(map.toString());
-		log("Step completato");
+
+		view.setUpdated(map);
 
 	    } catch (UnknownHostException e) {
 		e.printStackTrace();
@@ -165,6 +176,8 @@ public class ComputeActor extends Actor {
     }
 
     private void log(String msg) {
-	System.out.println(getActorName() + ": " + msg);
+	// synchronized (System.out) {
+	// System.out.println(getActorName() + ": " + msg);
+	// }
     }
 }

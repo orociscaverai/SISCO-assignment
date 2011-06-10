@@ -57,11 +57,9 @@ public abstract class Actor extends Thread {
 	return localPort;
     }
 
-    protected void send(Port port, Message message)
-	    throws UnknownHostException, IOException {
+    protected void send(Port port, Message message) throws UnknownHostException, IOException {
 	Socket socket = new Socket(port.getHostName(), 20504);
-	ObjectOutputStream outStream = new ObjectOutputStream(
-		socket.getOutputStream());
+	ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 	outStream.writeObject(port.getActorName());
 	outStream.writeObject(message);
 	outStream.close();
@@ -82,11 +80,9 @@ public abstract class Actor extends Thread {
 
 	    try {
 		synchronized (token) {
-		    System.out.println(this.getActorName()
-			    + " - mi metto in attesa ...");
+		    System.out.println(this.getActorName() + " - mi metto in attesa ...");
 		    token.wait();
-		    System.out.println(this.getActorName()
-			    + " - mi risveglio ...");
+		    System.out.println(this.getActorName() + " - mi risveglio ...");
 		}
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
@@ -109,11 +105,9 @@ public abstract class Actor extends Thread {
 
 		    try {
 			synchronized (token) {
-			    System.out.println(this.getActorName()
-				    + " - mi metto in attesa ...");
+			    System.out.println(this.getActorName() + " - mi metto in attesa ...");
 			    token.wait();
-			    System.out.println(this.getActorName()
-				    + " - mi risveglio ...");
+			    System.out.println(this.getActorName() + " - mi risveglio ...");
 			}
 		    } catch (InterruptedException e) {
 			e.printStackTrace();
