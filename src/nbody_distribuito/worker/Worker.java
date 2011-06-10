@@ -14,6 +14,8 @@ import nbody_distribuito.Constants;
 import nbody_distribuito.master.ClientData;
 import nbody_distribuito.master.ClientResponse;
 import nbody_distribuito.master.Job;
+import nbody_distribuito.message.DoJobMessage;
+import nbody_distribuito.message.JobResultMessage;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -143,11 +145,15 @@ public class Worker extends Actor {
 	if (init()) {
 	    while (true) {
 		Message m = receive();
-		if (m.getType().equals(Constants.DO_JOB)) {
+		if (m instanceof DoJobMessage) {
+
 		    log("Ricevuto messaggio Do_JOB");
-		    Job j = (Job) m.getArg(0);
-		    float deltaTime = (Float) m.getArg(1);
-		    float softFactor = (Float) m.getArg(2);
+		    DoJobMessage dj = ((DoJobMessage) m);
+
+		    Job j = dj.getJob();
+		    float deltaTime = dj.getDeltaTime();
+		    float softFactor = dj.getSoftFactor();
+
 		    // log("finito step 1");
 		    List<ClientResponse> jr = doCompute(j, deltaTime, softFactor);
 		    log("sending JOB_RESULT to " + computePort.getActorName() + " "
@@ -156,7 +162,8 @@ public class Worker extends Actor {
 		    // // System.out.println("\n" + r.toString());
 		    // }
 		    try {
-			send(computePort, new Message(Constants.JOB_RESULT, jr));
+			send(computePort, new JobResultMessage(dj.getWorkerID(), jr));
+
 		    } catch (UnknownHostException e) {
 			e.printStackTrace();
 		    } catch (IOException e) {
@@ -188,7 +195,7 @@ public class Worker extends Actor {
     }
 
     private void log(String msg) {
-	//System.out.println(getActorName() + ": " + msg);
+	// System.out.println(getActorName() + ": " + msg);
     }
 
 }

@@ -1,6 +1,6 @@
 package nbody_distribuito.controller;
 
-import gui.NBodyView;
+import nbody.gui.NBodyView;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 

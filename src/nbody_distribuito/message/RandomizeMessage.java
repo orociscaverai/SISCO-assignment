@@ -12,7 +12,7 @@ public class RandomizeMessage extends Message {
     private final int numBodies;
 
     public RandomizeMessage(int numBodies) {
-	super(messageType, numBodies);
+	super(messageType);
 	this.numBodies = numBodies;
     }
 
@@ -28,6 +28,7 @@ public class RandomizeMessage extends Message {
 
 	String args = getType() + " ";
 
+	args += "numBodies: ";
 	args += numBodies;
 
 	return args;

@@ -1,9 +1,9 @@
-package gui;
+package nbody.gui;
 
 import java.util.ArrayList;
 
+import nbody.controller.ObserverInterface;
 import nbody.event.Event;
-import controller.ObserverInterface;
 
 /**
  * Base class for representing passive components generating events.

@@ -1,9 +1,10 @@
 package nbody;
 
-import gui.NBodySetListener;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import nbody.gui.NBodySetListener;
 
 public class FrameRateUpdater extends Thread {
 

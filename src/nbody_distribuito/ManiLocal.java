@@ -36,12 +36,11 @@ public class ManiLocal {
 
 	Port serverPort = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP);
 
-	Worker w = new Worker(Constants.WORKER_ACTOR, serverPort);
+	for (int i = 0; i < 1; i++) {
+	    Worker w = new Worker(Constants.WORKER_ACTOR, serverPort);
 
-	w.start();
-	Worker w22 = new Worker(Constants.WORKER_ACTOR, serverPort);
-
-	w22.start();
+	    w.start();
+	}
 
     }
 }

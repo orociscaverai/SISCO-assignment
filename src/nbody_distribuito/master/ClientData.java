@@ -4,10 +4,8 @@ import java.io.Serializable;
 
 public class ClientData implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
+
     private int id, idRelative;
     private float[] pos = new float[2];
     private float mass;

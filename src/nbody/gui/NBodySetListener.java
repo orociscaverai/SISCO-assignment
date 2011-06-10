@@ -1,4 +1,4 @@
-package gui;
+package nbody.gui;
 
 import nbody.BodiesMap;
 

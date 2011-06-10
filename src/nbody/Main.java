@@ -1,14 +1,9 @@
+package nbody;
 
-import gui.NBodyView;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import nbody.BodiesMap;
-import nbody.EventHandler;
-import nbody.FrameRateUpdater;
-import nbody.Master;
-import nbody.StateMonitor;
-import nbody.StateVariables;
+import nbody.gui.NBodyView;
 
 public class Main {
 

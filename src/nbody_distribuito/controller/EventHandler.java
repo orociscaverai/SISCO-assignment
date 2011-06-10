@@ -3,12 +3,16 @@ package nbody_distribuito.controller;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import nbody_distribuito.Constants;
 import nbody_distribuito.event.ChangeParamEvent;
 import nbody_distribuito.event.Event;
 import nbody_distribuito.event.RandomizeEvent;
 import nbody_distribuito.event.StartedEvent;
+import nbody_distribuito.message.ChangeParamMessage;
+import nbody_distribuito.message.PauseComputationMessage;
 import nbody_distribuito.message.RandomizeMessage;
+import nbody_distribuito.message.SingleStepComputationMessage;
+import nbody_distribuito.message.StartComputationMessage;
+import nbody_distribuito.message.StopComputationMessage;
 import nbody_distribuito.view.NBodyView;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -63,31 +67,32 @@ public class EventHandler extends ControllerAgent {
 
 		} else if (ev instanceof StartedEvent) {
 
-		    Message m = new Message(Constants.START_EVENT);
+		    Message m = new StartComputationMessage();
 		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("paused")) {
 
-		    Message m = new Message(Constants.PAUSE_EVENT);
+		    Message m = new PauseComputationMessage();
 		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("stopped")) {
 
-		    Message m = new Message(Constants.STOP_EVENT);
+		    Message m = new StopComputationMessage();
 		    send(stopActor, m);
-		    //TODO prova per vedere se va
-		    send(computeActor,m);
+		    // TODO prova per vedere se va
+		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("singleStep")) {
-			Message m = new Message(Constants.STEP_EVENT);
-			send (computeActor, m);
-		    // TODO Effettua una sola computazione
+
+		    Message m = new SingleStepComputationMessage();
+		    send(computeActor, m);
 
 		} else if (ev.getDescription().equals("changeParam")) {
+
 		    float deltaTime = ((ChangeParamEvent) ev).getDeltaTime();
 		    float softFactor = ((ChangeParamEvent) ev).getSoftFactor();
-		    Message m = new Message(Constants.CHANGE_PARAM, deltaTime, softFactor);
-		    send(computeActor,m);
+		    Message m = new ChangeParamMessage(deltaTime, softFactor);
+		    send(computeActor, m);
 		}
 	    }
 

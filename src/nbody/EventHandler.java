@@ -1,9 +1,9 @@
 package nbody;
 
-import gui.NBodyView;
 import nbody.event.Event;
 import nbody.event.ChangeParamEvent;
 import nbody.event.RandomizeEvent;
+import nbody.gui.NBodyView;
 
 public class EventHandler extends ControllerAgent {
     private StateMonitor state;

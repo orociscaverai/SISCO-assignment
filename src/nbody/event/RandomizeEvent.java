@@ -1,6 +1,6 @@
 package nbody.event;
 
-import gui.NBodyView;
+import nbody.gui.NBodyView;
 
 public class RandomizeEvent extends Event {
     private int numBodies;

@@ -1,4 +1,4 @@
-package gui;
+package nbody.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
