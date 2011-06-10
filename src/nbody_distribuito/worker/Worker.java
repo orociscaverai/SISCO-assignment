@@ -193,6 +193,16 @@ public class Worker extends Actor {
 	Boolean b = (Boolean) m.getArg(0);
 	return b.booleanValue();
     }
+    
+    protected Message receive() {
+	Message m;
+	do {
+	    m = super.receive();
+	} while (m == null);
+
+	log("message received; " + m.toString());
+	return m;
+    }
 
     private void log(String msg) {
 	// System.out.println(getActorName() + ": " + msg);

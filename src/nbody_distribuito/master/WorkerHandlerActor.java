@@ -86,9 +86,13 @@ public class WorkerHandlerActor extends Actor {
     }
 
     protected Message receive() {
-	Message res = super.receive();
-	log("message received; " + res.toString());
-	return res;
+	Message m;
+	do {
+	    m = super.receive();
+	} while (m == null);
+
+	log("message received; " + m.toString());
+	return m;
     }
 
     private void log(String string) {

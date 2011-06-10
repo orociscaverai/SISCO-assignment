@@ -3,7 +3,6 @@ package nbody_distribuito;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
@@ -33,12 +32,9 @@ public class FlagActor extends Actor {
 	while (true) {
 	    log("in attesa di richieste ...");
 
-	    Message message;
-	    do{
-	    message = receive();
-	    }while(message != null);
+	    Message message = receive();
 	    log("messaggio ricevuto: " + message);
-	    
+
 	    String type = (String) message.getType();
 	    Port portActor = (Port) message.getArg(1);
 
@@ -60,6 +56,16 @@ public class FlagActor extends Actor {
 	    }
 
 	}
+    }
+
+    protected Message receive() {
+	Message m;
+	do {
+	    m = super.receive();
+	} while (m == null);
+
+	log("message received; " + m.toString());
+	return m;
     }
 
     private void log(String msg) {
