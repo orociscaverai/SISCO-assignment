@@ -1,4 +1,4 @@
-package nbody.gui;
+package nbody.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,8 +19,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import nbody.BodiesMap;
-import nbody.event.Event;
 import nbody.event.ChangeParamEvent;
+import nbody.event.Event;
 import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
@@ -33,7 +33,7 @@ import nbody.event.StoppedEvent;
  * @author aricci
  * 
  */
-public class NBodyView extends ObservableComponent implements NBodySetListener {
+public class NBodyView extends AbstractView {
 
     private NBodyFrame frame;
 
@@ -46,7 +46,8 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	frame.setVisible(true);
     }
 
-    // TODO Perchè deve essere final????????
+    // TODO Perchè deve essere final?
+    @Override
     public void setUpdated(final BodiesMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -55,6 +56,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	});
     }
 
+    @Override
     public void setProcessingState() {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -63,6 +65,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	});
     }
 
+    @Override
     public void setCompletedState(final long dt) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -73,6 +76,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	});
     }
 
+    @Override
     public void setInterruptedState(final long dt) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -83,6 +87,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	});
     }
 
+    @Override
     public void setParameter(final float deltaTime, final float softFactor) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -103,8 +108,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	}
 
 	public FloatJSlider(float min, float max, float value, int scale) {
-	    super((int) (min * scale), (int) (max * scale),
-		    (int) (value * scale));
+	    super((int) (min * scale), (int) (max * scale), (int) (value * scale));
 	    this.scale = scale;
 	}
 

@@ -58,7 +58,7 @@ public class StateMonitor {
 		canCompute.signal();
 		canUpdate.signal();
 	    } else {
-		log("StateMonitor: � stata richiesto lo START, ma lo stato dell'applicazione non � Pause o Stop");
+		log("StateMonitor: è stata richiesto lo START, ma lo stato dell'applicazione non è Pause o Stop");
 	    }
 	} finally {
 	    w.unlock();
@@ -74,7 +74,7 @@ public class StateMonitor {
 		canUpdate.signal();
 		isStarted.signalAll();
 	    } else {
-		log("StateMonitor: � stato richiesto lo Step, ma lo stato dell'applicazione non � PAUSE");
+		log("StateMonitor: è stato richiesto lo Step, ma lo stato dell'applicazione non è PAUSE");
 	    }
 	} finally {
 	    w.unlock();
@@ -144,7 +144,7 @@ public class StateMonitor {
 	}
 	w.lock();
 	try {
-	    // � necessario il while dato che potrebbero verificarsi degli
+	    // È necessario il while dato che potrebbero verificarsi degli
 	    // "spurious wakeup" come indicato nella documentazione Java
 	    while ((runState > START) && !singleStep) {
 		isStarted.await();

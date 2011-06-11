@@ -1,6 +1,6 @@
 package nbody.event;
 
-import nbody.gui.NBodyView;
+import nbody.view.swing.NBodyView;
 
 public class StartedEvent extends Event {
 

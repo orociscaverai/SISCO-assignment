@@ -1,13 +1,13 @@
 package nbody;
 
 import nbody.controller.EventHandler;
-import nbody.view.swing.NBodyView;
+import nbody.view.ForPerformanceTest;
 
-public class Main {
+public class PerformanceTestMain {
 
     public static void main(String[] args) {
 
-	NBodyView view = new NBodyView(600, 600);
+	ForPerformanceTest view = new ForPerformanceTest();
 	StateVariables var = new StateVariables();
 
 	StateMonitor state = new StateMonitor();
@@ -16,6 +16,8 @@ public class Main {
 	c.start();
 	Master m = new Master(view, state, var);
 	m.start();
+	
+	new Thread(view).start();
     }
 
 }
