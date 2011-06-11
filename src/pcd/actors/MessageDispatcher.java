@@ -39,6 +39,7 @@ public class MessageDispatcher extends Thread {
 	    try {
 		Socket socket = mainSocket.accept();
 		inStream = new ObjectInputStream(socket.getInputStream());
+		socket.setSoLinger(true, 0);
 
 		String actorName = (String) inStream.readObject();
 		Message message = (Message) inStream.readObject();
@@ -48,6 +49,7 @@ public class MessageDispatcher extends Thread {
 		boxActor.insert(message);
 
 		inStream.close();
+		socket.close();
 	    } catch (IOException e) {
 		e.printStackTrace();
 	    } catch (ClassNotFoundException e) {
