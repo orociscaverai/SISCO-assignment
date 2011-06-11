@@ -5,10 +5,8 @@ import java.util.List;
 
 import nbody_distribuito.BodiesMap;
 
-public class SplitStrategyUsingNewJob implements PartitionStrategy {
+public class SplitStrategyUsingNewJob extends StrategyUtil implements PartitionStrategy {
     
-    private List<Job> listOfJob;
-    private int nextJobToGet = 0;
 
     public void splitJob(int numOfWorker, BodiesMap map) {
 
@@ -42,8 +40,8 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 	// generazione job
 	int totalJob = numOfSplit * (numOfSplit - 1);
 
-	listOfJob = new ArrayList<Job>(totalJob);
-//	log("num of split = " + numOfSplit);
+	initializeJobList(totalJob);
+
 
 	for (int i = 0; i < numOfSplit; i++) {
 	    
@@ -54,16 +52,17 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 	    int index = i;
 
 	    while (true) {
-		Job job = new Job();
+		createNewJob();
 		
 //		log("Create job: " + firstIndex1 + " " + lastIndex1 + " "
 //			+ firstIndex2 + " " + lastIndex2);
 		for (int j = firstIndex1; j < lastIndex1; j++) {
-		    job.addData(j, map.getBody(j).getPosition(), map.getBody(j).getMass());
+		    addDataToCurrentJob(j, map.getBody(j).getPosition(), map.getBody(j).getMass());
 		}
 		if (firstIndex1 != firstIndex2) {
 		    for (int j = firstIndex2; j < lastIndex2; j++) {
-			job.addData(j, map.getBody(j).getPosition(), map.getBody(j).getMass());
+		    	addDataToCurrentJob(j, map.getBody(j).getPosition(), map.getBody(j).getMass());
+
 		    }
 		}
 		// interazioni
@@ -71,7 +70,8 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 		    for (int j = firstIndex1; j < lastIndex1; j++) {
 			for (int k = firstIndex2; k < lastIndex2; k++) {
 			    try {
-				job.addInteraction(j, k);
+			    	addInteractionToCurrentJob(j, k);
+
 			    } catch (Exception e) {
 				e.printStackTrace();
 			    }
@@ -81,7 +81,8 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 		    for (int j = firstIndex1; j < lastIndex1 - 1; j++) {
 			for (int k = j + 1; k < lastIndex1; k++) {
 			    try {
-				job.addInteraction(j, k);
+			    	addInteractionToCurrentJob(j, k);
+
 			    } catch (Exception e) {
 				e.printStackTrace();
 			    }
@@ -89,7 +90,6 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 		    }
 		}
 
-		listOfJob.add(job);
 		if (lastIndex2 == map.getNumBodies())
 		    break;
 		index += 1;
@@ -100,22 +100,5 @@ public class SplitStrategyUsingNewJob implements PartitionStrategy {
 	}
     }
 
-    public Job getNextJob() {
-
-	try {
-	    Job result = listOfJob.get(nextJobToGet);
-	    nextJobToGet += 1;
-	    return result;
-	} catch (Exception e) {
-	    return null;
-	}
-
-    }
-
-    private void log(String msg) {
-	synchronized (System.out) {
-	    System.out.println("SplitStrategyUsingNewJob: " + msg);
-	}
-    }
 
 }

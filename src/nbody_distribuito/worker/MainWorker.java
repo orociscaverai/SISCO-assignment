@@ -20,12 +20,14 @@ public class MainWorker {
 	
 	Port serverPort = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP); 
 	
+	for (int i = 0 ; i <5 ; i++){
 	Worker w = new Worker(Constants.WORKER_ACTOR,  serverPort);
 	
 	//TODO
 	FlagActor stopFlag = new FlagActor("stopFlag");
 	stopFlag.start();
 	w.start();
+	}
 	//w2.start();
     }
 

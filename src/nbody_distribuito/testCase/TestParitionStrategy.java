@@ -5,6 +5,8 @@ import java.util.List;
 import nbody_distribuito.BodiesMap;
 import nbody_distribuito.master.ClientData;
 import nbody_distribuito.master.Job;
+import nbody_distribuito.master.PartitionStrategy;
+import nbody_distribuito.master.StrategyFactory;
 
 public class TestParitionStrategy {
 
@@ -13,6 +15,10 @@ public class TestParitionStrategy {
      */
     public static void main(String[] args) {
 
+    PartitionStrategy ps = new StrategyFactory().getStrategy();
+	BodiesMap bm = new BodiesMap();
+	bm.generateRandomMap(100);
+    ps.splitJob(2, bm);
 	
 //	SimpleSplitStrategy ps = new SimpleSplitStrategy();
 //	

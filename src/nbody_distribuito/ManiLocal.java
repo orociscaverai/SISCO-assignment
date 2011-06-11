@@ -16,9 +16,9 @@ public class ManiLocal {
 
 	NBodyView view = new NBodyView(600, 600);
 
-	Port workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP);
-	Port stopActor = new Port(Constants.STOP_ACTOR, Constants.SERVER_IP);
-	Port computeActor = new Port(Constants.COMPUTE_ACTOR, Constants.SERVER_IP);
+	Port workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR, "127.0.0.1");
+	Port stopActor = new Port(Constants.STOP_ACTOR, "127.0.0.1");
+	Port computeActor = new Port(Constants.COMPUTE_ACTOR, "127.0.0.1");
 
 	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor, view).start();
 	new FlagActor(Constants.STOP_ACTOR).start();
@@ -34,9 +34,10 @@ public class ManiLocal {
 	    e.printStackTrace();
 	}
 
-	Port serverPort = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP);
+	Port serverPort = new Port(Constants.WORKER_HANDLER_ACTOR, "127.0.0.1");
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 5; i++) {
+
 	    Worker w = new Worker(Constants.WORKER_ACTOR, serverPort);
 
 	    w.start();

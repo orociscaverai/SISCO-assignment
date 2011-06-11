@@ -14,29 +14,19 @@ public class Job implements Serializable {
     private static final long serialVersionUID = 1L;
     private List<ClientData> data;
     private List<Interaction> interactions;
-    private Map<Integer, Integer> relativeIndexMap;
 
     public Job() {
 	data = new Vector<ClientData>();
 	interactions = new Vector<Interaction>();
-	relativeIndexMap = new HashMap<Integer, Integer>();
     }
 
     public void addData(int id, float pos[], float mass) {
-	relativeIndexMap.put(id, data.size());
 	ClientData newData = new ClientData(data.size(), id, pos, mass);
 	data.add(newData);
     }
 
-    public void addInteraction(int indexA, int indexB) throws Exception {
-	
-	int relativeA = relativeIndexMap.get(indexA);
-	if ((Integer) relativeA == null)
-	    throw new Exception("l'indice A(" + indexA + ") non è presente nel job");
-	int relativeB = relativeIndexMap.get(indexB);
-	if ((Integer) relativeB == null)
-	    throw new Exception("l'indice B(" + indexB + ") non è presente nel job");
-	interactions.add(new Interaction(relativeA, relativeB));
+    public void addInteraction(int indexA, int indexB){
+	interactions.add(new Interaction(indexA, indexB));
     }
 
     public int getNumTask() {

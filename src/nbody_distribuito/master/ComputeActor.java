@@ -87,12 +87,15 @@ public class ComputeActor extends Actor {
 	    // Suddivido il carico di lavoro in base al numero di worker
 	    // disponibili. Il tipo di strategia usata per suddividere il
 	    // lavoro dipende dal tipo di implementazione realizzata
-	    PartitionStrategy ps = new SplitStrategyUsingNewJob();
+	    StrategyFactory sf = new StrategyFactory();
+	    PartitionStrategy ps = sf.getStrategy();
 	    ps.splitJob(workers.size(), map);
 
 	    // send dei primi messaggi a tutti i worker
 	    int waitCompleteJobs = 0;
 	    int workerID = 0;
+	    //mando 2 job ai worker per accelerare il lavoro..
+	    for (int i=0;i<2;i++){
 	    for (Port worker : workers) {
 		Job n = ps.getNextJob();
 
@@ -103,15 +106,17 @@ public class ComputeActor extends Actor {
 		    Message m = new DoJobMessage(workerID, n, deltaTime, softFactor);
 		    send(worker, m);
 		    waitCompleteJobs++;
-		    workerID++;
+		    workerID = (workerID+1)%workers.size();
 		}
 	    }
+	    }
+	    
 
 	    ResultAggregator computeResult = new ResultAggregator(map.getNumBodies(), deltaTime);
 	    computeResult.initialize(map);
 
 	    while (waitCompleteJobs > 0) {
-		Message res = receive();
+		Message res = super.receive();
 		if (res instanceof StopComputationMessage || res instanceof PauseComputationMessage) {
 		    // this.getMessageBox().getQueue().clear();
 		    throw new StoppedException("STOP!");
