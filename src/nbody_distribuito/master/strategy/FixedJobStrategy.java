@@ -1,6 +1,6 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.strategy;
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
 
 public class FixedJobStrategy extends StrategyUtil {
 	private static final int MAX_INTERACTION_PER_JOB = 40;

@@ -2,8 +2,8 @@ package nbody_distribuito.worker;
 
 import java.util.concurrent.Callable;
 
-import nbody_distribuito.master.ClientData;
-import nbody_distribuito.master.ClientResponse;
+import nbody_distribuito.shared_object.ClientData;
+import nbody_distribuito.shared_object.ClientResponse;
 
 public class ComputeNewPosition implements Callable<ClientResponse> {
     final private static int dimension = 2;

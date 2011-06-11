@@ -1,9 +1,10 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.master.exception.NumWorkerException;
+import nbody_distribuito.model.BodiesMap;
 
 public class SplitStrategyUsingNewJob extends StrategyUtil implements PartitionStrategy {
     

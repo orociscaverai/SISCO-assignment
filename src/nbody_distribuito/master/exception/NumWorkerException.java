@@ -1,4 +1,4 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.exception;
 
 @SuppressWarnings("serial")
 public class NumWorkerException extends RuntimeException {

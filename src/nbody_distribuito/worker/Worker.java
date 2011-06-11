@@ -11,11 +11,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import nbody_distribuito.Constants;
-import nbody_distribuito.master.ClientData;
-import nbody_distribuito.master.ClientResponse;
-import nbody_distribuito.master.Job;
 import nbody_distribuito.message.DoJobMessage;
 import nbody_distribuito.message.JobResultMessage;
+import nbody_distribuito.shared_object.ClientData;
+import nbody_distribuito.shared_object.ClientResponse;
+import nbody_distribuito.shared_object.Job;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;

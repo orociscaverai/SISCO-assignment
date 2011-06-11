@@ -1,7 +1,8 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.strategy;
 
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
+import nbody_distribuito.shared_object.Job;
 
 /**
  * @author Boccacci Andrea, Cicora Saverio

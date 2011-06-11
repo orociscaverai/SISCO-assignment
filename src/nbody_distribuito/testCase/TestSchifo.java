@@ -1,10 +1,10 @@
 package nbody_distribuito.testCase;
 
 import pcd.actors.Port;
-import nbody_distribuito.Body;
-import nbody_distribuito.master.Job;
 import nbody_distribuito.master.WorkerHandlerActor;
 import nbody_distribuito.master.filter.QueueFilter;
+import nbody_distribuito.model.Body;
+import nbody_distribuito.shared_object.Job;
 import nbody_distribuito.worker.Worker;
 
 public class TestSchifo {

@@ -1,6 +1,6 @@
 package nbody_distribuito.testCase;
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
 
 public class TestBodiesMap {
 

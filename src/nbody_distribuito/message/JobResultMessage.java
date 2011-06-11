@@ -3,7 +3,7 @@ package nbody_distribuito.message;
 import java.util.List;
 
 import nbody_distribuito.Constants;
-import nbody_distribuito.master.ClientResponse;
+import nbody_distribuito.shared_object.ClientResponse;
 import pcd.actors.Message;
 
 public class JobResultMessage extends Message {

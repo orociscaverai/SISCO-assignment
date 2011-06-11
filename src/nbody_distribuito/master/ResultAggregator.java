@@ -2,8 +2,9 @@ package nbody_distribuito.master;
 
 import java.util.List;
 
-import nbody_distribuito.BodiesMap;
-import nbody_distribuito.Body;
+import nbody_distribuito.model.BodiesMap;
+import nbody_distribuito.model.Body;
+import nbody_distribuito.shared_object.ClientResponse;
 
 public class ResultAggregator {
 

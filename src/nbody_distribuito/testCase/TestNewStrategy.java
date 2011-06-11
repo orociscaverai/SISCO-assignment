@@ -1,8 +1,8 @@
 package nbody_distribuito.testCase;
 
-import nbody_distribuito.BodiesMap;
-import nbody_distribuito.master.Job;
-import nbody_distribuito.master.SplitStrategyUsingNewJob;
+import nbody_distribuito.master.strategy.SplitStrategyUsingNewJob;
+import nbody_distribuito.model.BodiesMap;
+import nbody_distribuito.shared_object.Job;
 
 public class TestNewStrategy {
 	public static void main(String[] args){

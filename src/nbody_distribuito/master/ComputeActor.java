@@ -5,10 +5,12 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Vector;
 
-import nbody_distribuito.BodiesMap;
 import nbody_distribuito.Constants;
+import nbody_distribuito.master.exception.NumWorkerException;
 import nbody_distribuito.master.exception.StoppedException;
 import nbody_distribuito.master.filter.QueueFilter;
+import nbody_distribuito.master.strategy.PartitionStrategy;
+import nbody_distribuito.master.strategy.StrategyFactory;
 import nbody_distribuito.message.ChangeParamMessage;
 import nbody_distribuito.message.DoJobMessage;
 import nbody_distribuito.message.JobResultMessage;
@@ -17,6 +19,9 @@ import nbody_distribuito.message.RandomizeMessage;
 import nbody_distribuito.message.SingleStepComputationMessage;
 import nbody_distribuito.message.StartComputationMessage;
 import nbody_distribuito.message.StopComputationMessage;
+import nbody_distribuito.model.BodiesMap;
+import nbody_distribuito.shared_object.ClientResponse;
+import nbody_distribuito.shared_object.Job;
 import nbody_distribuito.view.NBodyView;
 
 import pcd.actors.Actor;

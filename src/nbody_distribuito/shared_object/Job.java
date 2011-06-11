@@ -1,10 +1,11 @@
-package nbody_distribuito.master;
+package nbody_distribuito.shared_object;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 
 public class Job implements Serializable {
 

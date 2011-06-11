@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nbody_distribuito.master.ClientData;
-import nbody_distribuito.master.Job;
-import nbody_distribuito.master.Job;
+import nbody_distribuito.shared_object.ClientData;
+import nbody_distribuito.shared_object.Job;
 
 public class TestRemove {
 

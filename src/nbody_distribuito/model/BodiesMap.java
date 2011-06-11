@@ -1,10 +1,9 @@
-package nbody_distribuito;
+package nbody_distribuito.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import nbody_distribuito.Body;
 
 public class BodiesMap {
 

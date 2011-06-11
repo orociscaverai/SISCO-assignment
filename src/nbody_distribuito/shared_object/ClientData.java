@@ -1,4 +1,4 @@
-package nbody_distribuito.master;
+package nbody_distribuito.shared_object;
 
 import java.io.Serializable;
 

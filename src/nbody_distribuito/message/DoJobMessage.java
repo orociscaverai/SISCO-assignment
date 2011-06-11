@@ -1,7 +1,7 @@
 package nbody_distribuito.message;
 
 import nbody_distribuito.Constants;
-import nbody_distribuito.master.Job;
+import nbody_distribuito.shared_object.Job;
 import pcd.actors.Message;
 
 public class DoJobMessage extends Message {

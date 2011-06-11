@@ -1,6 +1,6 @@
 package nbody_distribuito.worker;
 
-import nbody_distribuito.master.ClientData;
+import nbody_distribuito.shared_object.ClientData;
 
 public class ComputeMutualAcceleration implements Runnable {
     private ClientData a, b;

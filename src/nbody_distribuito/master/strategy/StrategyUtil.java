@@ -1,4 +1,4 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.strategy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
+import nbody_distribuito.shared_object.Job;
 
 public abstract class StrategyUtil implements PartitionStrategy{
 

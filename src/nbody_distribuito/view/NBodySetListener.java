@@ -1,6 +1,6 @@
 package nbody_distribuito.view;
 
-import nbody_distribuito.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
 
 public interface NBodySetListener {
 

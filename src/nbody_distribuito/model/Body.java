@@ -1,4 +1,4 @@
-package nbody_distribuito;
+package nbody_distribuito.model;
 
 public class Body {
 

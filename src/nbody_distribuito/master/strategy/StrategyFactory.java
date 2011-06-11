@@ -1,4 +1,5 @@
-package nbody_distribuito.master;
+package nbody_distribuito.master.strategy;
+
 
 public class StrategyFactory {
 
