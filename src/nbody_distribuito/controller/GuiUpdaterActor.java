@@ -1,12 +1,12 @@
 package nbody_distribuito.controller;
 
-import nbody.gui.NBodyView;
+import nbody.view.swing.AbstractView;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 
 public class GuiUpdaterActor extends Actor {
 
-    protected GuiUpdaterActor(String actorName, NBodyView view) {
+    protected GuiUpdaterActor(String actorName, AbstractView view) {
 	super(actorName);
 
     }

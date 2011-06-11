@@ -1,11 +1,11 @@
 package nbody.event;
 
-import nbody.gui.NBodyView;
+import nbody.view.swing.AbstractView;
 
 public class RandomizeEvent extends Event {
     private int numBodies;
 
-    public RandomizeEvent(NBodyView source, int numBodies) {
+    public RandomizeEvent(AbstractView source, int numBodies) {
 	super("randomize", source);
 	this.numBodies = numBodies;
     }

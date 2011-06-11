@@ -1,37 +1,46 @@
 package nbody;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import nbody.view.swing.AbstractView;
+
 public class Master extends Thread {
+
     private InteractionMatrix interactionMatrix;
     private BodiesMap map;
-    // private int numBodies;
-    private StateMonitor state;
+
+    private AbstractView view;
     private StateVariables var;
-    private ArrayBlockingQueue<BodiesMap> mapQueue;
+    private StateMonitor state;
 
     private ExecutorService ex;
     private ExecutorCompletionService<Boolean> compServ;
 
-    public Master(StateMonitor state, StateVariables var, ArrayBlockingQueue<BodiesMap> mapQueue) {
+    public Master(AbstractView view, StateMonitor state, StateVariables var) {
 	super("Master");
 
+	this.view = view;
 	this.var = var;
 	this.state = state;
-	this.mapQueue = mapQueue;
 
+	doReset();
     }
 
+    /** Inizializza gli Executor */
     private void initPool() {
 	int poolSize = Runtime.getRuntime().availableProcessors() + 1;
 	ex = Executors.newFixedThreadPool(poolSize);
 	this.compServ = new ExecutorCompletionService<Boolean>(ex);
     }
 
+    /**
+     * Funzione utile in caso di stop dell'applicazione: si occupa di attendere
+     * l'arresto della computazione e di riportare lapplicazione in uno stato
+     * consistente
+     */
     private void shutdownAndReset() throws InterruptedException {
 	ex.shutdownNow();
 	ex.awaitTermination(2, TimeUnit.MINUTES);
@@ -115,11 +124,10 @@ public class Master extends Thread {
 	// in poi verrà acceduta solo in lettura
 	map = newMap;
 
-	mapQueue.put(newMap);
-
+	view.setUpdated(newMap);
     }// doCompute()
 
-    private void doReset() throws InterruptedException {
+    private void doReset() {
 	var.setNumBodies(0);
 	map = new BodiesMap(0);
 	interactionMatrix = new InteractionMatrix(0);
@@ -132,8 +140,7 @@ public class Master extends Thread {
 	Bodies.getInstance().makeRandomBodies(numBodies);
 
 	map.generateRandomMap();
-	System.out.println("messo");
-	mapQueue.put(map);
+	view.setUpdated(map);
 
 	// log("\n" + map.toString());
 	// log("\n" + Bodies.getInstance().toString());
@@ -148,12 +155,10 @@ public class Master extends Thread {
 		    state.waitAction();
 		    if (!state.isStopped()) {
 			doCompute();
-			log("do Compute");
 		    } else
 			doRandomize();
 		    if (state.isStopped()) {
 			log("Stopped " + System.currentTimeMillis());
-			mapQueue.clear();
 		    }
 		}
 

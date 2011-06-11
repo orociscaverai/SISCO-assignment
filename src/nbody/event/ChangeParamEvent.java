@@ -1,6 +1,6 @@
 package nbody.event;
 
-import nbody.gui.NBodyView;
+import nbody.view.swing.NBodyView;
 
 public class ChangeParamEvent extends Event {
     private float deltaTime;
