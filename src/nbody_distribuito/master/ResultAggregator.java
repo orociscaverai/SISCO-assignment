@@ -51,9 +51,9 @@ public class ResultAggregator {
 		velocity[j] = oldVel[j]; // v0
 		// acceleration[i][j] = 0;
 	    }
-	    b.setPosition(position);
-	    b.setVelocity(velocity);
-	    bm.addBody(b);
+	    Body newBody = new Body(i,b.getMass(),position);
+	    newBody.setVelocity(velocity);
+	    bm.addBody(newBody);
 	}
     }
 
