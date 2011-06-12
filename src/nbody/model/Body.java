@@ -1,5 +1,10 @@
-package nbody;
+package nbody.model;
 
+/**
+ * La classe Body è una Entity class che rappresenta il singolo corpo. Definisce
+ * la massa e la velocità di un corpo. Si è scelto di mantenere la posizione in
+ * una struttura dati differente: la BodiesMap.
+ */
 public class Body {
 
     final private static int dimension = 2;

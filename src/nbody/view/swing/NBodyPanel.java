@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import nbody.BodiesMap;
+import nbody.model.BodiesMap;
 
 @SuppressWarnings("serial")
 public class NBodyPanel extends JPanel {

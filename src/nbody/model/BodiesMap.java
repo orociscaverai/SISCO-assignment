@@ -1,8 +1,14 @@
-package nbody;
+package nbody.model;
 
 import java.util.Random;
 
+/**
+ * La classe mantiene i dati relativi alla posizione dei corpi nello spazio. Un
+ * istanza di tale classe viene inviata alla gui. Fornisce un metodo per la
+ * generazione random della posizione iniziale dei corpi.
+ */
 public class BodiesMap {
+
     private final static int dimension = 2;
     private float[][] positions;
     private int numBody;

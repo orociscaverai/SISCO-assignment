@@ -1,11 +1,21 @@
-package nbody;
+package nbody.model;
 
-// Si tratta della Struttura dati dei risultati delle accelerazioni
+/**
+ * Struttura dati per il salvataggio delle accelerazioni parziali. Si tratta di
+ * una matrice quadrata nxn dove n è il numero dei corpi. Nella cella ij è
+ * contenuta l'accelerazione parziale tra il corpo i e quello j.
+ * 
+ * In questa maniera ogni inserimento nella matrice può avvenire in maniera
+ * concorrente, senza creare interferenze.
+ * 
+ * Per ottenere l'accelerazione totale su un corpo i e necessario sommare tutti
+ * i valori della riga i-esima.
+ * */
 
-// TODO definirla statica visto che ne deve esistere solo una? ma se la passo di volta in volta?
 public class InteractionMatrix {
-    
+
     final private static int dimension = 2;
+
     private float[][][] matrix;
     private int numBodies;
 
@@ -22,6 +32,7 @@ public class InteractionMatrix {
 	return matrix[bodyIndex];
     }
 
+    /** Restituisce l'accelerazione totale che insiste su un corpo */
     public float[] getResultAcceleration(int planet) {
 
 	float[] out = new float[dimension];
@@ -36,9 +47,7 @@ public class InteractionMatrix {
     }
 
     /**
-     * 
      * Permette l'inserimento di una forza tra due pianeti
-     * 
      */
     public void setAcceleration(int planetA, int planetB, float[] acceleration) {
 	this.matrix[planetA][planetB] = acceleration;

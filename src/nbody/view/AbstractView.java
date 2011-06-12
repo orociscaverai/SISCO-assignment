@@ -1,6 +1,7 @@
-package nbody.view.swing;
+package nbody.view;
 
-import nbody.BodiesMap;
+import nbody.common.ObservableComponent;
+import nbody.model.BodiesMap;
 
 public abstract class AbstractView extends ObservableComponent {
 

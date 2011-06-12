@@ -3,6 +3,7 @@ package nbody.controller;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import nbody.common.ObserverInterface;
 import nbody.event.Event;
 
 public class ControllerAgent extends Thread implements ObserverInterface {

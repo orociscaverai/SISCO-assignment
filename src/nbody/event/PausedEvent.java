@@ -1,10 +1,10 @@
 package nbody.event;
 
-import nbody.view.swing.NBodyView;
+import nbody.view.AbstractView;
 
 public class PausedEvent extends Event {
 
-    public PausedEvent(NBodyView source) {
+    public PausedEvent(AbstractView source) {
 	super("paused", source);
     }
 

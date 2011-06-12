@@ -1,6 +1,6 @@
 package nbody_distribuito.controller;
 
-import nbody.view.swing.AbstractView;
+import nbody.view.AbstractView;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 

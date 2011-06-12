@@ -1,10 +1,10 @@
 package nbody.event;
 
-import nbody.view.swing.NBodyView;
+import nbody.view.AbstractView;
 
 public class StartedEvent extends Event {
 
-    public StartedEvent(NBodyView source) {
+    public StartedEvent(AbstractView source) {
 	super("started", source);
     }
 }

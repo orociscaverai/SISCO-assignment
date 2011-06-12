@@ -1,8 +1,7 @@
-package nbody.view.swing;
+package nbody.common;
 
 import java.util.ArrayList;
 
-import nbody.controller.ObserverInterface;
 import nbody.event.Event;
 
 /**

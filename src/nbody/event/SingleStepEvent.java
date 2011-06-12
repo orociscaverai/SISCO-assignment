@@ -1,10 +1,10 @@
 package nbody.event;
 
-import nbody.view.swing.NBodyView;
+import nbody.view.AbstractView;
 
 public class SingleStepEvent extends Event {
 
-    public SingleStepEvent(NBodyView source) {
+    public SingleStepEvent(AbstractView source) {
 	super("singleStep", source);
     }
 

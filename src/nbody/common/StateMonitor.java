@@ -1,4 +1,4 @@
-package nbody;
+package nbody.common;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -11,10 +11,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Gli stati possibili possono essere: Runned, Paused, Stopped. In più è
  * possibile eseguire un singolo step.
  * 
- * Se lo stato è Runned è possibile passare in Paused o Stopped
- * Se lo stato è Paused è possibile passare in Stopped, Runned oppure richiedere l'esecuzione
- * di un singolo step.
- * Se lo stato è Stopped è possibile passare in Started.
+ * Se lo stato è Runned è possibile passare in Paused o Stopped Se lo stato è
+ * Paused è possibile passare in Stopped, Runned oppure richiedere l'esecuzione
+ * di un singolo step. Se lo stato è Stopped è possibile passare in Started.
  * 
  * */
 public class StateMonitor {
@@ -27,7 +26,7 @@ public class StateMonitor {
 
     private boolean singleStep;
     private boolean randomize;
-    private boolean updateSignaled, stepSignaled;
+    private boolean updateSignaled;
 
     private ReentrantReadWriteLock lock;
     private Lock r, w;
@@ -46,7 +45,6 @@ public class StateMonitor {
 	this.singleStep = false;
 	this.randomize = false;
 	this.updateSignaled = false;
-	this.stepSignaled = false;
     }
 
     public void startProcess() {
@@ -236,7 +234,9 @@ public class StateMonitor {
     }
 
     private void log(String message) {
-	System.out.println(message);
+	synchronized (System.out) {
+	    System.out.println(message);
+	}
     }
 
 }

@@ -1,15 +1,15 @@
 package nbody.controller;
 
-import nbody.StateMonitor;
-import nbody.StateVariables;
+import nbody.common.StateMonitor;
+import nbody.common.StateVariables;
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
 import nbody.event.StartedEvent;
 import nbody.event.StoppedEvent;
-import nbody.view.swing.AbstractView;
 import nbody.event.PausedEvent;
+import nbody.view.AbstractView;
 
 public class EventHandler extends ControllerAgent {
     private StateMonitor state;

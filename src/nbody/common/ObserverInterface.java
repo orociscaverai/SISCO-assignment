@@ -1,4 +1,4 @@
-package nbody.controller;
+package nbody.common;
 
 import nbody.event.Event;
 

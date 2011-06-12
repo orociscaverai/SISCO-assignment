@@ -1,19 +1,15 @@
 package nbody.view;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import nbody.BodiesMap;
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
-import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
-import nbody.event.SingleStepEvent;
 import nbody.event.StartedEvent;
 import nbody.event.StoppedEvent;
-import nbody.view.swing.AbstractView;
+import nbody.model.BodiesMap;
 
-public class ForPerformanceTest extends AbstractView implements Runnable {
+public class PerformanceTest extends AbstractView implements Runnable {
     CountDownLatch counter;
 
     public void setUpdated(BodiesMap map) {
@@ -37,27 +33,17 @@ public class ForPerformanceTest extends AbstractView implements Runnable {
     private void notifyParameterChanged() {
 	float deltaTime = 0.5f;
 	float softFactor = 0.5f;
-	Event ev = new ChangeParamEvent(null, deltaTime, softFactor);
+	Event ev = new ChangeParamEvent(this, deltaTime, softFactor);
 	notifyEvent(ev);
     }
 
     private void notifyStarted() {
-	Event ev = new StartedEvent(null);
+	Event ev = new StartedEvent(this);
 	notifyEvent(ev);
     }
 
     private void notifyStopped() {
-	Event ev = new StoppedEvent(null);
-	notifyEvent(ev);
-    }
-
-    private void notifyPaused() {
-	Event ev = new PausedEvent(null);
-	notifyEvent(ev);
-    }
-
-    private void notifySingleStep() {
-	Event ev = new SingleStepEvent(null);
+	Event ev = new StoppedEvent(this);
 	notifyEvent(ev);
     }
 
@@ -91,7 +77,7 @@ public class ForPerformanceTest extends AbstractView implements Runnable {
 	String out = "sono state eseguite ";
 	out += computationNumber;
 	out += " computazioni con ";
-	out += numBodies + " in ";
+	out += numBodies + " corpi in ";
 	out += timeDiff + " millisecondi";
 	System.out.println(out);
 
@@ -100,14 +86,9 @@ public class ForPerformanceTest extends AbstractView implements Runnable {
     @Override
     public void run() {
 
-	System.out.println("Premere invio iniziare il test");
+	// System.out.println("Premere invio iniziare il test");
 
-	try {
-	    System.in.read();
-	    doTest(500, 500);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+	doTest(500, 1000);
 	System.out.println("Termino");
 
 	System.exit(0);

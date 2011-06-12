@@ -1,6 +1,6 @@
 package nbody.event;
 
-import nbody.view.swing.AbstractView;
+import nbody.view.AbstractView;
 
 public class RandomizeEvent extends Event {
     private int numBodies;

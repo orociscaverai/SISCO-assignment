@@ -1,11 +1,18 @@
-package nbody;
+package nbody.controller;
 
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import nbody.view.swing.AbstractView;
+import nbody.common.StateMonitor;
+import nbody.common.StateVariables;
+import nbody.model.Bodies;
+import nbody.model.BodiesMap;
+import nbody.model.ComputeMutualAcceleration;
+import nbody.model.ComputeNewPosition;
+import nbody.model.InteractionMatrix;
+import nbody.view.AbstractView;
 
 public class Master extends Thread {
 
@@ -55,6 +62,12 @@ public class Master extends Thread {
 	doReset();
     }
 
+    /**
+     * Coordina le fasi necessarie per la computazione di un singolo step della
+     * simulazione. Il lavoro viene implementato mediante gli excuto di Java.
+     * Infine viene inviata la notifica alla Gui per effettuare l'aggiornamento
+     * della visualizzazione.
+     */
     private void doCompute() throws InterruptedException {
 
 	int numBodies = map.getNumBodies();
@@ -83,6 +96,8 @@ public class Master extends Thread {
 	    for (int n = 0; n < numTask; n++) {
 		compServ.take();
 		if (state.isStopped()) {
+		    // Per lo stop viene usata la classe
+		    // ExecutorCompletionService
 		    log("Stop alla Fase 1");
 		    shutdownAndReset();
 		    return;
@@ -108,6 +123,8 @@ public class Master extends Thread {
 
 		compServ.take();
 		if (state.isStopped()) {
+		    // Per lo stop viene usata la classe
+		    // ExecutorCompletionService
 		    log("Stop alla Fase 2");
 		    shutdownAndReset();
 		    return;
@@ -158,7 +175,7 @@ public class Master extends Thread {
 		    } else
 			doRandomize();
 		    if (state.isStopped()) {
-			log("Stopped " + System.currentTimeMillis());
+			log("Stopped");
 		    }
 		}
 
@@ -171,7 +188,8 @@ public class Master extends Thread {
     }
 
     private void log(String error) {
-	System.out.println("[MASTER] : " + error);
-
+	synchronized (System.out) {
+	    System.out.println("[MASTER] : " + error);
+	}
     }
 }

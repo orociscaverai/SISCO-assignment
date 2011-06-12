@@ -1,9 +1,16 @@
-package nbody;
+package nbody.model;
 
 import java.util.Random;
 import java.util.Vector;
 
 
+/**
+ * Rappresenta la lista di tutti i corpi (classe Body) della simulazione che sto
+ * effettuando. La classe è realizzata mediante il pattern Singleton dato che
+ * tale elenco deve rimanere unico per all'interno dell'applicazione. Fornisce
+ * un metodo per la generazione random dei dati del sincolo corpo: massa e
+ * velocità.
+ */
 public class Bodies {
     private Vector<Body> bodies;
 
@@ -32,11 +39,11 @@ public class Bodies {
 	}
     }
 
-    public Body getPlanet(int index) {
+    public Body getBody(int index) {
 	return bodies.get(index);
     }
 
-    public Vector<Body> getPlanets() {
+    public Vector<Body> getBodies() {
 	return bodies;
     }
 

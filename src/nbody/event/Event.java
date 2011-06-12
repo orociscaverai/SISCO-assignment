@@ -1,6 +1,6 @@
 package nbody.event;
 
-import nbody.view.swing.ObservableComponent;
+import nbody.common.ObservableComponent;
 
 public class Event {
 

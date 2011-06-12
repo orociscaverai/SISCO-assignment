@@ -18,7 +18,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import nbody.BodiesMap;
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
 import nbody.event.PausedEvent;
@@ -26,6 +25,8 @@ import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
 import nbody.event.StartedEvent;
 import nbody.event.StoppedEvent;
+import nbody.model.BodiesMap;
+import nbody.view.AbstractView;
 
 /**
  * Class representing the view part of the application.

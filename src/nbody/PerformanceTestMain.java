@@ -1,13 +1,16 @@
 package nbody;
 
+import nbody.common.StateMonitor;
+import nbody.common.StateVariables;
 import nbody.controller.EventHandler;
-import nbody.view.ForPerformanceTest;
+import nbody.controller.Master;
+import nbody.view.PerformanceTest;
 
 public class PerformanceTestMain {
 
     public static void main(String[] args) {
 
-	ForPerformanceTest view = new ForPerformanceTest();
+	PerformanceTest view = new PerformanceTest();
 	StateVariables var = new StateVariables();
 
 	StateMonitor state = new StateMonitor();
