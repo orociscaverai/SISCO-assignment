@@ -9,8 +9,6 @@ import nbody.common.StateMonitor;
 import nbody.common.StateVariables;
 import nbody.model.Bodies;
 import nbody.model.BodiesMap;
-import nbody.model.ComputeMutualAcceleration;
-import nbody.model.ComputeNewPosition;
 import nbody.model.InteractionMatrix;
 import nbody.view.AbstractView;
 
