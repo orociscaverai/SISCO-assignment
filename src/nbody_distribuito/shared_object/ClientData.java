@@ -1,7 +1,12 @@
 package nbody_distribuito.shared_object;
 
 import java.io.Serializable;
-
+/**
+ * Classe di passaggio di informazioni tra ComputeActor e Workers
+ * contiene informazioni su id posizione e massa del corpo
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class ClientData implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -17,6 +22,10 @@ public class ClientData implements Serializable {
 	this.mass = mass;
     }
 
+    /**
+     * 
+     * @return l'indice del corpo rappresentato nel job
+     */
     public int getRelativeId() {
 	return idRelative;
     }

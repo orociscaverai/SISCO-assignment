@@ -2,6 +2,7 @@ package nbody.controller;
 
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
+import nbody.event.OpenFileEvent;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
 import nbody.event.StartedEvent;
@@ -53,6 +54,10 @@ public class EventHandler extends ControllerAgent {
 		    ChangeParamEvent cp = ((ChangeParamEvent) ev);
 		    var.setDeltaTime(cp.getDeltaTime());
 		    var.setSoftFactor(cp.getSoftFactor());
+		}else if (ev instanceof OpenFileEvent){
+		    log("received ev: " + ev.getDescription());
+			var.setFile(((OpenFileEvent) ev).getFile());
+			state.notifyOpenFile();
 		}
 	    }
 

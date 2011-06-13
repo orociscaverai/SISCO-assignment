@@ -1,7 +1,12 @@
-package nbody.view;
+package nbody_distribuito.view;
 
-import nbody.common.ObservableComponent;
-import nbody.model.BodiesMap;
+import nbody_distribuito.model.BodiesMap;
+
+/**
+ * Classe astratta per la gui
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 
 public abstract class AbstractView extends ObservableComponent {
 

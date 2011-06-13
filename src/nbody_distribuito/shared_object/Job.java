@@ -1,12 +1,16 @@
 package nbody_distribuito.shared_object;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-
+/**
+ * Classe che rappresenta un Job, al suo interno vi è una lista 
+ * di interazioni (lavoro da fare) e una lista di informazioni utili 
+ * sui corpi
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class Job implements Serializable {
 
     /**
@@ -30,16 +34,29 @@ public class Job implements Serializable {
 	interactions.add(new Interaction(indexA, indexB));
     }
 
+    /**
+     * Metodo che restituisce il numero di interazioni ancora da calcolare
+     * @return
+     */
     public int getNumTask() {
 	return interactions.size();
     }
 
+    /**
+     * Metodo che restituisce tutti i dati utili per 
+     * la prossima computazione
+     * @return Le due istanze di ClientData contenenti i dati dei corpi
+     * di cui bisogna calcolare l'interazione
+     * oppure null in caso non vi siano interazioni rimaste
+     */
     public ClientData[] getDataOfNextInteraction() {
 	if (interactions.isEmpty())
 	    return null;
 	ClientData[] out = new ClientData[2];
+	//rimuovo l'interazione dalla lista..
 	Interaction interaction = interactions.remove(0);
 	
+	//restituisco i dati del primo e del secondo indice
 	int indexA = interaction.getFirstIndex();
 	out[0] = data.get(indexA);
 	

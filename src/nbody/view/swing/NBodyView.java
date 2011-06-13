@@ -6,8 +6,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import javax.swing.event.ChangeListener;
 
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
+import nbody.event.OpenFileEvent;
 import nbody.event.PausedEvent;
 import nbody.event.RandomizeEvent;
 import nbody.event.SingleStepEvent;
@@ -98,6 +101,8 @@ public class NBodyView extends AbstractView {
 	private JButton stopButton;
 	private JButton pauseButton;
 	private JButton stepButton;
+	private JButton loadButton;
+	private JTextField state;
 	private JTextField numBodies;
 	private FloatJSlider deltaTimeSlider;
 	private FloatJSlider softFactorSlider;
@@ -119,7 +124,9 @@ public class NBodyView extends AbstractView {
 	    stopButton = new JButton("stop");
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
+	    loadButton = new JButton("Load from File..");
 
+	    loadButton.setEnabled(true);
 	    randomizeButton.setEnabled(true);
 	    startButton.setEnabled(false);
 	    stopButton.setEnabled(false);
@@ -148,10 +155,15 @@ public class NBodyView extends AbstractView {
 	    controlPanel.add(stopButton);
 	    controlPanel.add(pauseButton);
 	    controlPanel.add(stepButton);
+	    controlPanel.add(loadButton);
 
 	    setPanel = new NBodyPanel(w, h);
 	    setPanel.setPreferredSize(new Dimension(w, h));
 	    setPanel.setZoom(zoomSlider.getValue());
+	    
+	    state = new JTextField(20);
+	    state.setText("Idle");
+	    state.setEditable(false);
 
 	    JPanel cp = new JPanel(new BorderLayout());
 	    cp.add(BorderLayout.NORTH, controlPanel);
@@ -176,6 +188,10 @@ public class NBodyView extends AbstractView {
 	    eastPanel.add(zoomSlider, c);
 	    c.gridy = 6;
 	    eastPanel.add(new JLabel(" "), c);
+	    c.gridy = 7;
+	    eastPanel.add(new JLabel("State "),c);
+	    c.gridy = 8;
+	    eastPanel.add(state,c);
 
 	    cp.add(BorderLayout.EAST, eastPanel);
 
@@ -189,6 +205,7 @@ public class NBodyView extends AbstractView {
 	    stopButton.addActionListener(this);
 	    pauseButton.addActionListener(this);
 	    stepButton.addActionListener(this);
+	    loadButton.addActionListener(this);
 
 	    deltaTimeSlider.addChangeListener(this);
 	    softFactorSlider.addChangeListener(this);
@@ -207,6 +224,7 @@ public class NBodyView extends AbstractView {
 		pauseButton.setEnabled(true);
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifyStarted();
 
 	    } else if (cmd.equals("stop")) {
@@ -215,6 +233,7 @@ public class NBodyView extends AbstractView {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(true);
+		loadButton.setEnabled(true);
 		notifyStopped();
 
 	    } else if (cmd.equals("pause")) {
@@ -223,6 +242,7 @@ public class NBodyView extends AbstractView {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifyPaused();
 
 	    } else if (cmd.equals("step")) {
@@ -231,6 +251,7 @@ public class NBodyView extends AbstractView {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifySingleStep();
 
 	    } else if (cmd.equals("randomize")) {
@@ -238,8 +259,17 @@ public class NBodyView extends AbstractView {
 		stopButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
+		loadButton.setEnabled(true);
 		notifyRandomize();
 
+	    }else if (cmd.equals("Load from File..")){
+			startButton.setEnabled(true);
+	    	final JFileChooser fc = new JFileChooser();
+	    	int returnVal = fc.showOpenDialog(this);
+	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fc.getSelectedFile();
+	            notifyOpenFile(file);
+	        } 
 	    }
 	}
 
@@ -257,6 +287,11 @@ public class NBodyView extends AbstractView {
 	    float softFactor = softFactorSlider.getScaledValue();
 	    Event ev = new ChangeParamEvent(view, deltaTime, softFactor);
 	    view.notifyEvent(ev);
+	}
+	
+	private void notifyOpenFile(File f){
+		Event ev = new OpenFileEvent(view,f);
+		view.notifyEvent(ev);
 	}
 
 	private void notifyStarted() {
@@ -285,4 +320,15 @@ public class NBodyView extends AbstractView {
 	    view.notifyEvent(ev);
 	}
     }
+
+	@Override
+	public void setState(final String newState) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				frame.state.setText(newState);
+			}
+		});
+	}
 }

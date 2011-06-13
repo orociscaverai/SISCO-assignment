@@ -2,6 +2,13 @@ package nbody_distribuito.shared_object;
 
 import java.io.Serializable;
 
+/**
+ * Classe di scambio informazioni tra Workers e ComputeActor
+ * Al suo interno sono presenti i risultati della computazione relativi
+ *  ad un singolo corpo
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class ClientResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -80,9 +80,9 @@ public abstract class Actor extends Thread {
 
 	    try {
 		synchronized (token) {
-		    System.out.println(this.getActorName() + " - mi metto in attesa ...");
+//		    System.out.println(this.getActorName() + " - mi metto in attesa ...");
 		    token.wait();
-		    System.out.println(this.getActorName() + " - mi risveglio ...");
+//		    System.out.println(this.getActorName() + " - mi risveglio ...");
 		}
 	    } catch (InterruptedException e) {
 		e.printStackTrace();

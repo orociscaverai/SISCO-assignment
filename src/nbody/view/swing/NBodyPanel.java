@@ -21,6 +21,7 @@ public class NBodyPanel extends JPanel {
 
     private BufferedImage image;
     private int w, h;
+	private BodiesMap lastMap;
 
     public NBodyPanel(int w, int h) {
 	this.image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -34,6 +35,7 @@ public class NBodyPanel extends JPanel {
     }
 
     public void updateImage(BodiesMap pm) {
+    lastMap = pm;
 	// TODO stampa pippo per valutare la terminazione
 	// System.out.println("Iterazione " + pippo++);
 	Graphics2D g2d = image.createGraphics();
@@ -68,5 +70,7 @@ public class NBodyPanel extends JPanel {
 	this.translateW = (w - zoomW) / 2;
 	this.translateH = (h - zoomH) / 2;
 	this.radius = zoom * pointSize;
+	if(lastMap != null)
+		updateImage(lastMap);
     }
 }

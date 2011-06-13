@@ -8,7 +8,7 @@ public class Constants {
     public final static String SERVER_IP = "127.0.0.1";
 
 
-    // Costanti per lo scambio di messaggi che conivolgono il Master TODO
+    // Costanti per lo scambio di messaggi che conivolgono il Master 
     public final static String ASSOCIATE = "associate";
     public final static String ACK_ASSOCIATE = "ackAssociate";
     public final static String DISSOCIATE = "dissociate";
@@ -20,10 +20,10 @@ public class Constants {
     public final static String JOB_RESULT = "jobResult";
 
     // Costanti per lo scambio di messaggi che coinvolgono il FlagActor
-    public final static String IS_SET = "isSet";
-    public final static String IS_SET_RESULT = "isSetResult";
-    public final static String SET_FLAG = "setFlag";
-    public final static String RESET_FLAG = "resetFlag";
+//    public final static String IS_SET = "isSet";
+//    public final static String IS_SET_RESULT = "isSetResult";
+//    public final static String SET_FLAG = "setFlag";
+//    public final static String RESET_FLAG = "resetFlag";
 
     // COstanti per lo scambio di messaggi che coinvolgono gli eventi per la
     // gestione dell'avvio, dello stop e della pausa della computazione
@@ -33,12 +33,14 @@ public class Constants {
     public static final String STEP_EVENT = "singleStepEvent";
     public final static String RANDOMIZE_EVENT = "randomizeEvent";
     public final static String CHANGE_PARAM = "changeParamEvent";
+    public static final String OPEN_FILE_EVENT = "openFileEvent";
 
-    public final static String STOP_ACTOR = "stopActor";
+ //   public final static String STOP_ACTOR = "stopActor";
     public final static String EVENT_CONTROLLER_ACTOR = "eventControllerActor";
     public final static String COMPUTE_ACTOR = "computeActor";
     public final static String WORKER_HANDLER_ACTOR = "workerHandler";
     public final static String WORKER_ACTOR = "workerActor";
+	
 	
 
 }

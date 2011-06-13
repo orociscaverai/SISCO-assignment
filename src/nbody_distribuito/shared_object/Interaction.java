@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Interaction implements Serializable {
     /**
-	 * 
+	 * Classe che rappresenta una interazione
 	 */
     private static final long serialVersionUID = 1L;
     private int indexA;

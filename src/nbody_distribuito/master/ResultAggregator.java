@@ -6,6 +6,12 @@ import nbody_distribuito.model.BodiesMap;
 import nbody_distribuito.model.Body;
 import nbody_distribuito.shared_object.ClientResponse;
 
+/**
+ * Classe che si occupa di inizializzare una mappa e aggiungere i risultati
+ * parziali per arrivare ad una mappa completa
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class ResultAggregator {
 
     private BodiesMap bm;
@@ -51,6 +57,7 @@ public class ResultAggregator {
 		velocity[j] = oldVel[j]; // v0
 		// acceleration[i][j] = 0;
 	    }
+	    //creo un nuovo corpo e lo aggiungo alla mappa
 	    Body newBody = new Body(i,b.getMass(),position);
 	    newBody.setVelocity(velocity);
 	    bm.addBody(newBody);
@@ -64,6 +71,7 @@ public class ResultAggregator {
      * */
     public void aggregate(List<ClientResponse> resultList) {
 	for (int i = 0; i < resultList.size(); i++) {
+		//per ogni corpo contenuto nel risultato prendo posizione e velocità
 	    ClientResponse cr = resultList.get(i);
 	    int id = cr.getBodyId();
 
@@ -79,15 +87,20 @@ public class ResultAggregator {
 		// acceleration[id][j] += partialAcceleration[j];
 
 		// v = a * t
-		// TODO far fare questa roba al client???
+		// aggiungo la parte colcolta ai miei dati
 		velocity[j] += partialVelocity[j];
 		position[j] += partialdisplacement[j];
 	    }
+	    //aggiorno il corpo nella mappa
 	    b.setVelocity(velocity);
 	    b.setPosition(position);
 	}
     }
-
+/**
+ * Questo metodo va chiamato solo quando tutti i lavori sono terminati 
+ * restituisce la mappa risultato della computazione
+ * @return risultato della computazione
+ */
     public BodiesMap getResultMap() {
 	return bm;
     }

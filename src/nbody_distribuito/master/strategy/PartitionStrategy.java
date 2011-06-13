@@ -5,6 +5,7 @@ import nbody_distribuito.model.BodiesMap;
 import nbody_distribuito.shared_object.Job;
 
 /**
+ * Interfaccia che rappresenta una strategia di suddivisione del lavoro
  * @author Boccacci Andrea, Cicora Saverio
  * 
  */

@@ -2,6 +2,12 @@ package nbody_distribuito.worker;
 
 import nbody_distribuito.shared_object.ClientData;
 
+/**
+ * Classe che estende runnable che si occupa di calcolare le accelerazioni 
+ * tra due corpi
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class ComputeMutualAcceleration implements Runnable {
     private ClientData a, b;
     private final static int dimension = 2;
@@ -21,6 +27,13 @@ public class ComputeMutualAcceleration implements Runnable {
 	bodyBodyInteraction(a, b, softFactor);
     }
 
+    /**
+     * metodo che calcola le due interazioni e le scrive 
+     * nell'interaction matrix al posto opportuno
+     * @param c1
+     * @param c2
+     * @param soft2
+     */
     private void bodyBodyInteraction(ClientData c1, ClientData c2, float soft2) {
 
 	int indexA = c1.getRelativeId();
@@ -49,6 +62,7 @@ public class ComputeMutualAcceleration implements Runnable {
 	    ai[i] = rij[i] * b.getMass() * invDistCube;
 	    aj[i] = rij[i] * a.getMass() * invDistCube * -1;
 	}
+	//aggiungo i risultati nella matrice
 	interactionMatrix.setAcceleration(indexA, indexB, ai);
 	interactionMatrix.setAcceleration(indexB, indexA, aj);
     }

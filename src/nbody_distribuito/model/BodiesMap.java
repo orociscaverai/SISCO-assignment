@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
+/**
+ * Classe che rappresenta una mappa di corpi
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class BodiesMap {
 
     private final static int dimension = 2;
@@ -35,6 +39,10 @@ public class BodiesMap {
 	return bodies.get(bodyIndex);
     }
 
+    /**
+     * Metodo che genera una nuova mappa random a partire dal numero di corpi
+     * @param numBodies
+     */
     public void generateRandomMap(int numBodies) {
 
 	bodies.clear();
