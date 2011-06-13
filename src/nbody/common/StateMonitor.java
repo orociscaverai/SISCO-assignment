@@ -19,42 +19,44 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class StateMonitor {
 
     private int runState;
-    static final int START = 0;
-    static final int PAUSE = 1;
-    static final int STOP = 2;
-    static final int STOPPED = 3;
+    private static final int START = 0;
+    private static final int PAUSE = 1;
+    private static final int STOP = 2;
 
-    private boolean singleStep;
-    private boolean randomize;
-    private boolean updateSignaled;
+    public final static int NOTHING = -1;
+    public final static int COMPUTE = 0;
+    public final static int RANDOMIZE = 1;
+    public final static int STEP = 2;
+    private int actionType;
 
     private ReentrantReadWriteLock lock;
     private Lock r, w;
-    private Condition isStarted, isStopped, canUpdate, canCompute;
+    private Condition canCompute;
 
     public StateMonitor() {
 	lock = new ReentrantReadWriteLock();
 	r = lock.readLock();
 	w = lock.writeLock();
-	isStarted = w.newCondition();
-	isStopped = w.newCondition();
-	canUpdate = w.newCondition();
 	canCompute = w.newCondition();
 
 	this.runState = STOP;
-	this.singleStep = false;
-	this.randomize = false;
-	this.updateSignaled = false;
+	this.actionType = NOTHING;
+
     }
 
+    /**
+     * Da il via alla computazione segnalando la cosa ad eventuali thred in
+     * attesa
+     */
     public void startProcess() {
 	w.lock();
 	try {
+	    // Azione valida solo se non sono in stato di START, negli altri
+	    // caso ignoro il comando
 	    if (runState > START) {
 		runState = START;
-		isStarted.signalAll();
+		actionType = COMPUTE;
 		canCompute.signal();
-		canUpdate.signal();
 	    } else {
 		log("StateMonitor: è stata richiesto lo START, ma lo stato dell'applicazione non è Pause o Stop");
 	    }
@@ -63,14 +65,16 @@ public class StateMonitor {
 	}
     }
 
+    /**
+     * Da il via ad una singola computazione segnalando la cosa ad eventuali
+     * thred in attesa.
+     */
     public void stepProcess() {
 	w.lock();
 	try {
 	    if (runState == PAUSE) {
-		singleStep = true;
-		updateSignaled = true;
-		canUpdate.signal();
-		isStarted.signalAll();
+		actionType = STEP;
+		canCompute.signal();
 	    } else {
 		log("StateMonitor: è stato richiesto lo Step, ma lo stato dell'applicazione non è PAUSE");
 	    }
@@ -80,25 +84,37 @@ public class StateMonitor {
 
     }
 
+    /**
+     * Segnala la volontà di inizializzare la mappa con valori random. Comando
+     * valido sole se la computazione è ferma
+     */
     public void notifyRandomize() {
 	w.lock();
 	try {
-	    randomize = true;
-	    updateSignaled = true;
-	    canCompute.signal();
-	    canUpdate.signal();
+	    if (runState == STOP) {
+		actionType = RANDOMIZE;
+		canCompute.signal();
+	    } else {
+		log("StateMonitor: è stato richiesto la Randomize, ma lo stato dell'applicazione non è STOP");
+	    }
 	} finally {
 	    w.unlock();
 	}
     }
 
+    /**
+     * Imposta lo stato del monitor in PAUSE. Questa condizione metterà in
+     * attesa i thread che chiamano il metodo waitAction(), sino a quando non
+     * viene inviato un comando di start, o step.
+     */
     public void pauseProcess() {
 	w.lock();
 	try {
 	    if (runState == START) {
 		runState = PAUSE;
+		actionType = NOTHING;
 	    } else {
-		log("StateMonitor: � stata richiesta la Pause, ma lo stato dell'applicazione non � Runing");
+		log("StateMonitor: è stata richiesta la Pause, ma lo stato dell'applicazione non è Runing");
 	    }
 	} finally {
 	    w.unlock();
@@ -107,19 +123,18 @@ public class StateMonitor {
 
     /**
      * Permette di richiedere lo Stop dell'applicazione. Lo Stop non avviene in
-     * maniera immediata, ma verr� settato un flag interno che servir� a
-     * notificare all'intera applicazione di interrompere la computazione
+     * maniera immediata, ma verrà settato un flag interno. Il thread adibito ad
+     * eseguire la computazione interrogherà il metodo isStopped() per conoscere
+     * lo stato del flag
      */
     public void stopProcess() {
 	w.lock();
 	try {
 	    if (runState < STOP) {
 		runState = STOP;
-		singleStep = false;
-		updateSignaled = true;
-		canUpdate.signal();
+		actionType = NOTHING;
 	    } else {
-		log("StateMonitor: � stato richiesto lo Stop, ma lo stato dell'applicazione non � Runing");
+		log("StateMonitor: è stato richiesto lo Stop, ma lo stato dell'applicazione non è Runing");
 	    }
 	} finally {
 	    w.unlock();
@@ -127,92 +142,23 @@ public class StateMonitor {
     }
 
     /**
-     * � un metodo bloccante che, nel caso lo stato � Stopped o Paused, blocca
-     * il Thread chiamante sino a quando non viene richiesto lo Start o lo Step
+     * È un metodo bloccante che, nel caso lo stato è Stopped o Paused, blocca
+     * il Thread chiamante. Lo sblocco avviene invocando un comando di start,
+     * randomize e step.
      */
-    public void waitStart() throws InterruptedException {
-
-	r.lock();
-	try {
-	    if (runState == START || singleStep) {
-		return;
-	    }
-	} finally {
-	    r.unlock();
-	}
+    public int waitAction() throws InterruptedException {
 	w.lock();
 	try {
-	    // È necessario il while dato che potrebbero verificarsi degli
-	    // "spurious wakeup" come indicato nella documentazione Java
-	    while ((runState > START) && !singleStep) {
-		isStarted.await();
-	    }
-	    singleStep = false;
-	} finally {
-	    w.unlock();
-	}
-    }
-
-    public void waitStopped() throws InterruptedException {
-	r.lock();
-	try {
-	    if (runState == STOPPED)
-		return;
-	} finally {
-	    r.unlock();
-	}
-	w.lock();
-	try {
-	    while (runState != STOPPED)
-		isStopped.await();
-	} finally {
-	    w.unlock();
-	}
-    }
-
-    public void WaitUpdate() throws InterruptedException {
-	r.lock();
-	try {
-	    if (runState == START)
-		return;
-	} finally {
-	    r.unlock();
-	}
-	w.lock();
-	try {
-	    while (runState != START && !updateSignaled) {
-		canUpdate.await();
-	    }
-	    updateSignaled = false;
-	} finally {
-	    w.unlock();
-	}
-    }
-
-    public void waitAction() throws InterruptedException {
-	r.lock();
-	try {
-	    while (runState < STOP)
-		return;
-	} finally {
-	    r.unlock();
-	}
-	w.lock();
-	try {
-	    while (runState >= STOP && !randomize)
+	    while (runState > START && actionType == NOTHING) {
 		canCompute.await();
-	    randomize = false;
+	    }
+	    int n = actionType;
+	    if (actionType != COMPUTE) {
+		actionType = NOTHING;
+	    }
+	    return n;
 	} finally {
 	    w.unlock();
-	}
-    }
-
-    public boolean isSuspended() {
-	r.lock();
-	try {
-	    return runState > START;
-	} finally {
-	    r.unlock();
 	}
     }
 
@@ -227,10 +173,6 @@ public class StateMonitor {
 	} finally {
 	    r.unlock();
 	}
-    }
-
-    public boolean isStarted() {
-	return true;
     }
 
     private void log(String message) {

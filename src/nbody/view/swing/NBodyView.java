@@ -47,43 +47,11 @@ public class NBodyView extends AbstractView {
 	frame.setVisible(true);
     }
 
-    // TODO Perchè deve essere final?
     @Override
     public void setUpdated(final BodiesMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		frame.setPanel.updateImage(map);
-	    }
-	});
-    }
-
-    @Override
-    public void setProcessingState() {
-	SwingUtilities.invokeLater(new Runnable() {
-	    public void run() {
-		frame.state.setText("Processing...");
-	    }
-	});
-    }
-
-    @Override
-    public void setCompletedState(final long dt) {
-	SwingUtilities.invokeLater(new Runnable() {
-	    public void run() {
-		frame.state.setText("Terminated - Time elapsed: " + dt);
-		frame.startButton.setEnabled(true);
-		frame.stopButton.setEnabled(false);
-	    }
-	});
-    }
-
-    @Override
-    public void setInterruptedState(final long dt) {
-	SwingUtilities.invokeLater(new Runnable() {
-	    public void run() {
-		frame.state.setText("Interrupted - Time elapsed: " + dt);
-		frame.startButton.setEnabled(true);
-		frame.stopButton.setEnabled(false);
 	    }
 	});
     }
@@ -131,7 +99,6 @@ public class NBodyView extends AbstractView {
 	private JButton pauseButton;
 	private JButton stepButton;
 	private JTextField numBodies;
-	private JTextField state;
 	private FloatJSlider deltaTimeSlider;
 	private FloatJSlider softFactorSlider;
 	private JSlider zoomSlider;
@@ -186,10 +153,6 @@ public class NBodyView extends AbstractView {
 	    setPanel.setPreferredSize(new Dimension(w, h));
 	    setPanel.setZoom(zoomSlider.getValue());
 
-	    state = new JTextField(20);
-	    state.setText("Idle");
-	    state.setEditable(false);
-
 	    JPanel cp = new JPanel(new BorderLayout());
 	    cp.add(BorderLayout.NORTH, controlPanel);
 	    cp.add(BorderLayout.CENTER, setPanel);
@@ -213,10 +176,6 @@ public class NBodyView extends AbstractView {
 	    eastPanel.add(zoomSlider, c);
 	    c.gridy = 6;
 	    eastPanel.add(new JLabel(" "), c);
-	    c.gridy = 7;
-	    eastPanel.add(new JLabel("State "), c);
-	    c.gridy = 8;
-	    eastPanel.add(state, c);
 
 	    cp.add(BorderLayout.EAST, eastPanel);
 

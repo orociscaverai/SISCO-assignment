@@ -159,26 +159,18 @@ public class Master extends Thread {
 	map.generateRandomMap();
 	view.setUpdated(map);
 
-	// log("\n" + map.toString());
-	// log("\n" + Bodies.getInstance().toString());
-
     }// doRandomize()
 
     public void run() {
 	initPool();
 	while (true) {
 	    try {
-		while (true) {
-		    state.waitAction();
-		    if (!state.isStopped()) {
-			doCompute();
-		    } else
-			doRandomize();
-		    if (state.isStopped()) {
-			log("Stopped");
-		    }
+		int action = state.waitAction();
+		if (action == 0 || action == 2) {
+		    doCompute();
+		} else if (action == 1) {
+		    doRandomize();
 		}
-
 	    } catch (Exception ex) {
 		ex.printStackTrace();
 		log("restartingTime " + System.currentTimeMillis());

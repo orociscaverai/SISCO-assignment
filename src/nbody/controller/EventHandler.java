@@ -44,7 +44,6 @@ public class EventHandler extends ControllerAgent {
 		    state.pauseProcess();
 		} else if (ev instanceof StoppedEvent) {
 		    log("received ev: " + ev.getDescription());
-		    log("Sending stop " + System.currentTimeMillis());
 		    state.stopProcess();
 		} else if (ev instanceof SingleStepEvent) {
 		    log("received ev: " + ev.getDescription());
