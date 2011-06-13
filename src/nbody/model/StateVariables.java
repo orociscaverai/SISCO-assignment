@@ -1,4 +1,4 @@
-package nbody.common;
+package nbody.model;
 
 import java.io.File;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

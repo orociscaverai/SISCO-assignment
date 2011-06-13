@@ -1,9 +1,9 @@
 package nbody;
 
-import nbody.common.StateMonitor;
-import nbody.common.StateVariables;
 import nbody.controller.EventHandler;
 import nbody.controller.Master;
+import nbody.model.StateMonitor;
+import nbody.model.StateVariables;
 import nbody.view.swing.NBodyView;
 
 public class Main {

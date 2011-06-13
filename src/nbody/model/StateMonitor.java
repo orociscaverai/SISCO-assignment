@@ -1,4 +1,4 @@
-package nbody.common;
+package nbody.model;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
