@@ -43,7 +43,7 @@ public class Master extends Thread {
 
     /**
      * Funzione utile in caso di stop dell'applicazione: si occupa di attendere
-     * l'arresto della computazione e di riportare lapplicazione in uno stato
+     * l'arresto della computazione e di riportare l'applicazione in uno stato
      * consistente
      */
     private void shutdownAndReset() throws InterruptedException {
@@ -73,6 +73,7 @@ public class Master extends Thread {
 	float softFactor = var.getSoftFactor();
 
 	// Inizio la fase 1
+	// Creo i task da fare e li invio ai Worker
 	try {
 	    for (int i = 0; i < numBodies - 1; i++) {
 		for (int j = i + 1; j < numBodies; j++) {
@@ -90,6 +91,12 @@ public class Master extends Thread {
 
 	// La creo qui per guadagnare tempo
 	BodiesMap newMap = new BodiesMap(numBodies);
+
+	// Mediante il medoto take() del CompletitionServices mi blocco sino
+	// all'arrivo di un nuovo risultato. In questo caso non viene generato
+	// un risultato, ma lo utilizzao per implementare lo stop: ad ogni
+	// risultato controllo se è stato inviato un evento di stop, in questo
+	// caso interrompo la computazione senza aggiornare il modello
 	try {
 	    for (int n = 0; n < numTask; n++) {
 		compServ.take();
@@ -109,6 +116,7 @@ public class Master extends Thread {
 	}
 
 	// Inizio la fase 2
+	// Del tutto simile allfa fase 1 come implementazione
 	for (int i = 0; i < numBodies; i++) {
 
 	    compServ.submit(new ComputeNewPosition(i, map.getPosition(i), deltaTime,
@@ -134,9 +142,11 @@ public class Master extends Thread {
 	    shutdownAndReset();
 	    return;
 	}
-
-	// Posso usarla anche se l'ho inviata alla vista, dato che d'ora
-	// in poi verrà acceduta solo in lettura
+	// Tutti i calcoli sono stati fatti correttamente: aggiorno la vista col
+	// nuovo modello.
+	// Il nuovo modello posso usarlo come modello crrente anche se l'ho
+	// inviata alla vista, dato che d'ora
+	// in poi verrà acceduto solo in lettura
 	map = newMap;
 
 	view.setUpdated(newMap);
