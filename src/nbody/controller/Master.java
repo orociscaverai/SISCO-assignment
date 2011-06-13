@@ -5,11 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import nbody.common.StateMonitor;
-import nbody.common.StateVariables;
 import nbody.model.Bodies;
 import nbody.model.BodiesMap;
 import nbody.model.InteractionMatrix;
+import nbody.model.StateMonitor;
+import nbody.model.StateVariables;
 import nbody.view.AbstractView;
 
 public class Master extends Thread {

@@ -1,7 +1,5 @@
 package nbody.controller;
 
-import nbody.common.StateMonitor;
-import nbody.common.StateVariables;
 import nbody.event.ChangeParamEvent;
 import nbody.event.Event;
 import nbody.event.RandomizeEvent;
@@ -9,6 +7,8 @@ import nbody.event.SingleStepEvent;
 import nbody.event.StartedEvent;
 import nbody.event.StoppedEvent;
 import nbody.event.PausedEvent;
+import nbody.model.StateMonitor;
+import nbody.model.StateVariables;
 import nbody.view.AbstractView;
 
 public class EventHandler extends ControllerAgent {
