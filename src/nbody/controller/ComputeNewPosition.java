@@ -1,4 +1,9 @@
-package nbody.model;
+package nbody.controller;
+
+import nbody.model.Bodies;
+import nbody.model.BodiesMap;
+import nbody.model.Body;
+import nbody.model.InteractionMatrix;
 
 
 /**
