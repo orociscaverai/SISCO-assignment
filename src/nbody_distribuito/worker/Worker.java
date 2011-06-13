@@ -19,7 +19,6 @@ import nbody_distribuito.shared_object.Job;
 import pcd.actors.Actor;
 import pcd.actors.Message;
 import pcd.actors.Port;
-import pcd.actors.filters.MsgFilterImpl;
 
 public class Worker extends Actor {
 
@@ -30,7 +29,6 @@ public class Worker extends Actor {
     public Worker(String actorName, Port serverPort) {
 	super(actorName);
 
-	// TODO inserire il metodo per ottenere l'IP
 	this.setLocalPort(new Port(actorName, Constants.WORKER_IP));
 	masterPort = serverPort;
     }
@@ -60,6 +58,7 @@ public class Worker extends Actor {
 	    log("Il master ha risposto con: " + m.toString());
 	    return false;
 	}
+	//prendo la porta del computeActor
 	computePort = (Port) m.getArg(0);
 	log("nuova porta = " + computePort.getActorName() + " " + computePort.getHostName());
 	log("messaggio ricevuto, associaizione avvenuta " + m.toString());
@@ -72,6 +71,7 @@ public class Worker extends Actor {
 	this.compServ = new ExecutorCompletionService<ClientResponse>(ex);
     }
 
+    //metodo che inizializza il worker e fa l'associate
     private boolean init() {
 	if (!associate()) {
 	    return false;
@@ -81,9 +81,14 @@ public class Worker extends Actor {
 
     }
 
-    private void shutdownAndReset() throws InterruptedException {
+    private void shutdownAndReset(){
 	ex.shutdownNow();
-	ex.awaitTermination(2, TimeUnit.MINUTES);
+	try {
+		ex.awaitTermination(2, TimeUnit.MINUTES);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
 	int debug = 0;
 	while (compServ.poll() != null) {
@@ -95,66 +100,79 @@ public class Worker extends Actor {
 
     }
 
+    /**
+     * metodo che si occupa della computazione
+     * @param job
+     * @param deltaTime
+     * @param softFactor
+     * @return
+     */
     private List<ClientResponse> doCompute(Job job, float deltaTime, float softFactor) {
 	int numBodies = job.getNumBodies();
 	InteractionMatrix interactionMatrix = new InteractionMatrix(numBodies);
 	int numTask = job.getNumTask();
-	// System.out.println("numTask: "+numTask);
 	for (int i = 0; i < numTask; i++) {
+		//prendo i dati della prossima interazione
 	    ClientData[] nextData = job.getDataOfNextInteraction();
-	    // System.out.println(nextData[0].toString()+"\n"+nextData[1].toString());
+	    //invio il task
 	    compServ.submit(new ComputeMutualAcceleration(nextData[0], nextData[1],
 		    interactionMatrix, softFactor), null);
 	}
 	// log("numTask = " + numTask);
+	//attendo i risultati
 	for (int n = 0; n < numTask; n++) {
 	    try {
 		compServ.take();
 	    } catch (InterruptedException e) {
-		// TODO Auto-generated catch block
+		shutdownAndReset();
 		e.printStackTrace();
 	    }
 	}
 	// log("inizio step 2");
+	//per ogni pianeta un nuovo task
 	for (int i = 0; i < numBodies; i++) {
 	    ClientData c = job.getData(i);
-	    // TODO decidere dove scrivere i risultati, per ora non fa nulla..
+	    //calcolo posizione e velocità
 	    compServ.submit(new ComputeNewPosition(c, deltaTime, interactionMatrix));
 	}
 	// log("fine step 2");
+	//creo la lista per il messaggio di risposta
 	List<ClientResponse> response = new ArrayList<ClientResponse>(numBodies);
 	for (int i = 0; i < numBodies; i++) {
 	    try {
+	    //raccolgo i risultati e li aggiungo al messaggio di risposta
 		ClientResponse cr = compServ.take().get();
 		response.add(cr);
 	    } catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	    	shutdownAndReset();
+	    	e.printStackTrace();
 	    } catch (ExecutionException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	    	shutdownAndReset();
+	    	e.printStackTrace();
 	    }
 	}
 	// log("ritorno:\n");
 
+	//restituisco la risposta
 	return response;
     }
 
     @Override
     public void run() {
+    //faccio l'associazione e inizializzo le mie variabili
 	if (init()) {
 	    while (true) {
 		Message m = receive();
 		if (m instanceof DoJobMessage) {
-
-		    log("Ricevuto messaggio Do_JOB");
+			//inizio il lavoro
+		    //log("Ricevuto messaggio Do_JOB");
 		    DoJobMessage dj = ((DoJobMessage) m);
 
 		    Job j = dj.getJob();
 		    float deltaTime = dj.getDeltaTime();
 		    float softFactor = dj.getSoftFactor();
 
-		    // log("finito step 1");
+		    //Avvio la computazione
 		    List<ClientResponse> jr = doCompute(j, deltaTime, softFactor);
 		    log("sending JOB_RESULT to " + computePort.getActorName() + " "
 			    + computePort.getHostName());
@@ -162,6 +180,7 @@ public class Worker extends Actor {
 		    // // System.out.println("\n" + r.toString());
 		    // }
 		    try {
+		    //mando il risultato al ComputeActor
 			send(computePort, new JobResultMessage(dj.getWorkerID(), jr));
 
 		    } catch (UnknownHostException e) {
@@ -175,23 +194,6 @@ public class Worker extends Actor {
 	}
 
 	log("Termino spontaneamente l'esecuzione");
-    }
-
-    private boolean isStopped() {
-
-	Port stopFlag = new Port("stopFlag");
-
-	try {
-	    send(stopFlag, new Message(Constants.IS_SET, getLocalPort()));
-	} catch (UnknownHostException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-
-	Message m = receive(new MsgFilterImpl(Constants.IS_SET_RESULT, 1));
-	Boolean b = (Boolean) m.getArg(0);
-	return b.booleanValue();
     }
     
     protected Message receive() {

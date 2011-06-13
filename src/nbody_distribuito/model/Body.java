@@ -1,5 +1,10 @@
 package nbody_distribuito.model;
 
+/**
+ * Classe che rappresenta un corpo
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class Body {
 
     final private static int dimension = 2;
@@ -23,6 +28,20 @@ public class Body {
 
 	this.velocity = new float[dimension];
     }
+    public Body(int id, float mass, float[] position, float[] velocity) {
+    	this.id = id;
+    	this.mass = mass;
+    	this.position = new float[dimension];
+
+    	for (int d = 0; d < dimension; d++)
+    	    this.position[d] = position[d];
+
+    	this.velocity = new float[dimension];
+
+    	for (int d = 0; d < dimension; d++)
+    	    this.velocity[d] = velocity[d];
+
+        }
 
     public int getId() {
 	return id;

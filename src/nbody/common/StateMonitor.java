@@ -27,6 +27,7 @@ public class StateMonitor {
     public final static int COMPUTE = 0;
     public final static int RANDOMIZE = 1;
     public final static int STEP = 2;
+    public final static int OPENFILE = 3;
     private int actionType;
 
     private ReentrantReadWriteLock lock;
@@ -147,6 +148,14 @@ public class StateMonitor {
      * randomize e step.
      */
     public int waitAction() throws InterruptedException {
+    r.lock();
+    try{
+    	if (runState == START){
+    		return COMPUTE;
+    	}
+    }finally{
+    	r.unlock();
+    }
 	w.lock();
 	try {
 	    while (runState > START && actionType == NOTHING) {
@@ -180,5 +189,19 @@ public class StateMonitor {
 	    System.out.println(message);
 	}
     }
+
+	public void notifyOpenFile() {
+		w.lock();
+		try {
+		    if (runState == STOP) {
+			actionType = OPENFILE;
+			canCompute.signal();
+		    } else {
+			log("StateMonitor: è stato richiesto la openFile, ma lo stato dell'applicazione non è STOP");
+		    }
+		} finally {
+		    w.unlock();
+		}
+	}
 
 }

@@ -1,5 +1,6 @@
 package nbody.common;
 
+import java.io.File;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** La classe gestisce le variabili condivise */
@@ -11,6 +12,7 @@ public class StateVariables {
     private ReentrantReadWriteLock sfLock;
     private int numBodies;
     private ReentrantReadWriteLock nbLock;
+	private File file;
 
     public StateVariables() {
 	this.deltaTime = Float.parseFloat(System.getProperty("deltaTime", "0.5"));
@@ -74,4 +76,12 @@ public class StateVariables {
 	    nbLock.readLock().unlock();
 	}
     }
+
+	public void setFile(File file) {
+		this.file = file;
+		
+	}
+	public File getFile(){
+		return file;
+	}
 }

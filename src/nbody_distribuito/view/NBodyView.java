@@ -6,8 +6,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import javax.swing.event.ChangeListener;
 
 import nbody_distribuito.event.ChangeParamEvent;
 import nbody_distribuito.event.Event;
+import nbody_distribuito.event.OpenFileEvent;
 import nbody_distribuito.event.PausedEvent;
 import nbody_distribuito.event.RandomizeEvent;
 import nbody_distribuito.event.SingleStepEvent;
@@ -33,20 +36,23 @@ import nbody_distribuito.model.BodiesMap;
  * @author aricci
  * 
  */
-public class NBodyView extends ObservableComponent implements NBodySetListener {
+public class NBodyView extends AbstractView implements NBodySetListener {
 
     private NBodyFrame frame;
 
     /**
      * Costruisce una finestra che ha le dimensioni di disegno pari ai due
      * paramentri più le dimensioni dei menù.
+     * @wbp.parser.entryPoint
      * */
     public NBodyView(int w, int h) {
 	frame = new NBodyFrame(this, w, h);
 	frame.setVisible(true);
     }
 
-    // TODO Perchè deve essere final????????
+    /**
+     * @wbp.parser.entryPoint
+     */
     public void setUpdated(final BodiesMap map) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
@@ -125,6 +131,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	private JButton pauseButton;
 	private JButton stepButton;
 	private JTextField numBodies;
+	private JButton loadButton;
 	private JTextField state;
 	private FloatJSlider deltaTimeSlider;
 	private FloatJSlider softFactorSlider;
@@ -146,12 +153,14 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    stopButton = new JButton("stop");
 	    pauseButton = new JButton("pause");
 	    stepButton = new JButton("step");
+	    loadButton = new JButton("Load from File..");
 
 	    randomizeButton.setEnabled(true);
 	    startButton.setEnabled(false);
 	    stopButton.setEnabled(false);
 	    pauseButton.setEnabled(false);
 	    stepButton.setEnabled(false);
+	    loadButton.setEnabled(true);
 
 	    deltaTimeSlider = new FloatJSlider(0.01f, 1f, 0.5f, 100);
 	    deltaTimeSlider.setOrientation(SwingConstants.HORIZONTAL);
@@ -175,6 +184,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    controlPanel.add(stopButton);
 	    controlPanel.add(pauseButton);
 	    controlPanel.add(stepButton);
+	    controlPanel.add(loadButton);
 
 	    setPanel = new NBodyPanel(w, h);
 	    setPanel.setPreferredSize(new Dimension(w, h));
@@ -224,6 +234,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    stopButton.addActionListener(this);
 	    pauseButton.addActionListener(this);
 	    stepButton.addActionListener(this);
+	    loadButton.addActionListener(this);
 
 	    deltaTimeSlider.addChangeListener(this);
 	    softFactorSlider.addChangeListener(this);
@@ -242,6 +253,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		pauseButton.setEnabled(true);
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifyStarted();
 
 	    } else if (cmd.equals("stop")) {
@@ -250,6 +262,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
 		randomizeButton.setEnabled(true);
+		loadButton.setEnabled(true);
 		notifyStopped();
 
 	    } else if (cmd.equals("pause")) {
@@ -258,6 +271,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifyPaused();
 
 	    } else if (cmd.equals("step")) {
@@ -266,6 +280,7 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(true);
 		randomizeButton.setEnabled(false);
+		loadButton.setEnabled(false);
 		notifySingleStep();
 
 	    } else if (cmd.equals("randomize")) {
@@ -273,8 +288,17 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 		stopButton.setEnabled(false);
 		pauseButton.setEnabled(false);
 		stepButton.setEnabled(false);
+		loadButton.setEnabled(true);
 		notifyRandomize();
 
+	    }else if (cmd.equals("Load from File..")){
+			startButton.setEnabled(true);
+	    	final JFileChooser fc = new JFileChooser();
+	    	int returnVal = fc.showOpenDialog(this);
+	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fc.getSelectedFile();
+	            notifyOpenFile(file);
+	        } 
 	    }
 	}
 
@@ -319,5 +343,20 @@ public class NBodyView extends ObservableComponent implements NBodySetListener {
 	    Event ev = new RandomizeEvent(view, nb);
 	    view.notifyEvent(ev);
 	}
+	private void notifyOpenFile(File f){
+		Event ev = new OpenFileEvent(view,f);
+		view.notifyEvent(ev);
+	}
     }
+
+	@Override
+	public void setState(final String newState) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				frame.state.setText(newState);	
+			}
+		});	
+	}
 }

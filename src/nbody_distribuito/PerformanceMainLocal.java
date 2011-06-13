@@ -3,7 +3,9 @@ package nbody_distribuito;
 import nbody_distribuito.controller.EventHandler;
 import nbody_distribuito.master.ComputeActor;
 import nbody_distribuito.master.WorkerHandlerActor;
+import nbody_distribuito.view.AbstractView;
 import nbody_distribuito.view.NBodyView;
+import nbody_distribuito.view.PerformanceTest;
 import nbody_distribuito.worker.Worker;
 import pcd.actors.Actor;
 import pcd.actors.MessageDispatcher;
@@ -14,18 +16,15 @@ public class PerformanceMainLocal {
 
 	MessageDispatcher.getInstance().start();
 
-	NBodyView view = new NBodyView(600, 600);
+	PerformanceTest view = new PerformanceTest();
 
 	Port workerHandlerActor = new Port(Constants.WORKER_HANDLER_ACTOR, Constants.SERVER_IP);
-	Port stopActor = new Port(Constants.STOP_ACTOR, Constants.SERVER_IP);
 	Port computeActor = new Port(Constants.COMPUTE_ACTOR, Constants.SERVER_IP);
 
 	new ComputeActor(Constants.COMPUTE_ACTOR, workerHandlerActor, view).start();
-	new FlagActor(Constants.STOP_ACTOR).start();
 	new WorkerHandlerActor(Constants.WORKER_HANDLER_ACTOR, computeActor).start();
 
-	Actor controller = new EventHandler(Constants.EVENT_CONTROLLER_ACTOR, view, computeActor,
-		stopActor);
+	Actor controller = new EventHandler(Constants.EVENT_CONTROLLER_ACTOR, view, computeActor);
 	controller.start();
 
 	try {
@@ -42,5 +41,6 @@ public class PerformanceMainLocal {
 	    w.start();
 	}
 
+	new Thread(view).start();
     }
 }

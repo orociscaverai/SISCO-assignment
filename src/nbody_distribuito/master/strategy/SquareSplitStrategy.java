@@ -5,8 +5,13 @@ import java.util.List;
 
 import nbody_distribuito.master.exception.NumWorkerException;
 import nbody_distribuito.model.BodiesMap;
-
-public class SplitStrategyUsingNewJob extends StrategyUtil implements PartitionStrategy {
+/**
+ * Strategia che divide il lavoro in quadrati la cui grandezza dipende 
+ * dal numero di workers
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
+public class SquareSplitStrategy extends StrategyUtil implements PartitionStrategy {
     
 
     public void splitJob(int numOfWorker, BodiesMap map) {

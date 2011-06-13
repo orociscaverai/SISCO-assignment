@@ -2,6 +2,11 @@ package nbody_distribuito.master.strategy;
 
 import nbody_distribuito.model.BodiesMap;
 
+/**
+ * Strategia di base che mette 40 interazioni in ogni Job
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class FixedJobStrategy extends StrategyUtil {
 	private static final int MAX_INTERACTION_PER_JOB = 40;
 

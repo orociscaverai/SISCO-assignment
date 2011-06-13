@@ -2,7 +2,6 @@ package nbody_distribuito.worker;
 
 // Si tratta della Struttura dati dei risultati delle accelerazioni
 
-// TODO definirla statica visto che ne deve esistere solo una? ma se la passo di volta in volta?
 public class InteractionMatrix {
     
     final private static int dimension = 2;

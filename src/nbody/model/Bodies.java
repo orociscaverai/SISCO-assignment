@@ -65,4 +65,9 @@ public class Bodies {
 	}
 	return out;
     }
+
+	public void clear() {
+		bodies.clear();
+		
+	}
 }

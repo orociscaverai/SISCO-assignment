@@ -1,13 +1,14 @@
-package nbody.view;
+package nbody_distribuito.view;
 
 import java.util.concurrent.CountDownLatch;
 
-import nbody.event.ChangeParamEvent;
-import nbody.event.Event;
-import nbody.event.RandomizeEvent;
-import nbody.event.StartedEvent;
-import nbody.event.StoppedEvent;
-import nbody.model.BodiesMap;
+import nbody_distribuito.event.ChangeParamEvent;
+import nbody_distribuito.event.Event;
+import nbody_distribuito.event.RandomizeEvent;
+import nbody_distribuito.event.StartedEvent;
+import nbody_distribuito.event.StoppedEvent;
+import nbody_distribuito.model.BodiesMap;
+
 
 public class PerformanceTest extends AbstractView implements Runnable {
     CountDownLatch counter;
@@ -88,7 +89,7 @@ public class PerformanceTest extends AbstractView implements Runnable {
 
 	// System.out.println("Premere invio iniziare il test");
 
-	doTest(300, 100);
+	doTest(100, 100);
 	System.out.println("Termino");
 
 	System.exit(0);
@@ -98,4 +99,5 @@ public class PerformanceTest extends AbstractView implements Runnable {
 	@Override
 	public void setState(String state) {		
 	}
+
 }

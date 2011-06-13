@@ -5,6 +5,12 @@ import java.util.concurrent.Callable;
 import nbody_distribuito.shared_object.ClientData;
 import nbody_distribuito.shared_object.ClientResponse;
 
+/**
+ * Classe che si occupa di calcolare lo 
+ * spostamento parziale e la velocità parziale di un corpo
+ * @author Boccacci Andrea, Cicora Saverio
+ *
+ */
 public class ComputeNewPosition implements Callable<ClientResponse> {
     final private static int dimension = 2;
     private int bodyIndex;
@@ -44,9 +50,13 @@ public class ComputeNewPosition implements Callable<ClientResponse> {
 
 	@Override
 	public ClientResponse call() throws Exception {
+		//leggo l'accelerazione risultante
 		float[] acc = interactionMatrix.getResultAcceleration(bodyIndex);
+		//calcolo la velocità
 		float[] vel = computePartialVelocity(acc);
+		//calcolo lo spostamento
 		float[] displacement = computePartialDisplacement(acc);
+		//restituisco il risultato
 		return new ClientResponse(absoluteIndex, vel, displacement);
 	}
 
