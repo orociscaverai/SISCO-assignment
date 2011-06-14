@@ -1,12 +1,8 @@
 package nbody_distribuito.testCase;
 
-import java.util.List;
-
 import nbody_distribuito.master.strategy.PartitionStrategy;
 import nbody_distribuito.master.strategy.StrategyFactory;
 import nbody_distribuito.model.BodiesMap;
-import nbody_distribuito.shared_object.ClientData;
-import nbody_distribuito.shared_object.Job;
 
 public class TestParitionStrategy {
 

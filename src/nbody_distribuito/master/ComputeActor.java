@@ -92,6 +92,7 @@ public class ComputeActor extends Actor {
 			}else if (res instanceof StopComputationMessage){
 				//blocco la computazione
 				view.setState("Stopped");
+				
 			}else if (res instanceof OpenFileMessage){
 				//apro un file e ne leggo il contenuto
 				view.setState("Opening file");
@@ -313,6 +314,7 @@ public class ComputeActor extends Actor {
 		// Ricevo una struttura dati contenente le porte dei vari worker
 		MsgFilter f = new QueueFilter();
 		Message res = receive(f);
+		
 		Vector<Port> workers = (Vector<Port>) res.getArg(0);
 		if (workers.size() == 0) {
 			log("Attendo l'associazione dei worker");
@@ -323,6 +325,7 @@ public class ComputeActor extends Actor {
 			view.setState("Worker arrivato - Processing");
 			log("Si è associato almeno un worker, inizio la computazione");
 		}
+		
 		return workers;
 	}
 

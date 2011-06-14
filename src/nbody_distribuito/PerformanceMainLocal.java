@@ -3,8 +3,6 @@ package nbody_distribuito;
 import nbody_distribuito.controller.EventHandler;
 import nbody_distribuito.master.ComputeActor;
 import nbody_distribuito.master.WorkerHandlerActor;
-import nbody_distribuito.view.AbstractView;
-import nbody_distribuito.view.NBodyView;
 import nbody_distribuito.view.PerformanceTest;
 import nbody_distribuito.worker.Worker;
 import pcd.actors.Actor;

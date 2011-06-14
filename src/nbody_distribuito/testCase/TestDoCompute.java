@@ -1,7 +1,5 @@
 package nbody_distribuito.testCase;
 
-import nbody_distribuito.shared_object.Job;
-import nbody_distribuito.worker.Worker;
 
 public class TestDoCompute {
 
